@@ -34,25 +34,25 @@ const BASE_POSITIONS: Record<PlayerColor, React.CSSProperties[]> = {
 /**
  * A static map of all 52 tiles on the main path, starting from Red's start.
  * Each entry corresponds to an absolute position on the board.
+ * The path is defined in 13-tile segments, from one player's start to the next.
  */
 const MAIN_PATH_COORDS = [
-    // Path from Red's base
+    // Path from Red's start to Green's start (13 tiles, 0-12)
     pos(6, 1), pos(6, 2), pos(6, 3), pos(6, 4), pos(6, 5),
     pos(5, 6), pos(4, 6), pos(3, 6), pos(2, 6), pos(1, 6), pos(0, 6),
-    pos(0, 7),
-    // Path to Green's base
-    pos(0, 8), pos(1, 8), pos(2, 8), pos(3, 8), pos(4, 8), pos(5, 8),
+    pos(0, 7), pos(0, 8),
+    // Path from Green's start to Yellow's start (13 tiles, 13-25)
+    pos(1, 8), pos(2, 8), pos(3, 8), pos(4, 8), pos(5, 8),
     pos(6, 9), pos(6, 10), pos(6, 11), pos(6, 12), pos(6, 13), pos(6, 14),
-    pos(7, 14),
-    // Path to Yellow's base
-    pos(8, 14), pos(8, 13), pos(8, 12), pos(8, 11), pos(8, 10), pos(8, 9),
+    pos(7, 14), pos(8, 14),
+    // Path from Yellow's start to Blue's start (13 tiles, 26-38)
+    pos(8, 13), pos(8, 12), pos(8, 11), pos(8, 10), pos(8, 9),
     pos(9, 8), pos(10, 8), pos(11, 8), pos(12, 8), pos(13, 8), pos(14, 8),
-    pos(14, 7),
-    // Path to Blue's base
-    pos(14, 6), pos(13, 6), pos(12, 6), pos(11, 6), pos(10, 6), pos(9, 6),
+    pos(14, 7), pos(14, 6),
+    // Path from Blue's start to Red's start (13 tiles, 39-51)
+    pos(13, 6), pos(12, 6), pos(11, 6), pos(10, 6), pos(9, 6),
     pos(8, 5), pos(8, 4), pos(8, 3), pos(8, 2), pos(8, 1), pos(8, 0),
-    pos(7, 0),
-    pos(6, 0),
+    pos(7, 0), pos(6, 0),
 ];
 
 
