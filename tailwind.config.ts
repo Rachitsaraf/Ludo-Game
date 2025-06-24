@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -96,6 +97,16 @@ export default {
           '0%, 100%': { transform: 'translateY(-5%)', animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)' },
           '50%': { transform: 'translateY(0)', animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)' },
         },
+        'bounce-slow': {
+          '0%, 100%': {
+            transform: 'translateY(-8%)',
+            animationTimingFunction: 'cubic-bezier(0.8,0,1,1)'
+          },
+          '50%': {
+            transform: 'translateY(0)',
+            animationTimingFunction: 'cubic-bezier(0,0,0.2,1)'
+          },
+        },
         'confetti-pop': {
           '0%': { transform: 'scale(0) rotate(0deg)', opacity: '0' },
           '50%': { transform: 'scale(1.1) rotate(10deg)', opacity: '1' },
@@ -112,6 +123,7 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'bounce-soft': 'bounce-soft 1.5s ease-in-out infinite',
+        'bounce-slow': 'bounce-slow 4s ease-in-out infinite',
         'confetti-pop': 'confetti-pop 0.5s ease-out forwards',
         'shake': 'shake 0.82s cubic-bezier(.36,.07,.19,.97) both',
       },

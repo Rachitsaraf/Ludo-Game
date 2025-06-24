@@ -2,12 +2,20 @@
 "use client";
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { PlayerSelectionDialog } from '@/components/game/PlayerSelectionDialog';
 import { DevelopersDialog } from '@/components/DevelopersDialog';
 import Link from 'next/link';
-import { Settings, Info, Trophy, Users, Gamepad2 } from 'lucide-react';
+import { Settings, Info, Trophy, Users, Gamepad2, Star, Dice5 } from 'lucide-react';
 import { useSound } from '@/hooks/use-sound';
+
+// A component for decorative floating icons that gently bob and fade
+const FloatingIcon = ({ icon: Icon, className, duration = 4, delay = 0 }: { icon: React.ElementType, className: string, duration?: number, delay?: number }) => {
+    return (
+        <div className={`absolute text-white/10 animate-bounce-slow ${className}`} style={{ animationDuration: `${duration}s`, animationDelay: `${delay}s` }}>
+            <Icon className="w-full h-full" />
+        </div>
+    );
+};
 
 export default function Home() {
   const [isPlayerSelectionOpen, setPlayerSelectionOpen] = useState(false);
@@ -24,12 +32,17 @@ export default function Home() {
     setDevelopersOpen(true);
   };
 
+  // Base classes for the 3D-style buttons
+  const buttonBaseClasses = "flex flex-col items-center justify-center gap-2 p-2 text-white font-semibold rounded-2xl shadow-lg border-b-4 transform transition-all duration-150 ease-in-out hover:-translate-y-1 active:translate-y-0 active:border-b-2 active:brightness-90";
+
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-800 to-red-600 font-headline flex flex-col items-center justify-center p-6 text-center text-white">
-      <div className="absolute inset-0 z-0">
-        {/* Background animations or images can be placed here */}
-      </div>
-
+      {/* Background Decorative Icons */}
+      <FloatingIcon icon={Dice5} className="w-16 h-16 top-[10%] left-[10%] rotate-12" duration={5} delay={0.5} />
+      <FloatingIcon icon={Star} className="w-10 h-10 top-[20%] right-[8%] -rotate-12" duration={6} />
+      <FloatingIcon icon={Gamepad2} className="w-12 h-12 bottom-[15%] left-[12%] rotate-6" duration={4} delay={1}/>
+      <FloatingIcon icon={Trophy} className="w-11 h-11 bottom-[25%] right-[10%] -rotate-6" duration={5.5} delay={0.2} />
+      
       <div className="z-10 flex flex-col items-center justify-center gap-8 w-full">
         <div className="flex flex-col items-center gap-4 mb-4 animate-in fade-in-0 zoom-in-95 duration-500">
           <h1 className="font-bold text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
@@ -48,59 +61,51 @@ export default function Home() {
           </h1>
         </div>
 
-        <div className="flex flex-col items-center gap-6 w-full max-w-sm sm:max-w-md">
-          {/* Start Game button - centered and larger */}
+        <div className="flex flex-col items-center gap-6 w-full max-w-xs sm:max-w-sm">
+          {/* Start Game button */}
           <div className="w-full px-4 sm:px-0 animate-in fade-in-0 zoom-in-90 delay-100 duration-500">
-            <Button
-              size="lg"
-              className="w-full h-20 text-3xl rounded-3xl shadow-2xl bg-purple-600 hover:bg-purple-700 border-4 border-purple-400/50 transform hover:scale-105 transition-transform duration-300 ease-in-out flex items-center justify-center gap-4"
+            <button
+              className={`${buttonBaseClasses} w-full h-24 text-3xl bg-green-500 border-green-700 hover:bg-green-400`}
               onClick={handleOpenPlayerSelection}
             >
-              <Gamepad2 className="h-8 w-8" />
-              Start Game
-            </Button>
+              <div className="flex items-center gap-4">
+                <Gamepad2 className="h-10 w-10 drop-shadow-md" />
+                <span>Start Game</span>
+              </div>
+            </button>
           </div>
           
           {/* 2x2 Grid for other options */}
           <div className="grid grid-cols-2 gap-4 sm:gap-6 w-full">
-            
             <div className="animate-in slide-in-from-left-20 duration-700 ease-out delay-200">
-              <Button asChild size="lg" variant="outline" className="w-full h-28 sm:h-32 text-xl rounded-2xl shadow-xl bg-green-500/80 hover:bg-green-600/80 text-white border-2 border-green-300/50 transform hover:scale-105 transition-transform duration-200 flex flex-col items-center justify-center gap-2 p-2 backdrop-blur-sm">
-                <Link href="/leaderboard" onClick={() => playSound('click')}>
-                    <Trophy className="h-8 w-8" />
-                    <span className="font-semibold">Leaderboard</span>
-                </Link>
-              </Button>
+              <Link href="/leaderboard" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-blue-500 border-blue-700 hover:bg-blue-400`}>
+                  <Trophy className="h-10 w-10" />
+                  <span>Leaderboard</span>
+              </Link>
             </div>
 
             <div className="animate-in slide-in-from-right-20 duration-700 ease-out delay-200">
-              <Button asChild size="lg" variant="outline" className="w-full h-28 sm:h-32 text-xl rounded-2xl shadow-xl bg-yellow-500/80 hover:bg-yellow-600/80 text-black border-2 border-yellow-300/50 transform hover:scale-105 transition-transform duration-200 flex flex-col items-center justify-center gap-2 p-2 backdrop-blur-sm">
-                <Link href="/instructions" onClick={() => playSound('click')}>
-                    <Info className="h-8 w-8" />
-                    <span className="font-semibold">Instructions</span>
-                </Link>
-              </Button>
+              <Link href="/instructions" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl text-black bg-yellow-400 border-yellow-600 hover:bg-yellow-300`}>
+                  <Info className="h-10 w-10" />
+                  <span>Instructions</span>
+              </Link>
             </div>
 
             <div className="animate-in slide-in-from-left-20 duration-700 ease-out delay-300">
-                <Button asChild size="lg" variant="outline" className="w-full h-28 sm:h-32 text-xl rounded-2xl shadow-xl bg-blue-600/80 hover:bg-blue-700/80 text-white border-2 border-blue-400/50 transform hover:scale-105 transition-transform duration-200 flex flex-col items-center justify-center gap-2 p-2 backdrop-blur-sm">
-                    <Link href="/settings" onClick={() => playSound('click')}>
-                        <Settings className="h-8 w-8" />
-                        <span className="font-semibold">Settings</span>
-                    </Link>
-                </Button>
+                <Link href="/settings" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-red-500 border-red-700 hover:bg-red-400`}>
+                    <Settings className="h-10 w-10" />
+                    <span>Settings</span>
+                </Link>
             </div>
 
             <div className="animate-in slide-in-from-right-20 duration-700 ease-out delay-300">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full h-28 sm:h-32 text-xl rounded-2xl shadow-xl bg-pink-500/80 hover:bg-pink-600/80 text-white border-2 border-pink-300/50 transform hover:scale-105 transition-transform duration-200 flex flex-col items-center justify-center gap-2 p-2 backdrop-blur-sm"
+                <button
+                  className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-pink-500 border-pink-700 hover:bg-pink-400`}
                   onClick={handleOpenDevelopers}
                 >
-                  <Users className="h-8 w-8" />
-                  <span className="font-semibold">Developers</span>
-                </Button>
+                  <Users className="h-10 w-10" />
+                  <span>Developers</span>
+                </button>
             </div>
           </div>
         </div>
