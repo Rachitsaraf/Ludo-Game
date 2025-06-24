@@ -1,6 +1,16 @@
 "use client";
 
-export const Pawn = ({ color, canMove }: { color: string; canMove?: boolean }) => {
+export const Pawn = ({
+  color,
+  isSelectable,
+  isSelected,
+  onClick,
+}: {
+  color: string;
+  isSelectable?: boolean;
+  isSelected?: boolean;
+  onClick?: () => void;
+}) => {
   const SvgIcon = () => (
     <svg viewBox="0 0 100 125" className="w-full h-full drop-shadow-lg">
       <path
@@ -25,10 +35,13 @@ export const Pawn = ({ color, canMove }: { color: string; canMove?: boolean }) =
 
   return (
     <div
-      className={`relative w-[85%] h-[85%] transition-all duration-500 ease-in-out cursor-pointer flex items-center justify-center ${canMove ? 'filter brightness-125' : ''}`}
+      className={`relative w-[85%] h-[85%] transition-all duration-300 ease-in-out flex items-center justify-center ${
+        isSelectable ? 'cursor-pointer' : ''
+      } ${isSelected ? 'scale-110' : ''}`}
+      onClick={isSelectable ? onClick : undefined}
     >
       <div className="relative w-full h-full animate-bounce-soft">
-        {canMove && <div className="absolute -inset-1 rounded-full bg-white/50 animate-ping"></div>}
+        {isSelectable && <div className="absolute -inset-1 rounded-full bg-white/50 animate-ping"></div>}
         <SvgIcon />
       </div>
     </div>

@@ -4,6 +4,8 @@ import type { Player, PawnState, PlayerColor } from './types';
 // Each tile is 100/15 = 6.666% of the board width/height
 const TILE_SIZE = 100 / 15;
 const TILE_SIZE_PERCENT = `${TILE_SIZE}%`;
+const PAWN_SIZE_PERCENT = `${TILE_SIZE * 0.85}%`;
+const PAWN_OFFSET_PERCENT = `${TILE_SIZE * 0.075}%`
 
 /**
  * Helper function to calculate the top/left CSS properties for a tile.
@@ -14,9 +16,10 @@ const TILE_SIZE_PERCENT = `${TILE_SIZE}%`;
 const pos = (row: number, col: number) => ({
   top: `${row * TILE_SIZE}%`,
   left: `${col * TILE_SIZE}%`,
-  width: `${TILE_SIZE}%`,
-  height: `${TILE_SIZE}%`,
+  width: TILE_SIZE_PERCENT,
+  height: TILE_SIZE_PERCENT,
 });
+
 
 /**
  * Defines the four pawn positions within each player's home base.
@@ -24,21 +27,21 @@ const pos = (row: number, col: number) => ({
  */
 const BASE_POSITIONS: Record<PlayerColor, React.CSSProperties[]> = {
     red: [
-        { top: '6.67%', left: '6.67%' }, { top: '6.67%', left: '26.67%' },
-        { top: '26.67%', left: '6.67%' }, { top: '26.67%', left: '26.67%' }
-    ].map(p => ({ ...p, width: TILE_SIZE_PERCENT, height: TILE_SIZE_PERCENT })),
+        { top: '8.33%', left: '8.33%' }, { top: '8.33%', left: '25%' },
+        { top: '25%', left: '8.33%' }, { top: '25%', left: '25%' }
+    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)', left: `calc(${p.left} + ${PAWN_OFFSET_PERCENT})`, top: `calc(${p.top} + ${PAWN_OFFSET_PERCENT})` })),
     green: [
-        { top: '6.67%', left: '66.67%' }, { top: '6.67%', left: '86.67%' },
-        { top: '26.67%', left: '66.67%' }, { top: '26.67%', left: '86.67%' }
-    ].map(p => ({ ...p, width: TILE_SIZE_PERCENT, height: TILE_SIZE_PERCENT })),
+        { top: '8.33%', left: '68.33%' }, { top: '8.33%', left: '85%' },
+        { top: '25%', left: '68.33%' }, { top: '25%', left: '85%' }
+    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)', left: `calc(${p.left} + ${PAWN_OFFSET_PERCENT})`, top: `calc(${p.top} + ${PAWN_OFFSET_PERCENT})` })),
     blue: [
-        { top: '66.67%', left: '6.67%' }, { top: '66.67%', left: '26.67%' },
-        { top: '86.67%', left: '6.67%' }, { top: '86.67%', left: '26.67%' }
-    ].map(p => ({ ...p, width: TILE_SIZE_PERCENT, height: TILE_SIZE_PERCENT })),
+        { top: '68.33%', left: '8.33%' }, { top: '68.33%', left: '25%' },
+        { top: '85%', left: '8.33%' }, { top: '85%', left: '25%' }
+    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)', left: `calc(${p.left} + ${PAWN_OFFSET_PERCENT})`, top: `calc(${p.top} + ${PAWN_OFFSET_PERCENT})` })),
     yellow: [
-        { top: '66.67%', left: '66.67%' }, { top: '66.67%', left: '86.67%' },
-        { top: '86.67%', left: '66.67%' }, { top: '86.67%', left: '86.67%' }
-    ].map(p => ({ ...p, width: TILE_SIZE_PERCENT, height: TILE_SIZE_PERCENT })),
+        { top: '68.33%', left: '68.33%' }, { top: '68.33%', left: '85%' },
+        { top: '85%', left: '68.33%' }, { top: '85%', left: '85%' }
+    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)', left: `calc(${p.left} + ${PAWN_OFFSET_PERCENT})`, top: `calc(${p.top} + ${PAWN_OFFSET_PERCENT})` })),
 };
 
 /**
@@ -49,22 +52,21 @@ const MAIN_PATH_COORDS = [
     // Path from Red's base
     pos(6, 1), pos(6, 2), pos(6, 3), pos(6, 4), pos(6, 5),
     pos(5, 6), pos(4, 6), pos(3, 6), pos(2, 6), pos(1, 6),
-    pos(0, 6), pos(0, 7),
+    pos(0, 6), pos(0, 7), pos(0, 8), 
     // Path to Green's base
-    pos(0, 8), pos(1, 8), pos(2, 8), pos(3, 8), pos(4, 8), pos(5, 8),
+    pos(1, 8), pos(2, 8), pos(3, 8), pos(4, 8), pos(5, 8),
     pos(6, 9), pos(6, 10), pos(6, 11), pos(6, 12), pos(6, 13),
-    pos(7, 14), pos(8, 14),
+    pos(7, 14), pos(8, 14), pos(8, 13),
     // Path to Yellow's base
-    pos(8, 13), pos(8, 12), pos(8, 11), pos(8, 10), pos(8, 9),
+    pos(8, 12), pos(8, 11), pos(8, 10), pos(8, 9),
     pos(9, 8), pos(10, 8), pos(11, 8), pos(12, 8), pos(13, 8),
-    pos(14, 8), pos(14, 7),
+    pos(14, 8), pos(14, 7), pos(14, 6),
     // Path to Blue's base
-    pos(14, 6), pos(13, 6), pos(12, 6), pos(11, 6), pos(10, 6), pos(9, 6),
+    pos(13, 6), pos(12, 6), pos(11, 6), pos(10, 6), pos(9, 6),
     pos(8, 5), pos(8, 4), pos(8, 3), pos(8, 2), pos(8, 1),
-    pos(7, 0),
-    // Loop back to Red's start
-    pos(6, 0)
-];
+    pos(7, 0), pos(6, 0)
+].map(p => ({...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(10%, 10%)'}));
+
 
 /**
  * A static map of the 6 home-stretch tiles for each player.
@@ -76,19 +78,23 @@ const HOME_PATH_COORDS: Record<PlayerColor, React.CSSProperties[]> = {
   blue:   [pos(13, 7), pos(12, 7), pos(11, 7), pos(10, 7), pos(9, 7), pos(8, 7)],
 };
 
+Object.keys(HOME_PATH_COORDS).forEach(key => {
+    HOME_PATH_COORDS[key as PlayerColor] = HOME_PATH_COORDS[key as PlayerColor].map(p => ({...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(10%, 10%)'}));
+});
+
 /**
  * Configuration for each player, including their starting position on the
- * main path and the location of safe tiles relative to their own path.
+ * main path.
  */
-export const PLAYER_CONFIG: Record<PlayerColor, { pathStart: number; safeTiles: number[] }> = {
-  red:    { pathStart: 0,  safeTiles: [0, 8, 13, 21, 26, 34, 39, 47] },
-  green:  { pathStart: 13, safeTiles: [0, 8, 13, 21, 26, 34, 39, 47] },
-  yellow: { pathStart: 26, safeTiles: [0, 8, 13, 21, 26, 34, 39, 47] },
-  blue:   { pathStart: 39, safeTiles: [0, 8, 13, 21, 26, 34, 39, 47] },
+export const PLAYER_CONFIG: Record<PlayerColor, { pathStart: number; }> = {
+  red:    { pathStart: 0 },
+  green:  { pathStart: 13 },
+  yellow: { pathStart: 26 },
+  blue:   { pathStart: 39 },
 };
 
 // The central finishing position for all pawns.
-const FINISH_POSITION = {...pos(7, 7), transform: 'scale(0.8)'};
+const FINISH_POSITION = {...pos(7, 7), width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(10%, 10%)'};
 
 /**
  * Calculates the CSS style for a pawn based on its state.

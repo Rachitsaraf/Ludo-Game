@@ -26,7 +26,6 @@ export interface GameState {
   players: Player[];
   currentPlayerIndex: number;
   dice: [number, Operator, number] | null;
-  mathQuestion: { question: string; answer: number; options: number[] } | null;
-  turnState: 'rolling' | 'answering' | 'moving' | 'game-over';
+  turnState: 'rolling' | 'selecting' | 'moving' | 'game-over';
   winner: Player | null;
 }
