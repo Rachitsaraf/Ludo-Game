@@ -16,114 +16,110 @@ const Arrow = ({ direction, colorClass }: { direction: 'up' | 'down' | 'left' | 
 };
 
 export const LudoBoard = () => {
-  const Tile = ({ className = "", children, ...props }: { className?: string, children?: React.ReactNode, style?: React.CSSProperties }) => 
-    <div className={`border border-black/10 flex items-center justify-center ${className}`} {...props}>{children}</div>;
-  
-  const HomePawnSpot = () => 
-    <div className="aspect-square bg-white/80 rounded-full border-2 border-white/90 shadow-inner"></div>;
+  const Tile = ({ className = "", children }: { className?: string; children?: React.ReactNode }) => (
+    <div className={`border border-black/10 flex items-center justify-center ${className}`}>{children}</div>
+  );
 
-  const HomeBase = ({ bgColor, children }: { bgColor: string, children?: React.ReactNode }) => (
-    <div className={`p-4 ${bgColor} flex items-center justify-center`}>
-      <div className="grid h-2/3 w-2/3 grid-cols-2 grid-rows-2 gap-3 p-3 rounded-lg bg-white/40">
-        {children || <><HomePawnSpot /> <HomePawnSpot /> <HomePawnSpot /> <HomePawnSpot /></>}
+  const HomeBase = ({ bgColor }: { bgColor: string }) => (
+    <div className={`p-2 md:p-4 ${bgColor} flex items-center justify-center border-2 border-black`}>
+      <div className="bg-white w-[75%] h-[75%] rounded-lg grid grid-cols-2 grid-rows-2 gap-2 p-2">
+        <div className="rounded-full bg-white border-2 border-black/10"></div>
+        <div className="rounded-full bg-white border-2 border-black/10"></div>
+        <div className="rounded-full bg-white border-2 border-black/10"></div>
+        <div className="rounded-full bg-white border-2 border-black/10"></div>
       </div>
     </div>
   );
 
-  const SafeStar = () => <Star className="text-black/50 h-3/4 w-3/4" fill="currentColor" />;
+  const SafeStar = ({colorClass = 'text-black/50'}: {colorClass?: string}) => <Star className={`h-3/4 w-3/4 ${colorClass}`} fill="currentColor" />;
 
   const boardCells = [];
-
-  // This defines the visual layout of the 15x15 board
-  // R=Red, G=Green, B=Blue, Y=Yellow
-  // s=safe, .
-  // r/g/b/y are home path tiles
+  
   const layout = [
-    'R R R R R R . g s . G G G G G G',
-    'R R R R R R . g . . G G G G G G',
-    'R R R R R R . g . . G G G G G G',
-    'R R R R R R . g . . G G G G G G',
-    'R R R R R R . g . . G G G G G G',
-    'R R R R R R . g . . G G G G G G',
-    '. . . . . s r g g g s . . . . .',
-    'b b b b b . R G Y B . y y y y y',
-    '. . . . . s b y y y s . . . . .',
-    'B B B B B B . b . . Y Y Y Y Y Y',
-    'B B B B B B . b . . Y Y Y Y Y Y',
-    'B B B B B B . b . . Y Y Y Y Y Y',
-    'B B B B B B . b . . Y Y Y Y Y Y',
-    'B B B B B B . b . . Y Y Y Y Y Y',
-    'B B B B B B . s . . Y Y Y Y Y Y',
-  ].map(row => row.split(' '));
+    'R R R R R R . g . G G G G G G',
+    'R R R R R R . g . G G G G G G',
+    'R R R R R R . g . G G G G G G',
+    'R R R R R R . g . G G G G G G',
+    'R R R R R R . g . G G G G G G',
+    'R R R R R R . g . G G G G G G',
+    '. . . . . . C C C . . . . . .',
+    'r r r r r . C C C . y y y y y',
+    '. . . . . . C C C . . . . . .',
+    'B B B B B B . b . Y Y Y Y Y Y',
+    'B B B B B B . b . Y Y Y Y Y Y',
+    'B B B B B B . b . Y Y Y Y Y Y',
+    'B B B B B B . b . Y Y Y Y Y Y',
+    'B B B B B B . b . Y Y Y Y Y Y',
+    'B B B B B B . b . Y Y Y Y Y Y',
+  ].map(row => row.split(/\s+/));
 
   const colorMap: { [key: string]: string } = {
     '.': 'bg-white',
-    's': 'bg-white',
-    // Home Bases
-    'R': 'bg-red-400',
-    'G': 'bg-green-400',
-    'B': 'bg-blue-400',
-    'Y': 'bg-yellow-400',
-    // Home paths
-    'r': 'bg-red-400',
-    'g': 'bg-green-400',
-    'b': 'bg-blue-400',
-    'y': 'bg-yellow-400'
+    'R': 'bg-red-500', 'G': 'bg-green-500', 'B': 'bg-blue-500', 'Y': 'bg-yellow-400',
+    'r': 'bg-red-500', 'g': 'bg-green-500', 'b': 'bg-blue-500', 'y': 'bg-yellow-400',
   };
 
-  const startingTiles = { '6-1': 'red', '1-8': 'green', '8-13': 'yellow', '13-6': 'blue' };
-  const arrowDirections: {[key: string]: 'up' | 'down' | 'left' | 'right'} = {
-    red: 'up', green: 'right', yellow: 'down', blue: 'left'
+  const startingTiles: { [key: string]: { dir: 'up' | 'down' | 'left' | 'right'; color: string; tileColor: string } } = {
+    '6-1': { dir: 'right', color: 'text-red-600', tileColor: 'bg-red-500'},
+    '1-8': { dir: 'down', color: 'text-green-600', tileColor: 'bg-green-500'},
+    '8-13': { dir: 'left', color: 'text-yellow-500', tileColor: 'bg-yellow-400'},
+    '13-6': { dir: 'up', color: 'text-blue-600', tileColor: 'bg-blue-500'},
   };
-  const safeTiles = ['0-8', '1-6', '6-0', '6-14', '8-1', '8-13', '13-8', '14-6'];
+
+  const safeTiles: { [key: string]: string } = {
+    '1-6': 'text-red-500',
+    '6-13': 'text-green-500',
+    '13-8': 'text-yellow-400',
+    '8-1': 'text-blue-500',
+  };
 
   for (let r = 0; r < 15; r++) {
     for (let c = 0; c < 15; c++) {
       const key = `${r}-${c}`;
-      let cellContent = null;
       let cellType = layout[r][c];
 
-      // Handle corner Home Bases
       if (cellType === 'R' && r < 6 && c < 6) {
-        if (r === 0 && c === 0) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-red-400"/></div>);
+        if (r === 0 && c === 0) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-red-500"/></div>);
       } else if (cellType === 'G' && r < 6 && c > 8) {
-        if (r === 0 && c === 9) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-green-400"/></div>);
+        if (r === 0 && c === 9) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-green-500"/></div>);
       } else if (cellType === 'B' && r > 8 && c < 6) {
-        if (r === 9 && c === 0) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-blue-400"/></div>);
+        if (r === 9 && c === 0) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-blue-500"/></div>);
       } else if (cellType === 'Y' && r > 8 && c > 8) {
         if (r === 9 && c === 9) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-yellow-400"/></div>);
-      } 
-      // Handle center
-      else if (['R','G','B','Y'].includes(cellType) && r>5 && r<9 && c>5 && c<9) {
-          if (r === 7 && c === 7) {
-            boardCells.push(
+      } else if (cellType === 'C') {
+        if (r === 6 && c === 6) {
+          boardCells.push(
             <div key="center" className="col-start-7 col-span-3 row-start-7 row-span-3">
-                <div className="w-full h-full relative">
-                    <div style={{ clipPath: 'polygon(50% 100%, 0 0, 100% 0)'}} className="absolute inset-0 bg-red-400"></div>
-                    <div style={{ clipPath: 'polygon(0 50%, 100% 0, 100% 100%)'}} className="absolute inset-0 bg-green-400"></div>
-                    <div style={{ clipPath: 'polygon(50% 0, 0 100%, 100% 100%)'}} className="absolute inset-0 bg-yellow-400"></div>
-                    <div style={{ clipPath: 'polygon(0 0, 0 100%, 100% 50%)'}} className="absolute inset-0 bg-blue-400"></div>
-                </div>
-            </div>);
-          }
-      }
-      else if (cellType !== 'R' && cellType !== 'G' && cellType !== 'B' && cellType !== 'Y') {
-        const startColor = startingTiles[key as keyof typeof startingTiles];
-        if (startColor) {
-            cellContent = <Arrow direction={arrowDirections[startColor]} colorClass={`text-${startColor}-600`} />;
-            colorMap[key] = `bg-${startColor}-400`;
-        } else if (safeTiles.includes(key)) {
-            cellContent = <SafeStar />;
+              <div className="w-full h-full relative">
+                <div style={{ clipPath: 'polygon(0 0, 100% 0, 50% 50%)'}} className="absolute inset-0 bg-green-500"></div>
+                <div style={{ clipPath: 'polygon(100% 0, 100% 100%, 50% 50%)'}} className="absolute inset-0 bg-yellow-400"></div>
+                <div style={{ clipPath: 'polygon(0 100%, 100% 100%, 50% 50%)'}} className="absolute inset-0 bg-blue-500"></div>
+                <div style={{ clipPath: 'polygon(0 0, 0 100%, 50% 50%)'}} className="absolute inset-0 bg-red-500"></div>
+              </div>
+            </div>
+          );
         }
+      } else {
+        let cellContent = null;
+        let tileBg = colorMap[cellType] || 'bg-white';
+        
+        const startInfo = startingTiles[key];
+        const safeColor = safeTiles[key];
 
-        boardCells.push(<Tile key={key} className={colorMap[cellType]}>{cellContent}</Tile>);
+        if (startInfo) {
+          cellContent = <Arrow direction={startInfo.dir} colorClass={startInfo.color} />;
+          tileBg = startInfo.tileColor;
+        } else if (safeColor) {
+          cellContent = <SafeStar colorClass={safeColor} />;
+        }
+        
+        boardCells.push(<Tile key={key} className={tileBg}>{cellContent}</Tile>);
       }
     }
   }
 
-
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[95vw] rounded-2xl bg-[#fefce8] p-2 shadow-lg sm:p-3 md:max-w-[500px] lg:max-w-[600px] border-4 border-yellow-800">
+    <div className="relative mx-auto aspect-square w-full max-w-[95vw] rounded-2xl bg-white p-2 shadow-lg sm:p-3 md:max-w-[500px] lg:max-w-[600px] border-4 border-black">
       <div className="grid h-full w-full grid-cols-15 grid-rows-15 gap-px">
         {boardCells}
       </div>
