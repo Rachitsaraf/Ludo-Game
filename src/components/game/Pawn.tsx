@@ -12,10 +12,10 @@ export const Pawn = ({
   onClick?: () => void;
 }) => {
   const SvgIcon = () => (
-    <svg viewBox="0 0 52 62" className="w-full h-full drop-shadow-lg" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="26" cy="28" r="20" fill={color} stroke="black" strokeWidth="2"/>
-        <path d="M14.5 21C17.6534 16.6331 21.6162 13.5932 26 14" stroke="white" strokeOpacity="0.7" strokeWidth="3" strokeLinecap="round"/>
-        <path d="M25 48 C22.25 51.75 25.5 54.5 26 56.5 C26.5 54.5 29.75 51.75 27 48 C29.5 46.5 22.5 46.5 25 48Z" fill={color} stroke="black" strokeWidth="1.5" strokeLinejoin="round"/>
+    <svg viewBox="0 0 50 60" className="w-full h-full drop-shadow-lg" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="25" cy="25" r="24" fill={color} stroke="black" strokeWidth="2" />
+      <path d="M25 49 L20 59 L30 59 Z" fill={color} stroke="black" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M35 15 A 15 15 0 0 0 20 30" stroke="white" strokeOpacity="0.5" strokeWidth="3" strokeLinecap="round" />
     </svg>
   );
 
