@@ -195,7 +195,7 @@ export const GameClient = () => {
             if(toastToShow) toast(toastToShow);
             setAnimationState(null);
             nextTurn();
-        }, 500);
+        }, 300);
     } else {
         animationTimeout = setTimeout(() => {
             setPlayers(produce(draft => {
@@ -209,7 +209,7 @@ export const GameClient = () => {
                     draft.path.shift();
                 }
             }));
-        }, 500); // Delay between steps
+        }, 300); // Delay between steps
     }
 
     return () => clearTimeout(animationTimeout);
@@ -277,7 +277,7 @@ export const GameClient = () => {
   return (
     <div className="flex flex-col md:flex-row items-center justify-center p-2 sm:p-4 gap-4 sm:gap-6 w-full max-w-6xl mx-auto">
         {winner && <Confetti />}
-        <div className="relative w-full max-w-[90vw] md:max-w-[500px] lg:max-w-[600px] aspect-square">
+        <div className="relative w-full max-w-[90vw] sm:max-w-md md:max-w-lg aspect-square">
             <LudoBoard />
             {players.map((player) =>
                 player.pawns.map((pawn) => {
@@ -324,7 +324,7 @@ export const GameClient = () => {
                 ) : (
                     <>
                         {animationState ? (
-                             <div className="flex flex-col items-center justify-center gap-2 text-center">
+                             <div className="flex flex-col items-center justify-center gap-2 text-center h-full">
                                 <p className="text-xl sm:text-2xl font-bold text-primary-foreground">Moving Pawn</p>
                                 <p className="text-4xl sm:text-5xl font-bold">
                                     {animationState.totalSteps - animationState.path.length + 1}
