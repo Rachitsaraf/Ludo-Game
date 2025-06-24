@@ -21,13 +21,19 @@ export const LudoBoard = () => {
   );
 
   const HomeBase = ({ bgColor }: { bgColor: string }) => (
-    <div className={`w-full h-full p-2 md:p-4 ${bgColor} flex items-center justify-center border-2 border-black`}>
-      <div className="bg-white w-[75%] h-[75%] rounded-lg grid grid-cols-2 grid-rows-2 gap-2 p-2">
-        <div className="rounded-full bg-white border-2 border-black/10"></div>
-        <div className="rounded-full bg-white border-2 border-black/10"></div>
-        <div className="rounded-full bg-white border-2 border-black/10"></div>
-        <div className="rounded-full bg-white border-2 border-black/10"></div>
-      </div>
+    <div className={`w-full h-full ${bgColor} border-2 border-black grid grid-cols-2 grid-rows-2 gap-2 p-4`}>
+        <div className="flex items-center justify-center">
+            <div className="w-full h-full rounded-full bg-white/50 border border-black/20"></div>
+        </div>
+        <div className="flex items-center justify-center">
+            <div className="w-full h-full rounded-full bg-white/50 border border-black/20"></div>
+        </div>
+        <div className="flex items-center justify-center">
+            <div className="w-full h-full rounded-full bg-white/50 border border-black/20"></div>
+        </div>
+        <div className="flex items-center justify-center">
+            <div className="w-full h-full rounded-full bg-white/50 border border-black/20"></div>
+        </div>
     </div>
   );
 
@@ -79,13 +85,13 @@ export const LudoBoard = () => {
       let cellType = layout[r][c];
 
       if (cellType === 'R' && r < 6 && c < 6) {
-        if (r === 0 && c === 0) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-red-500"/></div>);
+        if (r === 0 && c === 0) boardCells.push(<div key={key} className="col-span-6 row-span-6 h-full w-full"><HomeBase bgColor="bg-red-500"/></div>);
       } else if (cellType === 'G' && r < 6 && c > 8) {
-        if (r === 0 && c === 9) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-green-500"/></div>);
+        if (r === 0 && c === 9) boardCells.push(<div key={key} className="col-span-6 row-span-6 h-full w-full"><HomeBase bgColor="bg-green-500"/></div>);
       } else if (cellType === 'B' && r > 8 && c < 6) {
-        if (r === 9 && c === 0) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-blue-500"/></div>);
+        if (r === 9 && c === 0) boardCells.push(<div key={key} className="col-span-6 row-span-6 h-full w-full"><HomeBase bgColor="bg-blue-500"/></div>);
       } else if (cellType === 'Y' && r > 8 && c > 8) {
-        if (r === 9 && c === 9) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-yellow-400"/></div>);
+        if (r === 9 && c === 9) boardCells.push(<div key={key} className="col-span-6 row-span-6 h-full w-full"><HomeBase bgColor="bg-yellow-400"/></div>);
       } else if (cellType === 'C') {
         if (r === 6 && c === 6) {
           boardCells.push(

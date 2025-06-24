@@ -5,7 +5,6 @@ import type { Player, PawnState, PlayerColor } from './types';
 const TILE_SIZE = 100 / 15;
 const TILE_SIZE_PERCENT = `${TILE_SIZE}%`;
 const PAWN_SIZE_PERCENT = `${TILE_SIZE * 0.85}%`;
-const PAWN_OFFSET_PERCENT = `${TILE_SIZE * 0.075}%`
 
 /**
  * Helper function to calculate the top/left CSS properties for a tile.
@@ -27,21 +26,21 @@ const pos = (row: number, col: number) => ({
  */
 const BASE_POSITIONS: Record<PlayerColor, React.CSSProperties[]> = {
     red: [
-        { top: '8.33%', left: '8.33%' }, { top: '8.33%', left: '25%' },
-        { top: '25%', left: '8.33%' }, { top: '25%', left: '25%' }
-    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)', left: `calc(${p.left} + ${PAWN_OFFSET_PERCENT})`, top: `calc(${p.top} + ${PAWN_OFFSET_PERCENT})` })),
+        { top: '10%', left: '10%' }, { top: '10%', left: '30%' },
+        { top: '30%', left: '10%' }, { top: '30%', left: '30%' }
+    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)' })),
     green: [
-        { top: '8.33%', left: '68.33%' }, { top: '8.33%', left: '85%' },
-        { top: '25%', left: '68.33%' }, { top: '25%', left: '85%' }
-    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)', left: `calc(${p.left} + ${PAWN_OFFSET_PERCENT})`, top: `calc(${p.top} + ${PAWN_OFFSET_PERCENT})` })),
+        { top: '10%', left: '70%' }, { top: '10%', left: '90%' },
+        { top: '30%', left: '70%' }, { top: '30%', left: '90%' }
+    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)' })),
     blue: [
-        { top: '68.33%', left: '8.33%' }, { top: '68.33%', left: '25%' },
-        { top: '85%', left: '8.33%' }, { top: '85%', left: '25%' }
-    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)', left: `calc(${p.left} + ${PAWN_OFFSET_PERCENT})`, top: `calc(${p.top} + ${PAWN_OFFSET_PERCENT})` })),
+        { top: '70%', left: '10%' }, { top: '70%', left: '30%' },
+        { top: '90%', left: '10%' }, { top: '90%', left: '30%' }
+    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)' })),
     yellow: [
-        { top: '68.33%', left: '68.33%' }, { top: '68.33%', left: '85%' },
-        { top: '85%', left: '68.33%' }, { top: '85%', left: '85%' }
-    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)', left: `calc(${p.left} + ${PAWN_OFFSET_PERCENT})`, top: `calc(${p.top} + ${PAWN_OFFSET_PERCENT})` })),
+        { top: '70%', left: '70%' }, { top: '70%', left: '90%' },
+        { top: '90%', left: '70%' }, { top: '90%', left: '90%' }
+    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)' })),
 };
 
 /**
