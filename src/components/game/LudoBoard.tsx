@@ -1,3 +1,5 @@
+import React from "react";
+
 export const LudoBoard = () => {
   const PathSquare = ({ className = "" }) => <div className={`border border-black/10 rounded-sm ${className}`}></div>;
   const HomeBaseSquare = ({ className = "" }) => <div className={`flex items-center justify-center rounded-full bg-white/50 ${className}`}></div>;
