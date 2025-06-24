@@ -3,7 +3,6 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme-provider';
 import { SoundProvider } from '@/hooks/use-sound';
-import { BackgroundMusicManager } from '@/components/BackgroundMusicManager';
 
 export const metadata: Metadata = {
   title: 'Ludo Learn & Play',
@@ -30,7 +29,6 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <BackgroundMusicManager />
             {children}
             <Toaster />
           </ThemeProvider>

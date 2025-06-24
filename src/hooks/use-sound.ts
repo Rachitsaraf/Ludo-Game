@@ -25,29 +25,82 @@ interface SoundContextType {
 const SoundContext = createContext<SoundContextType | undefined>(undefined);
 
 export const SoundProvider = ({ children }: { children: React.ReactNode }): React.ReactElement => {
-  // Default to unmuted state, which is more intuitive for a game.
   const [isMuted, setIsMuted] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
   const backgroundAudioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Effect to load mute state from localStorage on initial client load
+  // Load mute state from localStorage on initial client load
   useEffect(() => {
-    setIsMounted(true);
     const savedMuteState = localStorage.getItem('ludoMuted');
     if (savedMuteState !== null) {
       setIsMuted(JSON.parse(savedMuteState));
     }
   }, []);
+  
+  const playBackgroundMusic = useCallback(() => {
+    if (isMuted) return;
 
-  // Effect to sync the actual audio element's muted property with our state
-  useEffect(() => {
-    if (backgroundAudioRef.current) {
-      backgroundAudioRef.current.muted = isMuted;
+    if (!backgroundAudioRef.current) {
+        try {
+            backgroundAudioRef.current = new Audio(SOUND_FILES.background);
+            backgroundAudioRef.current.loop = true;
+            backgroundAudioRef.current.volume = 0.2;
+        } catch (error) {
+            console.error("Could not create background audio element", error);
+            return;
+        }
+    }
+
+    if (backgroundAudioRef.current.paused) {
+        backgroundAudioRef.current.play().catch(e => {
+            // This error is expected on first load before user interaction
+            console.log("Browser prevented audio from playing automatically. Waiting for user interaction.");
+        });
     }
   }, [isMuted]);
 
+  const stopBackgroundMusic = useCallback(() => {
+    if (backgroundAudioRef.current && !backgroundAudioRef.current.paused) {
+      backgroundAudioRef.current.pause();
+    }
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    const newMutedState = !isMuted;
+    setIsMuted(newMutedState);
+    localStorage.setItem('ludoMuted', JSON.stringify(newMutedState));
+
+    if (newMutedState) {
+      stopBackgroundMusic();
+    } else {
+      // If unmuting, try to play music. It will only play if user has interacted.
+      playBackgroundMusic();
+    }
+  }, [isMuted, playBackgroundMusic, stopBackgroundMusic]);
+
+  // Effect to handle the first user interaction to enable audio
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+        // Now that the user has interacted, we can safely play our music
+        if (!isMuted) {
+            playBackgroundMusic();
+        }
+        // Remove the event listener so it only runs once
+        window.removeEventListener('click', handleFirstInteraction);
+        window.removeEventListener('keydown', handleFirstInteraction);
+    };
+
+    window.addEventListener('click', handleFirstInteraction);
+    window.addEventListener('keydown', handleFirstInteraction);
+
+    return () => {
+        window.removeEventListener('click', handleFirstInteraction);
+        window.removeEventListener('keydown', handleFirstInteraction);
+    };
+  }, [isMuted, playBackgroundMusic]);
+
+
   const playSound = useCallback((type: SoundEffect) => {
-    if (isMuted || !isMounted) return;
+    if (isMuted) return;
     try {
       const audio = new Audio(SOUND_FILES[type]);
       audio.volume = 0.5;
@@ -55,51 +108,7 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }): Reac
     } catch (error) {
       console.error("Could not play sound", error);
     }
-  }, [isMuted, isMounted]);
-
-  const playBackgroundMusic = useCallback(() => {
-    // Top-level guard to prevent playing when muted.
-    if (isMuted || !isMounted) return;
-
-    try {
-      if (!backgroundAudioRef.current) {
-        backgroundAudioRef.current = new Audio(SOUND_FILES.background);
-        backgroundAudioRef.current.loop = true;
-        backgroundAudioRef.current.volume = 0.2;
-      }
-      
-      // Always try to play if not muted. The browser will prevent it if there's
-      // no interaction, and calling play() on an already playing element is a no-op.
-      backgroundAudioRef.current.play().catch(e => {
-        // This catch is expected to fire on first load until user interaction.
-      });
-
-    } catch (error) {
-       console.error("Could not play background music", error);
-    }
-  }, [isMuted, isMounted]);
-
-  const stopBackgroundMusic = useCallback(() => {
-    if (backgroundAudioRef.current && !backgroundAudioRef.current.paused) {
-      backgroundAudioRef.current.pause();
-    }
-  }, []);
-  
-  const toggleMute = useCallback(() => {
-    if (!isMounted) return;
-    
-    const newMutedState = !isMuted;
-    setIsMuted(newMutedState);
-    localStorage.setItem('ludoMuted', JSON.stringify(newMutedState));
-
-    // Explicitly stop or start music based on the new state
-    if (newMutedState) {
-      stopBackgroundMusic();
-    } else {
-      // When un-muting, always try to play the music.
-      playBackgroundMusic();
-    }
-  }, [isMuted, isMounted, playBackgroundMusic, stopBackgroundMusic]);
+  }, [isMuted]);
 
   const value = { isMuted, toggleMute, playSound, playBackgroundMusic, stopBackgroundMusic };
 
