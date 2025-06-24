@@ -16,7 +16,6 @@ export interface PawnState {
 export interface Player {
   id: PlayerColor;
   name: string;
-  color: string;
   pawns: PawnState[];
 }
 

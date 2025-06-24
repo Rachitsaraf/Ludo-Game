@@ -2,7 +2,7 @@
 
 export const Pawn = ({ color, canMove }: { color: string; canMove?: boolean }) => {
   const SvgIcon = () => (
-    <svg viewBox="0 0 100 125" className="w-6 h-8 md:w-8 md:h-10 drop-shadow-lg">
+    <svg viewBox="0 0 100 125" className="w-5 h-7 md:w-6 md:h-8 drop-shadow-lg">
       <path
         fill={color}
         d="M50,5C27.9,5,10,22.9,10,45c0,16.5,9.8,30.8,23.8,37.3c1,0.5,2.2,0.7,3.3,0.7c2.1,0,4.1-0.9,5.5-2.6l2.9-3.4 c1.3-1.5,3.2-2.4,5.2-2.4s3.9,0.9,5.2,2.4l2.9,3.4c1.4,1.7,3.4,2.6,5.5,2.6c1.1,0,2.2-0.2,3.3-0.7C80.2,75.8,90,61.5,90,45 C90,22.9,72.1,5,50,5z"
@@ -21,7 +21,7 @@ export const Pawn = ({ color, canMove }: { color: string; canMove?: boolean }) =
 
   return (
     <div
-      className={`relative transition-all duration-500 ease-in-out cursor-pointer ${canMove ? 'filter brightness-125' : ''}`}
+      className={`relative transition-all duration-500 ease-in-out cursor-pointer flex items-center justify-center ${canMove ? 'filter brightness-125' : ''}`}
     >
       <div className="relative animate-bounce-soft">
         {canMove && <div className="absolute -inset-1 rounded-full bg-white/50 animate-ping"></div>}

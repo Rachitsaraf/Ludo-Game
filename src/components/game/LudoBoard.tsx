@@ -19,14 +19,14 @@ export const LudoBoard = () => {
   const PathSquare = ({ className = "", children }: { className?: string, children?: React.ReactNode }) => 
     <div className={`border border-black/10 flex items-center justify-center ${className}`}>{children}</div>;
   
-  const HomePawnPlaceholder = () => 
+  const HomePawnSpot = () => 
     <div className="aspect-square bg-white/60 rounded-full shadow-inner"></div>;
 
   const HomeBase = ({ bgColor, innerBgColor }: { bgColor: string, innerBgColor: string }) => (
     <div className={`p-1 sm:p-2 ${bgColor}`}>
       <div className={`grid h-full w-full grid-cols-2 grid-rows-2 gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg ${innerBgColor}`}>
-        <HomePawnPlaceholder /> <HomePawnPlaceholder />
-        <HomePawnPlaceholder /> <HomePawnPlaceholder />
+        <HomePawnSpot /> <HomePawnSpot />
+        <HomePawnSpot /> <HomePawnSpot />
       </div>
     </div>
   );
@@ -35,16 +35,10 @@ export const LudoBoard = () => {
 
   const cells: React.ReactNode[] = [];
   
-  // Top-left block (Red)
+  // Corners
   cells.push(<div key="red-home" className="col-span-6 row-span-6 rounded-tl-xl overflow-hidden"><HomeBase bgColor="bg-red-500" innerBgColor="bg-red-400" /></div>);
-  
-  // Top-right block (Green)
   cells.push(<div key="green-home" className="col-span-6 row-span-6 col-start-10 rounded-tr-xl overflow-hidden"><HomeBase bgColor="bg-green-500" innerBgColor="bg-green-400" /></div>);
-  
-  // Bottom-left block (Blue)
   cells.push(<div key="blue-home" className="col-span-6 row-span-6 row-start-10 rounded-bl-xl overflow-hidden"><HomeBase bgColor="bg-blue-500" innerBgColor="bg-blue-400" /></div>);
-
-  // Bottom-right block (Yellow)
   cells.push(<div key="yellow-home" className="col-span-6 row-span-6 col-start-10 row-start-10 rounded-br-xl overflow-hidden"><HomeBase bgColor="bg-yellow-400" innerBgColor="bg-yellow-300" /></div>);
 
   // Center
@@ -59,42 +53,51 @@ export const LudoBoard = () => {
     </div>
   );
 
-  // Vertical Path (Top)
-  for (let i = 0; i < 6; i++) {
-    cells.push(<PathSquare key={`vt-1-${i}`} className="col-start-7" style={{gridRow: i+1}}/>);
-    cells.push(<PathSquare key={`vt-2-${i}`} className={`col-start-8 ${i > 0 ? 'bg-red-500' : ''}`} style={{gridRow: i+1}}/>);
-    cells.push(<PathSquare key={`vt-3-${i}`} className="col-start-9" style={{gridRow: i+1}}/>);
-  }
-  cells.push(<PathSquare key="red-start" className="col-start-8 bg-red-500" style={{gridRow: 2}}><Arrow direction="down" colorClass="text-white" /></PathSquare>);
-  cells.push(<PathSquare key="red-safe" className="col-start-7 bg-red-300" style={{gridRow: 2}}><SafeStar /></PathSquare>);
+  // Paths
+  const pathCoordinates = [
+    // Top arm
+    ...Array.from({length: 6}, (_, i) => ({r: i, c: 6})),
+    ...Array.from({length: 6}, (_, i) => ({r: i, c: 8})),
+    // Right arm
+    ...Array.from({length: 6}, (_, i) => ({r: 6, c: 9+i})),
+    ...Array.from({length: 6}, (_, i) => ({r: 8, c: 9+i})),
+    // Bottom arm
+    ...Array.from({length: 6}, (_, i) => ({r: 9+i, c: 6})),
+    ...Array.from({length: 6}, (_, i) => ({r: 9+i, c: 8})),
+    // Left arm
+    ...Array.from({length: 6}, (_, i) => ({r: 6, c: i})),
+    ...Array.from({length: 6}, (_, i) => ({r: 8, c: i})),
+    // Home runs
+    ...Array.from({length: 5}, (_, i) => ({r: i+1, c: 7, bg: 'bg-red-500'})),
+    ...Array.from({length: 5}, (_, i) => ({r: 7, c: 9+i, bg: 'bg-green-500'})),
+    ...Array.from({length: 5}, (_, i) => ({r: 9+i, c: 7, bg: 'bg-yellow-400'})),
+    ...Array.from({length: 5}, (_, i) => ({r: 7, c: i+1, bg: 'bg-blue-500'})),
+  ];
 
-
-  // Vertical Path (Bottom)
-  for (let i = 0; i < 6; i++) {
-    cells.push(<PathSquare key={`vb-1-${i}`} className="col-start-7" style={{gridRow: i+10}}/>);
-    cells.push(<PathSquare key={`vb-2-${i}`} className={`col-start-8 ${i < 5 ? 'bg-yellow-400' : ''}`} style={{gridRow: i+10}}/>);
-    cells.push(<PathSquare key={`vb-3-${i}`} className="col-start-9" style={{gridRow: i+10}}/>);
-  }
-  cells.push(<PathSquare key="yellow-start" className="col-start-8 bg-yellow-400" style={{gridRow: 14}}><Arrow direction="up" colorClass="text-white" /></PathSquare>);
-  cells.push(<PathSquare key="yellow-safe" className="col-start-9 bg-yellow-300" style={{gridRow: 14}}><SafeStar /></PathSquare>);
-
-  // Horizontal Path (Left)
-  for (let i = 0; i < 6; i++) {
-    cells.push(<PathSquare key={`hl-1-${i}`} className="row-start-7" style={{gridColumn: i+1}}/>);
-    cells.push(<PathSquare key={`hl-2-${i}`} className={`row-start-8 ${i < 5 ? 'bg-blue-500' : ''}`} style={{gridColumn: i+1}}/>);
-    cells.push(<PathSquare key={`hl-3-${i}`} className="row-start-9" style={{gridColumn: i+1}}/>);
-  }
-  cells.push(<PathSquare key="blue-start" className="row-start-8 bg-blue-500" style={{gridColumn: 2}}><Arrow direction="right" colorClass="text-white" /></PathSquare>);
-  cells.push(<PathSquare key="blue-safe" className="row-start-9 bg-blue-300" style={{gridColumn: 2}}><SafeStar /></PathSquare>);
+  pathCoordinates.forEach(({r, c, bg}, index) => {
+    cells.push(<PathSquare key={`path-${r}-${c}-${index}`} className={`${bg ?? ''}`} style={{gridRow: r+1, gridColumn: c+1}}/>);
+  });
   
-  // Horizontal Path (Right)
-  for (let i = 0; i < 6; i++) {
-    cells.push(<PathSquare key={`hr-1-${i}`} className="row-start-7" style={{gridColumn: i+10}}/>);
-    cells.push(<PathSquare key={`hr-2-${i}`} className={`row-start-8 ${i > 0 ? 'bg-green-500' : ''}`} style={{gridColumn: i+10}}/>);
-    cells.push(<PathSquare key={`hr-3-${i}`} className="row-start-9" style={{gridColumn: i+10}}/>);
-  }
-  cells.push(<PathSquare key="green-start" className="row-start-8 bg-green-500" style={{gridColumn: 14}}><Arrow direction="left" colorClass="text-white" /></PathSquare>);
-  cells.push(<PathSquare key="green-safe" className="row-start-7 bg-green-300" style={{gridColumn: 14}}><SafeStar /></PathSquare>);
+  // Arrows & Stars
+  const markers = [
+    // Red
+    {r: 6, c: 1, el: <Arrow direction="up" colorClass="text-red-500"/>, safe: true},
+    {r: 1, c: 6, safe: true},
+    // Green
+    {r: 1, c: 8, el: <Arrow direction="right" colorClass="text-green-500"/>, safe: true},
+    {r: 6, c: 13, safe: true},
+    // Yellow
+    {r: 8, c: 13, el: <Arrow direction="down" colorClass="text-yellow-500"/>, safe: true},
+    {r: 13, c: 8, safe: true},
+    // Blue
+    {r: 13, c: 6, el: <Arrow direction="left" colorClass="text-blue-500"/>, safe: true},
+    {r: 8, c: 1, safe: true},
+  ];
+
+  markers.forEach(({r,c,el, safe}) => {
+    cells.push(<PathSquare key={`marker-${r}-${c}`} className={safe ? 'bg-gray-200' : ''} style={{gridRow: r+1, gridColumn: c+1}}>{el ?? (safe ? <SafeStar /> : null)}</PathSquare>);
+  })
+
 
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[90vw] rounded-2xl bg-white p-1 shadow-lg sm:p-2 md:max-w-[500px] lg:max-w-[600px]">

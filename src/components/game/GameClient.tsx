@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -30,10 +31,10 @@ const initialPawns: PawnState[] = [
 ];
 
 const initialPlayers: Player[] = [
-  { id: 'red', name: 'Red', color: playerColors.red, pawns: JSON.parse(JSON.stringify(initialPawns)) },
-  { id: 'green', name: 'Green', color: playerColors.green, pawns: JSON.parse(JSON.stringify(initialPawns)) },
-  { id: 'blue', name: 'Blue', color: playerColors.blue, pawns: JSON.parse(JSON.stringify(initialPawns)) },
-  { id: 'yellow', name: 'Yellow', color: playerColors.yellow, pawns: JSON.parse(JSON.stringify(initialPawns)) },
+  { id: 'red', name: 'Red', pawns: JSON.parse(JSON.stringify(initialPawns)) },
+  { id: 'green', name: 'Green', pawns: JSON.parse(JSON.stringify(initialPawns)) },
+  { id: 'blue', name: 'Blue', pawns: JSON.parse(JSON.stringify(initialPawns)) },
+  { id: 'yellow', name: 'Yellow', pawns: JSON.parse(JSON.stringify(initialPawns)) },
 ];
 
 const DiceIcon = ({value}: {value: number}) => {
@@ -94,17 +95,16 @@ export const GameClient = () => {
       produce(draft => {
         const player = draft[currentPlayerIndex];
         const { pawns } = player;
+        const playerConfig = PLAYER_CONFIG[player.id];
 
-        // A pawn can only leave base if the roll is a 6. In our game, the number of steps is the answer.
         const canLeaveBase = steps === 6;
 
         let movablePawns = pawns.filter(p => {
-            if (p.position === -1) return canLeaveBase; // Can move from base only on 6
-            if (p.position === 57) return false; // Cannot move finished pawns
-            return p.position + steps <= 57; // Can move if it doesn't overshoot
+            if (p.position === -1) return canLeaveBase;
+            if (p.position === 57) return false;
+            return p.position + steps <= 57;
         });
 
-        // Prefer moving pawns already on the board
         let pawnToMove = movablePawns.find(p => p.position >= 0);
         if (!pawnToMove) {
             pawnToMove = movablePawns.find(p => p.position === -1);
@@ -117,36 +117,32 @@ export const GameClient = () => {
         }
 
         if (pawnToMove.position === -1 && canLeaveBase) {
-          pawnToMove.position = 0; // Moves to start
+          pawnToMove.position = playerConfig.start;
         } else {
           pawnToMove.position += steps;
         }
   
         if (pawnToMove.position > 56) {
-          pawnToMove.position = 57; // Finished
+          pawnToMove.position = 57; 
         } 
         
-        // Collision detection
-        if (pawnToMove.position < 51) { // Only check for collisions on the main path
-            const { path, safeTiles } = PLAYER_CONFIG[player.id];
-            const targetPos = path[pawnToMove.position];
+        if (pawnToMove.position < 51 && !playerConfig.safeTiles.includes(pawnToMove.position)) {
+            const targetPos = (playerConfig.pathStart + pawnToMove.position) % 52;
 
-            if (!safeTiles.includes(targetPos)) {
-                draft.forEach(p_other => {
-                    if (p_other.id !== player.id) {
-                        const otherPlayerConfig = PLAYER_CONFIG[p_other.id];
-                        p_other.pawns.forEach(otherPawn => {
-                            if (otherPawn.position >= 0 && otherPawn.position < 51) {
-                                const otherPawnGlobalPos = otherPlayerConfig.path[otherPawn.position];
-                                if (otherPawnGlobalPos === targetPos) {
-                                    otherPawn.position = -1; // Send back to base
-                                    toast({title: "Collision!", description: `A ${p_other.name} pawn was sent back to base!`})
-                                }
+            draft.forEach(other_player => {
+                if (other_player.id !== player.id) {
+                    const otherPlayerConfig = PLAYER_CONFIG[other_player.id];
+                    other_player.pawns.forEach(otherPawn => {
+                        if (otherPawn.position >= 0 && otherPawn.position < 51) {
+                            const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 52;
+                            if (otherPawnGlobalPos === targetPos) {
+                                otherPawn.position = -1;
+                                toast({title: "Collision!", description: `A ${other_player.name} pawn was sent back to base!`})
                             }
-                        });
-                    }
-                });
-            }
+                        }
+                    });
+                }
+            });
         }
         toast({ title: `${player.name} moved ${steps} steps!`})
       })
@@ -169,7 +165,7 @@ export const GameClient = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-background font-headline flex flex-col items-center justify-between p-2 pt-16 md:p-4 md:pt-20 gap-4">
+    <div className="min-h-screen w-full bg-background font-headline flex flex-col items-center justify-center p-4 gap-6">
         <div className="absolute top-4 left-4 z-20">
             <Link href="/" passHref>
                 <Button variant="ghost" size="icon" className="rounded-full bg-white/50">
@@ -178,7 +174,7 @@ export const GameClient = () => {
             </Link>
         </div>
         <div className="absolute top-4 right-4 z-20">
-          <Card className="p-2 px-4 rounded-2xl shadow-lg" style={{backgroundColor: currentPlayer.color}}>
+          <Card className="p-2 px-4 rounded-2xl shadow-lg" style={{backgroundColor: playerColors[currentPlayer.id]}}>
             <h2 className="text-lg font-bold text-white text-center">{turnState !== 'game-over' ? `${currentPlayer.name}'s Turn` : `Game Over!`}</h2>
           </Card>
         </div>
@@ -189,10 +185,10 @@ export const GameClient = () => {
                 player.pawns.map((pawn) => (
                     <div
                         key={`${player.id}-${pawn.id}`}
-                        className="absolute transform -translate-x-1/2 -translate-y-1/2"
+                        className="absolute transition-all duration-500 ease-in-out"
                         style={getPawnStyle(player, pawn)}
                     >
-                        <Pawn color={player.color} />
+                        <Pawn color={playerColors[player.id]} />
                     </div>
                 ))
             )}
@@ -201,7 +197,7 @@ export const GameClient = () => {
         <Card className="w-full max-w-md p-4 rounded-4xl shadow-lg flex flex-col items-center gap-4">
             {winner ? (
                 <div className="text-center">
-                    <h2 className="text-3xl font-bold" style={{color: winner.color}}>{winner.name} Wins!</h2>
+                    <h2 className="text-3xl font-bold" style={{color: playerColors[winner.id]}}>{winner.name} Wins!</h2>
                     <p className="text-muted-foreground">Congratulations!</p>
                 </div>
             ) : (
