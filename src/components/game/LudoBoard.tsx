@@ -17,7 +17,7 @@ const Arrow = ({ direction, colorClass }: { direction: 'up' | 'down' | 'left' | 
 
 export const LudoBoard = () => {
   const Tile = ({ className = "", children }: { className?: string; children?: React.ReactNode }) => (
-    <div className={`border border-black/10 flex items-center justify-center ${className}`}>{children}</div>
+    <div className={`flex items-center justify-center ${className}`}>{children}</div>
   );
 
   const HomeBase = ({ bgColor }: { bgColor: string }) => (
@@ -60,7 +60,7 @@ export const LudoBoard = () => {
   ].map(row => row.split(/\s+/));
 
   const colorMap: { [key: string]: string } = {
-    '.': 'bg-white',
+    '.': 'bg-slate-100',
     'R': 'bg-red-500', 'G': 'bg-green-500', 'B': 'bg-blue-500', 'Y': 'bg-yellow-400',
     'r': 'bg-red-500', 'g': 'bg-green-500', 'b': 'bg-blue-500', 'y': 'bg-yellow-400',
   };
@@ -107,7 +107,7 @@ export const LudoBoard = () => {
         }
       } else {
         let cellContent = null;
-        let tileBg = colorMap[cellType] || 'bg-white';
+        let tileBg = colorMap[cellType] || 'bg-slate-100';
         
         const startInfo = startingTiles[key];
         const safeColor = safeTiles[key];
@@ -119,7 +119,7 @@ export const LudoBoard = () => {
           cellContent = <SafeStar colorClass={safeColor} />;
         }
         
-        boardCells.push(<Tile key={key} className={tileBg}>{cellContent}</Tile>);
+        boardCells.push(<Tile key={key} className={`${tileBg} border-black/20`}>{cellContent}</Tile>);
       }
     }
   }
