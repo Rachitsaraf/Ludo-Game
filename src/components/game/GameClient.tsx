@@ -8,9 +8,6 @@ import { Pawn } from './Pawn';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Dices, Minus, Plus } from 'lucide-react';
 import type { Operator, Player, PlayerColor, PawnState } from '@/lib/types';
-import { getMathQuestion } from '@/app/actions';
-import { MathQuestionModal } from './MathQuestionModal';
-import { Confetti } from './Confetti';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { Card } from '@/components/ui/card';
@@ -51,29 +48,46 @@ export const GameClient = () => {
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [dice, setDice] = useState<[number, Operator, number] | null>(null);
-  const [question, setQuestion] = useState<any>(null);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [turnState, setTurnState] = useState<'rolling' | 'answering' | 'moving' | 'game-over'>('rolling');
+  const [turnState, setTurnState] = useState<'rolling' | 'moving' | 'game-over'>('rolling');
   const [winner, setWinner] = useState<Player | null>(null);
   
   const { toast } = useToast();
   
   const currentPlayer = players[currentPlayerIndex];
 
-  const handleRollDice = async () => {
+  const handleRollDice = () => {
     if (turnState !== 'rolling') return;
     
-    setTurnState('answering');
+    setTurnState('moving');
     const d1 = Math.floor(Math.random() * 6) + 1;
     const ops: Operator[] = ['+', '-', 'Max', 'Min'];
     const op: Operator = ops[Math.floor(Math.random() * ops.length)];
     const d3 = Math.floor(Math.random() * 6) + 1;
     setDice([d1, op, d3]);
 
-    toast({ title: "Dice Rolled!", description: `You rolled ${d1}, ${op}, ${d3}. Answer the question!`});
+    let result: number;
+    switch (op) {
+      case '+':
+        result = d1 + d3;
+        break;
+      case '-':
+        result = Math.abs(d1 - d3);
+        break;
+      case 'Max':
+        result = Math.max(d1, d3);
+        break;
+      case 'Min':
+        result = Math.min(d1, d3);
+        break;
+      default:
+        result = 0;
+    }
     
-    const questionData = await getMathQuestion({ dice1: d1, operator: op, dice3: d3 });
-    setQuestion(questionData);
+    toast({ title: "Dice Rolled!", description: `You rolled ${d1} ${op} ${d3}. Moving ${result} steps.`});
+    
+    setTimeout(() => {
+        executeMove(result);
+    }, 1000);
   };
 
   const nextTurn = useCallback(() => {
@@ -81,17 +95,20 @@ export const GameClient = () => {
     if (newWinner) {
         setWinner(newWinner);
         setTurnState('game-over');
-        setShowConfetti(true);
         return;
     }
 
     setCurrentPlayerIndex((prev) => (prev + 1) % players.length);
     setTurnState('rolling');
     setDice(null);
-    setQuestion(null);
   }, [players]);
 
   const executeMove = useCallback((steps: number) => {
+    if (steps <= 0) {
+        toast({ title: "No move!", description: "Result is 0 or less, skipping turn." });
+        setTimeout(() => nextTurn(), 500);
+        return;
+    }
     setPlayers(
       produce(draft => {
         const player = draft[currentPlayerIndex];
@@ -100,11 +117,11 @@ export const GameClient = () => {
   
         let movablePawns = pawns.filter(p => {
             if (p.position === 57) return false; // Already finished
-            if (p.position === -1) return true; // Can always leave base
+            if (p.position === -1) return true; // Can always leave base if move is valid
             if (p.position + steps > 57) return false; // Cannot overshoot the end
             return true;
         });
-
+        
         // Simple AI: move the pawn that is furthest along the path
         movablePawns.sort((a, b) => b.position - a.position);
   
@@ -119,8 +136,7 @@ export const GameClient = () => {
         const pawnToUpdate = player.pawns.find(p => p.id === pawnToMove!.id)!;
   
         if (pawnToUpdate.position === -1) {
-            // position is 0-indexed, so a roll of 1 lands on tile 0.
-            pawnToUpdate.position = steps - 1; 
+            pawnToUpdate.position = steps - 1;
         } else {
            pawnToUpdate.position += steps;
         }
@@ -153,20 +169,6 @@ export const GameClient = () => {
     );
     setTimeout(() => nextTurn(), 500);
   }, [currentPlayerIndex, nextTurn, toast]);
-
-
-  const handleAnswer = (isCorrect: boolean, answer: number) => {
-    setQuestion(null);
-    if (isCorrect) {
-      toast({ title: "Correct!", description: `You can move ${answer} steps.`, variant: 'default' });
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 4000);
-      executeMove(answer);
-    } else {
-      toast({ title: "Oops!", description: "Wrong answer. Try again next turn!", variant: 'destructive' });
-      setTimeout(() => nextTurn(), 1000);
-    }
-  };
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-center p-4 gap-6 w-full max-w-6xl mx-auto">
@@ -213,20 +215,12 @@ export const GameClient = () => {
                         
                         <Button onClick={handleRollDice} disabled={turnState !== 'rolling'} className="w-full h-16 text-2xl rounded-3xl shadow-lg">
                             <Dices className="mr-2 h-8 w-8" />
-                            {turnState === 'rolling' ? 'Roll Dice' : 'Waiting...'}
+                            {turnState === 'rolling' ? 'Roll Dice' : 'Moving...'}
                         </Button>
                     </>
                 )}
             </Card>
         </div>
-
-        {question && (
-            <MathQuestionModal
-                questionData={question}
-                onAnswer={handleAnswer}
-            />
-        )}
-        {showConfetti && <Confetti />}
     </div>
   );
 };
