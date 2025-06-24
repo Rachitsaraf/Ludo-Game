@@ -1,6 +1,6 @@
 "use client";
 
-export const Pawn = ({ color }: {color: string}) => {
+export const Pawn = ({ color, canMove }: { color: string; canMove?: boolean }) => {
   const SvgIcon = () => (
     <svg viewBox="0 0 100 125" className="w-8 h-10 md:w-10 md:h-12 drop-shadow-lg">
       <path
@@ -21,9 +21,10 @@ export const Pawn = ({ color }: {color: string}) => {
 
   return (
     <div
-      className={`relative transition-transform duration-200`}
+      className={`relative transition-transform duration-200 cursor-pointer ${canMove ? 'filter brightness-125' : ''}`}
     >
       <div className="relative animate-bounce-soft">
+        {canMove && <div className="absolute -inset-1 rounded-full bg-white/50 animate-ping"></div>}
         <SvgIcon />
       </div>
     </div>
