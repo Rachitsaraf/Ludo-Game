@@ -21,7 +21,7 @@ const playerColors = {
   yellow: '#facc15', // yellow-400
 };
 
-const initialPlayers: Player[] = [
+const allPossiblePlayers: Player[] = [
   { id: 'red', name: 'Red', pawns: [
     { id: 1, position: -1 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
   ]},
@@ -81,7 +81,8 @@ const OperatorPlaceholder = () => (
     </div>
 );
 
-export const GameClient = () => {
+export const GameClient = ({ playerCount }: { playerCount: number }) => {
+  const initialPlayers = allPossiblePlayers.slice(0, playerCount);
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [dice, setDice] = useState<[number, Operator, number] | null>(null);
