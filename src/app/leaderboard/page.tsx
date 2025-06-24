@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { db } from '@/lib/firebase';
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, limit, onSnapshot, Unsubscribe } from 'firebase/firestore';
 import type { LeaderboardEntry } from '@/lib/types';
 
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,18 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     setLoading(true);
+
+    if (!db) {
+      toast({
+        title: "Firebase Not Configured",
+        description: "The leaderboard requires Firebase. Please add your project credentials to a .env.local file to see the data.",
+        variant: "destructive",
+        duration: 10000,
+      });
+      setLoading(false);
+      return;
+    }
+
     const leaderboardCollection = collection(db, 'leaderboard');
     const q = query(
       leaderboardCollection,
@@ -34,7 +46,7 @@ export default function LeaderboardPage() {
       limit(50)
     );
 
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const unsubscribe: Unsubscribe = onSnapshot(q, (querySnapshot) => {
       const data: LeaderboardEntry[] = [];
       querySnapshot.forEach((doc) => {
         data.push({ id: doc.id, ...doc.data() } as LeaderboardEntry);
@@ -156,7 +168,7 @@ export default function LeaderboardPage() {
                             <TableCell className="hidden md:table-cell"><Skeleton className="h-6 w-16 ml-auto" /></TableCell>
                           </TableRow>
                         ))
-                    ) : (
+                    ) : leaderboardData.length > 0 ? (
                         leaderboardData.map((player, index) => (
                             <TableRow key={player.id} className={cn('transition-colors', getRankClass(index))}>
                                 <TableCell className="font-bold text-lg text-center w-[50px]">{rankEmojis[index] || index + 1}</TableCell>
@@ -172,13 +184,19 @@ export default function LeaderboardPage() {
                                 <TableCell className="text-right hidden md:table-cell">{player.averageTime}</TableCell>
                             </TableRow>
                         ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center text-muted-foreground py-10">
+                          No leaderboard data available.
+                        </TableCell>
+                      </TableRow>
                     )}
                 </TableBody>
             </Table>
           </div>
         </CardContent>
          <CardFooter className="flex justify-end gap-2 pt-4">
-          <Button variant="outline" onClick={handleRefresh} disabled={loading}>
+          <Button variant="outline" onClick={handleRefresh} disabled={loading || !db}>
             <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
