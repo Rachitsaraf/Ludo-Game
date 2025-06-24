@@ -2,12 +2,14 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
+// Using web URLs for sound files as a placeholder.
+// For a production app, you would typically store these in `/public/sounds`
 const SOUND_FILES = {
-  dice: '/sounds/dice-roll.mp3',
-  move: '/sounds/pawn-move.mp3',
-  win: '/sounds/win-jingle.mp3',
-  click: '/sounds/button-click.mp3',
-  background: '/sounds/background-music.mp3',
+  dice: 'https://cdn.pixabay.com/audio/2022/03/10/audio_c35f8e5f8f.mp3',
+  move: 'https://cdn.pixabay.com/audio/2021/08/04/audio_a47d2f3148.mp3',
+  win: 'https://cdn.pixabay.com/audio/2022/11/22/audio_1e37267e78.mp3',
+  click: 'https://cdn.pixabay.com/audio/2022/03/15/audio_76538ae2b6.mp3',
+  background: 'https://cdn.pixabay.com/audio/2022/08/18/audio_253018e6be.mp3',
 };
 
 type SoundEffect = keyof Omit<typeof SOUND_FILES, 'background'>;
