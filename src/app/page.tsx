@@ -75,14 +75,13 @@ export default function Home() {
 
       <div className="z-10 text-center">
         <Image
-          src="https://placehold.co/280x70.png"
-          alt="Koushiki Innovision Logo"
-          width={180}
-          height={45}
+          src="https://placehold.co/750x200.png"
+          alt="Koushiki Innovision Logo with tagline"
+          width={280}
+          height={75}
           className="object-contain mx-auto"
-          data-ai-hint="company logo"
+          data-ai-hint="company logo tagline"
         />
-        <p className="text-xs mt-2 text-white/80 italic max-w-xs">"Where industry and academia blend to create a unique diagonal!"</p>
       </div>
     </div>
   );
