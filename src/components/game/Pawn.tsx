@@ -22,7 +22,7 @@ export const Pawn = ({
 
   return (
     <div
-      className={`relative w-5/6 h-5/6 transition-all duration-300 ease-in-out flex items-center justify-center ${
+      className={`relative w-3/4 h-3/4 transition-all duration-300 ease-in-out flex items-center justify-center ${
         isSelectable ? 'cursor-pointer' : ''
       } ${isSelected ? 'scale-110' : ''}`}
       onClick={isSelectable ? onClick : undefined}
