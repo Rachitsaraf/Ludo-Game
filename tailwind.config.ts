@@ -10,16 +10,16 @@ export default {
   theme: {
     extend: {
        gridTemplateColumns: {
-        '15': 'repeat(15, minmax(0, 1fr))',
+        '17': 'repeat(17, minmax(0, 1fr))',
       },
       gridTemplateRows: {
-        '15': 'repeat(15, minmax(0, 1fr))',
+        '17': 'repeat(17, minmax(0, 1fr))',
       },
       gridColumn: {
-        'span-15': 'span 15 / span 15',
+        'span-17': 'span 17 / span 17',
       },
       gridRow: {
-        'span-15': 'span 15 / span 15',
+        'span-17': 'span 17 / span 17',
       },
       fontFamily: {
         body: ['"Baloo 2"', 'sans-serif'],

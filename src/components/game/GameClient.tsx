@@ -36,7 +36,7 @@ const initialPlayers: Player[] = [
   ]},
 ];
 
-const SAFE_TILE_INDICES = [0, 8, 13, 21, 26, 34, 39, 47];
+const SAFE_TILE_INDICES = [0, 8, 15, 23, 30, 38, 45, 53];
 
 
 const DieFace = ({ value }: { value: number }) => {
@@ -101,7 +101,7 @@ export const GameClient = () => {
   const currentPlayer = players[currentPlayerIndex];
 
   const nextTurn = useCallback(() => {
-    const newWinner = players.find(p => p.pawns.every(pawn => pawn.position === 57));
+    const newWinner = players.find(p => p.pawns.every(pawn => pawn.position === 66));
     if (newWinner) {
         setWinner(newWinner);
         setTurnState('game-over');
@@ -116,13 +116,13 @@ export const GameClient = () => {
   }, [players]);
 
   const isPawnMovable = useCallback((pawn: PawnState, steps: number): boolean => {
-      if (pawn.position === 57) return false;
+      if (pawn.position === 66) return false;
 
       if (pawn.position === -1) {
         return steps === 6;
       }
 
-      if (pawn.position + steps > 57) return false;
+      if (pawn.position + steps > 66) return false;
       return true;
   }, []);
 
@@ -137,7 +137,7 @@ export const GameClient = () => {
     } else {
         for (let i = 1; i <= steps; i++) {
             const nextPos = startPos + i;
-            if (nextPos > 57) break; 
+            if (nextPos > 66) break; 
             path.push(nextPos);
         }
     }
@@ -169,15 +169,15 @@ export const GameClient = () => {
             
             toastToShow = { title: `${movedPlayer.name} moved ${animationState.totalSteps} steps!` };
 
-            if (finalPosition >= 0 && finalPosition <= 50) {
-                const targetPosOnBoard = (playerConfig.pathStart + finalPosition) % 52;
+            if (finalPosition >= 0 && finalPosition < 60) {
+                const targetPosOnBoard = (playerConfig.pathStart + finalPosition) % 60;
                 if (!SAFE_TILE_INDICES.includes(targetPosOnBoard)) {
                     draft.forEach(otherPlayer => {
                         if (otherPlayer.id !== movedPlayer.id) {
                             const otherPlayerConfig = PLAYER_CONFIG[otherPlayer.id];
                             otherPlayer.pawns.forEach(otherPawn => {
-                                if (otherPawn.position >= 0 && otherPawn.position <= 50) {
-                                    const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 52;
+                                if (otherPawn.position >= 0 && otherPawn.position < 60) {
+                                    const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 60;
                                     if (otherPawnGlobalPos === targetPosOnBoard) {
                                         otherPawn.position = -1;
                                         toastToShow = { title: "Collision!", description: `A ${otherPlayer.name} pawn was sent back to base!` };
@@ -201,7 +201,11 @@ export const GameClient = () => {
             setPlayers(produce(draft => {
                 const player = draft[animationState.playerIndex];
                 const pawn = player.pawns.find(p => p.id === animationState.pawnId)!;
-                pawn.position = animationState.path[0];
+                if (pawn.position === -1 && animationState.path[0] === 0) {
+                  pawn.position = 0;
+                } else {
+                  pawn.position = animationState.path[0];
+                }
             }));
 
             setAnimationState(produce(draft => {
@@ -275,9 +279,9 @@ export const GameClient = () => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center p-2 sm:p-4 gap-4 sm:gap-6 w-full max-w-6xl mx-auto">
+    <div className="flex flex-col md:flex-row items-center justify-center p-2 sm:p-4 gap-4 sm:gap-6 w-full max-w-7xl mx-auto">
         {winner && <Confetti />}
-        <div className="relative w-full max-w-[90vw] sm:max-w-md md:max-w-lg aspect-square">
+        <div className="relative w-full max-w-[95vw] sm:max-w-md md:max-w-xl aspect-square">
             <LudoBoard />
             {players.map((player) =>
                 player.pawns.map((pawn) => {

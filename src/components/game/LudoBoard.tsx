@@ -42,21 +42,23 @@ export const LudoBoard = () => {
   const boardCells = [];
   
   const layout = [
-    'R R R R R R . g . G G G G G G',
-    'R R R R R R . g . G G G G G G',
-    'R R R R R R . g . G G G G G G',
-    'R R R R R R . g . G G G G G G',
-    'R R R R R R . g . G G G G G G',
-    'R R R R R R . g . G G G G G G',
-    '. . . . . . C C C . . . . . .',
-    'r r r r r . C C C . y y y y y',
-    '. . . . . . C C C . . . . . .',
-    'B B B B B B . b . Y Y Y Y Y Y',
-    'B B B B B B . b . Y Y Y Y Y Y',
-    'B B B B B B . b . Y Y Y Y Y Y',
-    'B B B B B B . b . Y Y Y Y Y Y',
-    'B B B B B B . b . Y Y Y Y Y Y',
-    'B B B B B B . b . Y Y Y Y Y Y',
+    'R R R R R R R . g . G G G G G G G',
+    'R R R R R R R . g . G G G G G G G',
+    'R R R R R R R . g . G G G G G G G',
+    'R R R R R R R . g . G G G G G G G',
+    'R R R R R R R . g . G G G G G G G',
+    'R R R R R R R . g . G G G G G G G',
+    'R R R R R R R . g . G G G G G G G',
+    '. . . . . . . C C C . . . . . . .',
+    'r r r r r r . C C C . y y y y y y',
+    '. . . . . . . C C C . . . . . . .',
+    'B B B B B B B . b . Y Y Y Y Y Y Y',
+    'B B B B B B B . b . Y Y Y Y Y Y Y',
+    'B B B B B B B . b . Y Y Y Y Y Y Y',
+    'B B B B B B B . b . Y Y Y Y Y Y Y',
+    'B B B B B B B . b . Y Y Y Y Y Y Y',
+    'B B B B B B B . b . Y Y Y Y Y Y Y',
+    'B B B B B B B . b . Y Y Y Y Y Y Y',
   ].map(row => row.split(/\s+/));
 
   const colorMap: { [key: string]: string } = {
@@ -66,36 +68,36 @@ export const LudoBoard = () => {
   };
 
   const startingTiles: { [key: string]: { dir: 'up' | 'down' | 'left' | 'right'; color: string; tileColor: string } } = {
-    '6-1': { dir: 'right', color: 'text-red-600', tileColor: 'bg-red-500'},
-    '1-8': { dir: 'down', color: 'text-green-600', tileColor: 'bg-green-500'},
-    '8-13': { dir: 'left', color: 'text-yellow-500', tileColor: 'bg-yellow-400'},
-    '13-6': { dir: 'up', color: 'text-blue-600', tileColor: 'bg-blue-500'},
+    '7-1': { dir: 'right', color: 'text-red-600', tileColor: 'bg-red-500'},
+    '1-9': { dir: 'down', color: 'text-green-600', tileColor: 'bg-green-500'},
+    '9-15': { dir: 'left', color: 'text-yellow-500', tileColor: 'bg-yellow-400'},
+    '15-7': { dir: 'up', color: 'text-blue-600', tileColor: 'bg-blue-500'},
   };
 
   const safeTiles: { [key: string]: string } = {
-    '1-6': 'text-red-500',
-    '6-13': 'text-green-500',
-    '13-8': 'text-yellow-400',
-    '8-1': 'text-blue-500',
+    '3-7': 'text-red-500',
+    '7-13': 'text-green-500',
+    '13-9': 'text-yellow-400',
+    '9-3': 'text-blue-500',
   };
 
-  for (let r = 0; r < 15; r++) {
-    for (let c = 0; c < 15; c++) {
+  for (let r = 0; r < 17; r++) {
+    for (let c = 0; c < 17; c++) {
       const key = `${r}-${c}`;
       let cellType = layout[r][c];
 
-      if (cellType === 'R' && r < 6 && c < 6) {
-        if (r === 0 && c === 0) boardCells.push(<div key={key} className="col-span-6 row-span-6 h-full w-full"><HomeBase bgColor="bg-red-500"/></div>);
-      } else if (cellType === 'G' && r < 6 && c > 8) {
-        if (r === 0 && c === 9) boardCells.push(<div key={key} className="col-span-6 row-span-6 h-full w-full"><HomeBase bgColor="bg-green-500"/></div>);
-      } else if (cellType === 'B' && r > 8 && c < 6) {
-        if (r === 9 && c === 0) boardCells.push(<div key={key} className="col-span-6 row-span-6 h-full w-full"><HomeBase bgColor="bg-blue-500"/></div>);
-      } else if (cellType === 'Y' && r > 8 && c > 8) {
-        if (r === 9 && c === 9) boardCells.push(<div key={key} className="col-span-6 row-span-6 h-full w-full"><HomeBase bgColor="bg-yellow-400"/></div>);
+      if (cellType === 'R' && r < 7 && c < 7) {
+        if (r === 0 && c === 0) boardCells.push(<div key={key} className="col-span-7 row-span-7 h-full w-full"><HomeBase bgColor="bg-red-500"/></div>);
+      } else if (cellType === 'G' && r < 7 && c > 9) {
+        if (r === 0 && c === 10) boardCells.push(<div key={key} className="col-span-7 row-span-7 h-full w-full"><HomeBase bgColor="bg-green-500"/></div>);
+      } else if (cellType === 'B' && r > 9 && c < 7) {
+        if (r === 10 && c === 0) boardCells.push(<div key={key} className="col-span-7 row-span-7 h-full w-full"><HomeBase bgColor="bg-blue-500"/></div>);
+      } else if (cellType === 'Y' && r > 9 && c > 9) {
+        if (r === 10 && c === 10) boardCells.push(<div key={key} className="col-span-7 row-span-7 h-full w-full"><HomeBase bgColor="bg-yellow-400"/></div>);
       } else if (cellType === 'C') {
-        if (r === 6 && c === 6) {
+        if (r === 7 && c === 7) {
           boardCells.push(
-            <div key="center" className="col-start-7 col-span-3 row-start-7 row-span-3">
+            <div key="center" className="col-start-8 col-span-3 row-start-8 row-span-3">
               <div className="w-full h-full relative">
                 <div style={{ clipPath: 'polygon(0 0, 100% 0, 50% 50%)'}} className="absolute inset-0 bg-green-500"></div>
                 <div style={{ clipPath: 'polygon(100% 0, 100% 100%, 50% 50%)'}} className="absolute inset-0 bg-yellow-400"></div>
@@ -126,7 +128,7 @@ export const LudoBoard = () => {
 
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[95vw] rounded-2xl bg-white p-2 shadow-lg sm:p-3 md:max-w-[500px] lg:max-w-[600px] border-4 border-black">
-      <div className="grid h-full w-full grid-cols-15 grid-rows-15 gap-px">
+      <div className="grid h-full w-full grid-cols-17 grid-rows-17 gap-px">
         {boardCells}
       </div>
     </div>
