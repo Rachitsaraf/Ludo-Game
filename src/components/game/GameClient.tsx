@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -35,7 +36,8 @@ const initialPlayers: Player[] = [
   ]},
 ];
 
-const SAFE_TILE_INDICES = [0, 10, 13, 21, 26, 34, 39, 45];
+const SAFE_TILE_INDICES = [0, 8, 13, 21, 26, 34, 39, 47];
+
 
 const DiceIcon = ({value}: {value: number}) => {
     return <div className="text-3xl border-2 rounded-lg p-2 bg-white shadow-inner w-16 h-16 flex items-center justify-center font-bold">{value}</div>;
@@ -76,6 +78,12 @@ export const GameClient = () => {
 
   const isPawnMovable = useCallback((pawn: PawnState, steps: number): boolean => {
       if (pawn.position === 57) return false; // Already home
+
+      // From base, can only move if steps is 6
+      if (pawn.position === -1) {
+        return steps === 6;
+      }
+
       if (pawn.position + steps > 57) return false; // Overshoots
       return true;
   }, []);
@@ -105,6 +113,14 @@ export const GameClient = () => {
     }
 
     const movablePawns = currentPlayer.pawns.filter(p => isPawnMovable(p, result));
+    
+    // Special case for '6', if no pawns are out, one must move out.
+    if (result === 6 && currentPlayer.pawns.every(p => p.position === -1)) {
+        toast({ title: "Rolled a 6!", description: "A pawn comes out of the base." });
+        setTurnState('moving');
+        setTimeout(() => executeMove(result, 1), 500); // Move first pawn
+        return;
+    }
 
     if (movablePawns.length === 0) {
         toast({ title: "No valid moves!", description: `Cannot move ${result} steps. Skipping turn.` });
@@ -135,14 +151,19 @@ export const GameClient = () => {
   };
 
   const executeMove = useCallback((steps: number, pawnToMoveId: number) => {
+    const toastsToShow: { title: string; description?: string }[] = [];
+    let movedPlayerName = '';
+
     setPlayers(
       produce(draft => {
         const player = draft[currentPlayerIndex];
+        movedPlayerName = player.name;
         const pawnToUpdate = player.pawns.find(p => p.id === pawnToMoveId)!;
         const playerConfig = PLAYER_CONFIG[player.id];
   
         if (pawnToUpdate.position === -1) {
-            pawnToUpdate.position = steps - 1;
+            // This is handled by isPawnMovable check, assumes steps is 6
+            pawnToUpdate.position = 0;
         } else {
            pawnToUpdate.position += steps;
         }
@@ -164,7 +185,7 @@ export const GameClient = () => {
                                 const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 52;
                                 if (otherPawnGlobalPos === targetPosOnBoard) {
                                     otherPawn.position = -1; // Send back to base
-                                    toast({title: "Collision!", description: `A ${other_player.name} pawn was sent back to base!`})
+                                    toastsToShow.push({title: "Collision!", description: `A ${other_player.name} pawn was sent back to base!`});
                                 }
                             }
                         });
@@ -172,9 +193,12 @@ export const GameClient = () => {
                 });
             }
         }
-        toast({ title: `${player.name} moved ${steps} steps!`})
       })
     );
+    
+    toastsToShow.push({ title: `${movedPlayerName} moved ${steps} steps!`});
+    toastsToShow.forEach(t => toast(t));
+
     setTimeout(() => nextTurn(), 500);
   }, [currentPlayerIndex, nextTurn, toast]);
 
