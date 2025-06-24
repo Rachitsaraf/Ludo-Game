@@ -7,11 +7,10 @@ export default function Home() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-background font-headline flex flex-col items-center justify-center p-4">
       <Image
-        src="https://placehold.co/1080x1920/A7D9ED/F0F8FF?text=+"
+        src="https://placehold.co/1080x1920/A7D9ED/F0F8FF"
         alt="Cartoon background"
-        layout="fill"
-        objectFit="cover"
-        className="opacity-30"
+        fill
+        className="object-cover opacity-30"
         data-ai-hint="cartoon landscape"
       />
       <div className="absolute top-4 right-4">
