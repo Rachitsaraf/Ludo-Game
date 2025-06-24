@@ -1,4 +1,3 @@
-
 'use client';
 
 import { initializeApp, getApps, getApp, FirebaseOptions } from "firebase/app";
@@ -18,8 +17,6 @@ let app;
 if (!getApps().length) {
     if (firebaseConfig.projectId) {
         app = initializeApp(firebaseConfig);
-    } else {
-        console.error("Firebase config is not set. Please update your .env file.");
     }
 } else {
     app = getApp();
