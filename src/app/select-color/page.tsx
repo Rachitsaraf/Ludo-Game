@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { PlayerColor } from '@/lib/types';
 import { CheckCircle, Circle, Palette } from 'lucide-react';
+import { CHARACTER_DATA, CHARACTER_HINTS } from '@/lib/characters';
+import Image from 'next/image';
 
-const colorOptions: { id: PlayerColor; hex: string; name: string }[] = [
-  { id: 'red',    hex: '#f87171', name: 'Red' },
-  { id: 'green',  hex: '#4ade80', name: 'Green' },
-  { id: 'blue',   hex: '#60a5fa', name: 'Blue' },
-  { id: 'yellow', hex: '#facc15', name: 'Yellow' },
+const colorOptions: { id: PlayerColor; hex: string; name: string; image: string; hint: string }[] = [
+  { id: 'red',    hex: '#f87171', name: CHARACTER_DATA.red.name, image: CHARACTER_DATA.red.image, hint: CHARACTER_HINTS.red },
+  { id: 'green',  hex: '#4ade80', name: CHARACTER_DATA.green.name, image: CHARACTER_DATA.green.image, hint: CHARACTER_HINTS.green },
+  { id: 'blue',   hex: '#60a5fa', name: CHARACTER_DATA.blue.name, image: CHARACTER_DATA.blue.image, hint: CHARACTER_HINTS.blue },
+  { id: 'yellow', hex: '#facc15', name: CHARACTER_DATA.yellow.name, image: CHARACTER_DATA.yellow.image, hint: CHARACTER_HINTS.yellow },
 ];
 
 export default function SelectColorPage() {
@@ -43,9 +45,9 @@ export default function SelectColorPage() {
   const selectionPrompt = useMemo(() => {
     if (selectedColors.length < humanPlayerCount) {
         const remaining = humanPlayerCount - selectedColors.length;
-        return `Select ${remaining} more color${remaining > 1 ? 's' : ''}`;
+        return `Select ${remaining} more character${remaining > 1 ? 's' : ''}`;
     }
-    return 'All colors selected!';
+    return 'All characters selected!';
   }, [humanPlayerCount, selectedColors]);
 
   return (
@@ -54,21 +56,22 @@ export default function SelectColorPage() {
         <CardHeader>
           <CardTitle className="text-3xl sm:text-4xl font-bold text-white drop-shadow-lg flex items-center justify-center gap-3">
             <Palette className="h-8 w-8" />
-            Select Player Colors
+            Select Your Character
           </CardTitle>
           <p className="text-white/80 pt-2">{selectionPrompt}</p>
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-4 p-6">
-          {colorOptions.map(({ id, hex, name }) => {
+          {colorOptions.map(({ id, hex, name, image, hint }) => {
             const isSelected = selectedColors.includes(id);
             return (
               <button
                 key={id}
                 onClick={() => handleColorSelect(id)}
-                className={`relative flex items-center justify-center w-full h-24 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-200 ease-in-out border-4 ${isSelected ? 'border-white' : 'border-transparent'}`}
+                className={`relative flex flex-col items-center justify-center p-2 w-full h-32 rounded-2xl shadow-lg transform hover:scale-105 transition-all duration-200 ease-in-out border-4 ${isSelected ? 'border-white' : 'border-transparent'}`}
                 style={{ backgroundColor: hex }}
               >
-                <span className="text-2xl font-bold text-white" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>{name}</span>
+                <Image src={image} alt={name} width={64} height={64} className="rounded-full object-cover mb-2" data-ai-hint={hint} />
+                <span className="text-lg font-bold text-white" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>{name}</span>
                 <div className="absolute top-2 right-2 bg-white/30 rounded-full">
                     {isSelected ? <CheckCircle className="h-6 w-6 text-white" /> : <Circle className="h-6 w-6 text-white/50" />}
                 </div>

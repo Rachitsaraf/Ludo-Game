@@ -13,6 +13,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Card } from '@/components/ui/card';
 import { getPawnStyle, PLAYER_CONFIG } from '@/lib/board';
 import { Confetti } from './Confetti';
+import { CHARACTER_DATA, CHARACTER_HINTS } from '@/lib/characters';
+import Image from 'next/image';
 
 const playerColors = {
   red: '#f87171',    // red-400
@@ -71,9 +73,11 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     const allColors: PlayerColor[] = ['red', 'green', 'blue', 'yellow'];
     return allColors.map(color => ({
         id: color,
-        name: color.charAt(0).toUpperCase() + color.slice(1),
+        name: CHARACTER_DATA[color].name,
         pawns: Array.from({ length: 4 }, (_, i) => ({ id: i + 1, position: -1 })),
-        isBot: !humanColors.includes(color)
+        isBot: !humanColors.includes(color),
+        characterName: CHARACTER_DATA[color].name,
+        characterImage: CHARACTER_DATA[color].image,
     }));
   }, [humanColors]);
 
@@ -162,7 +166,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
             const finalPosition = movedPawn.position;
             const playerConfig = PLAYER_CONFIG[movedPlayer.id];
             
-            toastToShow = { title: `${movedPlayer.name} moved ${animationState.totalSteps} steps!` };
+            toastToShow = { title: `${movedPlayer.characterName} moved ${animationState.totalSteps} steps!` };
 
             if (finalPosition >= 0 && finalPosition < 60) {
                 const targetPosOnBoard = (playerConfig.pathStart + finalPosition) % 60;
@@ -175,7 +179,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                                     const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 60;
                                     if (otherPawnGlobalPos === targetPosOnBoard) {
                                         otherPawn.position = -1;
-                                        toastToShow = { title: "Collision!", description: `${movedPlayer.name} knocked a ${otherPlayer.name} pawn back to base!` };
+                                        toastToShow = { title: "Collision!", description: `${movedPlayer.characterName} knocked a ${otherPlayer.characterName} pawn back to base!` };
                                     }
                                 }
                             });
@@ -270,11 +274,11 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
   const handleBotTurn = useCallback(() => {
     if (turnState !== 'rolling' || !currentPlayer.isBot) return;
 
-    toast({ title: `${currentPlayer.name} is thinking...` });
+    toast({ title: `${currentPlayer.characterName} is thinking...` });
     
     setTimeout(() => {
       const result = performRoll();
-      toast({ title: `${currentPlayer.name} (Bot) rolled for ${result} steps` });
+      toast({ title: `${currentPlayer.characterName} (Bot) rolled for ${result} steps` });
 
       if (result === 0) {
           setTimeout(() => nextTurn(), 1200);
@@ -329,10 +333,10 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
   }
 
   const turnTitle = useMemo(() => {
-      if (winner) return `${winner.name} Wins!`;
+      if (winner) return `${winner.characterName} Wins!`;
       if (turnState === 'game-over') return 'Game Over!';
       const playerType = currentPlayer.isBot ? 'Bot' : 'Your';
-      return `${playerType} Turn - ${currentPlayer.name}`;
+      return `${playerType} Turn`;
   }, [currentPlayer, turnState, winner]);
 
   return (
@@ -365,6 +369,8 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                                 isSelectable={canBeSelected}
                                 isSelected={isCurrentlySelected}
                                 onClick={() => handlePawnClick(pawn)}
+                                characterImage={player.characterImage}
+                                data-ai-hint={CHARACTER_HINTS[player.id]}
                             />
                         </div>
                     );
@@ -373,14 +379,18 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
         </div>
         
         <div className="w-full md:w-auto flex flex-col items-center gap-4">
-            <Card className="p-2 px-4 rounded-2xl shadow-lg" style={{backgroundColor: playerColors[currentPlayer.id as PlayerColor]}}>
+            <Card className="p-2 px-4 rounded-2xl shadow-lg w-full max-w-xs flex flex-col items-center gap-2" style={{backgroundColor: playerColors[currentPlayer.id as PlayerColor]}}>
                 <h2 className="text-xl font-bold text-white text-center">{turnTitle}</h2>
+                 <div className="flex items-center gap-2">
+                    <Image src={currentPlayer.characterImage} alt={currentPlayer.characterName} width={40} height={40} className="rounded-full bg-white/20 p-1" data-ai-hint={CHARACTER_HINTS[currentPlayer.id]} />
+                    <span className="text-lg font-semibold text-white">{currentPlayer.characterName}</span>
+                </div>
             </Card>
 
             <Card className="w-full max-w-xs p-4 rounded-4xl shadow-lg flex flex-col items-center gap-4 min-h-[200px] sm:min-h-[220px] justify-center bg-white/10 backdrop-blur-sm border border-white/20">
                 {winner ? (
                     <div className="text-center text-white">
-                        <h2 className="text-3xl font-bold" style={{color: playerColors[winner.id as PlayerColor]}}>{winner.name} Wins!</h2>
+                        <h2 className="text-3xl font-bold" style={{color: playerColors[winner.id as PlayerColor]}}>{winner.characterName} Wins!</h2>
                         <p className="text-muted-foreground">Congratulations!</p>
                     </div>
                 ) : (
@@ -416,6 +426,15 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                     </>
                 )}
             </Card>
+
+            <div className="w-full max-w-xs grid grid-cols-2 gap-2">
+                {players.map(p => (
+                    <Card key={p.id} className={`p-2 rounded-xl flex items-center gap-2 transition-all duration-300 ${p.id === currentPlayer.id ? 'border-2 border-white scale-105' : 'opacity-70'}`} style={{backgroundColor: playerColors[p.id as PlayerColor]}}>
+                        <Image src={p.characterImage} alt={p.characterName} width={32} height={32} className="rounded-full bg-white/30" data-ai-hint={CHARACTER_HINTS[p.id]} />
+                        <div className="text-white font-semibold text-sm truncate">{p.name} {p.isBot && '(Bot)'}</div>
+                    </Card>
+                ))}
+            </div>
         </div>
     </div>
   );

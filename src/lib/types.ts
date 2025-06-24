@@ -21,6 +21,8 @@ export interface Player {
   name: string;
   pawns: PawnState[];
   isBot: boolean;
+  characterName: string;
+  characterImage: string;
 }
 
 export interface GameState {

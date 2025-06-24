@@ -1,16 +1,21 @@
 
 "use client";
+import Image from 'next/image';
 
 export const Pawn = ({
   color,
   isSelectable,
   isSelected,
   onClick,
+  characterImage,
+  ...props
 }: {
   color: string;
   isSelectable?: boolean;
   isSelected?: boolean;
   onClick?: () => void;
+  characterImage?: string;
+  [key: string]: any;
 }) => {
   const SvgIcon = () => (
     <svg viewBox="0 0 32 48" className="w-full h-full drop-shadow-lg" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -30,6 +35,18 @@ export const Pawn = ({
       <div className={`relative w-full h-full ${isSelectable ? 'animate-bounce' : 'animate-bounce-soft'}`}>
         {isSelectable && <div className="absolute -inset-1 rounded-full bg-yellow-400/75 animate-ping"></div>}
         <SvgIcon />
+        {characterImage && (
+            <div className="absolute flex items-center justify-center w-full h-full top-[-15%]">
+                 <Image 
+                    src={characterImage} 
+                    alt="character icon" 
+                    width={16} 
+                    height={16} 
+                    className="rounded-full object-contain bg-white/50 border border-black/20 p-px"
+                    {...props}
+                 />
+            </div>
+        )}
       </div>
     </div>
   );
