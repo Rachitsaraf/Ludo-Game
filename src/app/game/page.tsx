@@ -2,11 +2,12 @@ import { GameClient } from '@/components/game/GameClient';
 import type { PlayerColor } from '@/lib/types';
 
 export default function GamePage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }> | { [key: string]: string | string[] | undefined };
 }) {
-  const humanColorsParam = searchParams?.humanColors as string | undefined;
+  // Await searchParams if it's a Promise
+  const humanColorsParam = searchParamsPromise && 'then' in searchParamsPromise ? (searchParamsPromise as any).humanColors as string | undefined : (searchParamsPromise as any)?.humanColors as string | undefined;
   
   // Default to 2 players (red, green) if no params are passed for direct access/testing
   const humanColors = humanColorsParam 

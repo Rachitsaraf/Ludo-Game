@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { PlayerSelectionDialog } from '@/components/game/PlayerSelectionDialog';
 import Link from 'next/link';
-import { Settings, Info } from 'lucide-react';
+import { Settings, Info, Trophy } from 'lucide-react';
 
 export default function Home() {
   const [isPlayerSelectionOpen, setPlayerSelectionOpen] = useState(false);
@@ -40,6 +40,16 @@ export default function Home() {
           >
             Start Game
           </Button>
+          <Link href="/leaderboard" passHref className="w-full">
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full h-16 text-2xl rounded-2xl shadow-xl bg-green-500 hover:bg-green-600 text-black border-2 border-green-300/50 transform hover:scale-105 transition-transform duration-200"
+            >
+              <Trophy className="mr-2" />
+              Leaderboard
+            </Button>
+          </Link>
           <Link href="/instructions" passHref className="w-full">
             <Button
               size="lg"

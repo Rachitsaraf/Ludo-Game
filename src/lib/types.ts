@@ -1,3 +1,4 @@
+import type { Timestamp } from 'firebase/firestore';
 
 export type Operator = '+' | '-' | 'Max' | 'Min';
 
@@ -31,4 +32,15 @@ export interface GameState {
   dice: [number, Operator, number] | null;
   turnState: 'rolling' | 'selecting' | 'moving' | 'game-over';
   winner: Player | null;
+}
+
+export interface LeaderboardEntry {
+  id: string;
+  playerName: string;
+  gamesPlayed: number;
+  gamesWon: number;
+  averageTime: string;
+  score: number;
+  avatarUrl: string;
+  lastUpdated: Timestamp;
 }
