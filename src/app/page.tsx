@@ -45,17 +45,6 @@ export default function Home() {
           </Button>
         </Link>
       </div>
-
-      <div className="z-10 text-center pb-2">
-        <Image
-          src="https://placehold.co/750x200.png"
-          alt="Koushiki Innovision Logo with tagline"
-          width={280}
-          height={70}
-          className="object-contain mx-auto"
-          data-ai-hint="company logo tagline"
-        />
-      </div>
     </div>
   );
 }
