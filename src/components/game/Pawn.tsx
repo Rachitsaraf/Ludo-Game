@@ -40,8 +40,8 @@ export const Pawn = ({
       } ${isSelected ? 'scale-110' : ''}`}
       onClick={isSelectable ? onClick : undefined}
     >
-      <div className="relative w-full h-full animate-bounce-soft">
-        {isSelectable && <div className="absolute -inset-1 rounded-full bg-white/50 animate-ping"></div>}
+      <div className={`relative w-full h-full ${isSelectable ? 'animate-bounce' : 'animate-bounce-soft'}`}>
+        {isSelectable && <div className="absolute -inset-1 rounded-full bg-yellow-400/75 animate-ping"></div>}
         <SvgIcon />
       </div>
     </div>
