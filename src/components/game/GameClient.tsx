@@ -161,7 +161,7 @@ export const GameClient = () => {
             if(toastToShow) toast(toastToShow);
             setAnimationState(null);
             nextTurn();
-        }, 400);
+        }, 300);
     } else {
         animationTimeout = setTimeout(() => {
             setPlayers(produce(draft => {
@@ -175,7 +175,7 @@ export const GameClient = () => {
                     draft.path.shift();
                 }
             }));
-        }, 400); // Delay between steps
+        }, 300); // Delay between steps
     }
 
     return () => clearTimeout(animationTimeout);
@@ -202,7 +202,7 @@ export const GameClient = () => {
     
     if (result === 0) {
         toast({ title: "No move!", description: "Result is 0, skipping turn." });
-        setTimeout(() => nextTurn(), 1000);
+        setTimeout(() => nextTurn(), 800);
         return;
     }
 
@@ -210,7 +210,7 @@ export const GameClient = () => {
     
     if (movablePawns.length === 0) {
         toast({ title: "No valid moves!", description: `Cannot move ${result} steps. Skipping turn.` });
-        setTimeout(() => nextTurn(), 1000);
+        setTimeout(() => nextTurn(), 800);
         return;
     }
     
