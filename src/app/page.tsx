@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-background font-headline flex flex-col items-center justify-between p-8 text-center">
       <Image
-        src="https://placehold.co/1080x1920"
+        src="https://placehold.co/1080x1920.png"
         alt="Colorful Ludo board background"
         fill
         className="object-cover opacity-20"
@@ -51,7 +51,14 @@ export default function Home() {
       </div>
 
       <div className="z-10">
-        <p className="font-bold text-lg text-primary-foreground/80 drop-shadow-md">Koushiki Innovision</p>
+        <Image
+          src="https://placehold.co/400x100.png"
+          alt="Koushiki Innovision Logo"
+          width={280}
+          height={70}
+          className="object-contain"
+          data-ai-hint="company logo"
+        />
       </div>
     </div>
   );
