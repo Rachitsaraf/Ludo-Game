@@ -26,16 +26,6 @@ export default function Home() {
             Learn & Play
           </span>
         </h1>
-        <div className="relative z-10 my-4 flex items-center justify-center w-64 h-64 sm:w-80 sm:h-80">
-          <Image
-              src="https://placehold.co/400x400.png"
-              alt="A Ludo board tilted at an angle with two dice (one white, one blue) floating above it."
-              width={320}
-              height={320}
-              className="object-contain drop-shadow-2xl"
-              data-ai-hint="ludo board dice"
-          />
-        </div>
       </div>
       
       <div className="z-10 flex flex-col items-center gap-4 w-full max-w-xs">
