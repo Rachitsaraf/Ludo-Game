@@ -3,6 +3,7 @@ import type { Player, PawnState, PlayerColor } from './types';
 
 // Each tile is 100/15 = 6.666% of the board width/height
 const TILE_SIZE = 100 / 15;
+const TILE_SIZE_PERCENT = `${TILE_SIZE}%`;
 
 /**
  * Helper function to calculate the top/left CSS properties for a tile.
@@ -19,25 +20,25 @@ const pos = (row: number, col: number) => ({
 
 /**
  * Defines the four pawn positions within each player's home base.
- * These are styled to fit within the 2x2 grid in the LudoBoard component.
+ * These are calculated to center the pawns in their respective 2x2 grid slots.
  */
 const BASE_POSITIONS: Record<PlayerColor, React.CSSProperties[]> = {
-  red: [
-    { top: '10%', left: '10%' }, { top: '10%', left: '23.33%' },
-    { top: '23.33%', left: '10%' }, { top: '23.33%', left: '23.33%' }
-  ].map(p => ({...p, width: '6.67%', height: '6.67%'})),
-  green: [
-    { top: '10%', left: '63.33%' }, { top: '10%', left: '76.66%' },
-    { top: '23.33%', left: '63.33%' }, { top: '23.33%', left: '76.66%' }
-  ].map(p => ({...p, width: '6.67%', height: '6.67%'})),
-  blue: [
-    { top: '63.33%', left: '10%' }, { top: '63.33%', left: '23.33%' },
-    { top: '76.66%', left: '10%' }, { top: '76.66%', left: '23.33%' }
-  ].map(p => ({...p, width: '6.67%', height: '6.67%'})),
-  yellow: [
-    { top: '63.33%', left: '63.33%' }, { top: '63.33%', left: '76.66%' },
-    { top: '76.66%', left: '63.33%' }, { top: '76.66%', left: '76.66%' }
-  ].map(p => ({...p, width: '6.67%', height: '6.67%'})),
+    red: [
+        { top: '6.67%', left: '6.67%' }, { top: '6.67%', left: '26.67%' },
+        { top: '26.67%', left: '6.67%' }, { top: '26.67%', left: '26.67%' }
+    ].map(p => ({ ...p, width: TILE_SIZE_PERCENT, height: TILE_SIZE_PERCENT })),
+    green: [
+        { top: '6.67%', left: '66.67%' }, { top: '6.67%', left: '86.67%' },
+        { top: '26.67%', left: '66.67%' }, { top: '26.67%', left: '86.67%' }
+    ].map(p => ({ ...p, width: TILE_SIZE_PERCENT, height: TILE_SIZE_PERCENT })),
+    blue: [
+        { top: '66.67%', left: '6.67%' }, { top: '66.67%', left: '26.67%' },
+        { top: '86.67%', left: '6.67%' }, { top: '86.67%', left: '26.67%' }
+    ].map(p => ({ ...p, width: TILE_SIZE_PERCENT, height: TILE_SIZE_PERCENT })),
+    yellow: [
+        { top: '66.67%', left: '66.67%' }, { top: '66.67%', left: '86.67%' },
+        { top: '86.67%', left: '66.67%' }, { top: '86.67%', left: '86.67%' }
+    ].map(p => ({ ...p, width: TILE_SIZE_PERCENT, height: TILE_SIZE_PERCENT })),
 };
 
 /**
@@ -69,10 +70,10 @@ const MAIN_PATH_COORDS = [
  * A static map of the 6 home-stretch tiles for each player.
  */
 const HOME_PATH_COORDS: Record<PlayerColor, React.CSSProperties[]> = {
-  red:    [pos(1, 7), pos(2, 7), pos(3, 7), pos(4, 7), pos(5, 7), pos(6, 7)],
-  green:  [pos(7, 13), pos(7, 12), pos(7, 11), pos(7, 10), pos(7, 9), pos(7, 8)],
-  yellow: [pos(13, 7), pos(12, 7), pos(11, 7), pos(10, 7), pos(9, 7), pos(8, 7)],
-  blue:   [pos(7, 1), pos(7, 2), pos(7, 3), pos(7, 4), pos(7, 5), pos(7, 6)],
+  red:    [pos(7, 1), pos(7, 2), pos(7, 3), pos(7, 4), pos(7, 5), pos(7, 6)],
+  green:  [pos(1, 7), pos(2, 7), pos(3, 7), pos(4, 7), pos(5, 7), pos(6, 7)],
+  yellow: [pos(7, 13), pos(7, 12), pos(7, 11), pos(7, 10), pos(7, 9), pos(7, 8)],
+  blue:   [pos(13, 7), pos(12, 7), pos(11, 7), pos(10, 7), pos(9, 7), pos(8, 7)],
 };
 
 /**

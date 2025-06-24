@@ -25,7 +25,7 @@ export const Pawn = ({ color, canMove }: { color: string; canMove?: boolean }) =
 
   return (
     <div
-      className={`relative w-[70%] h-[70%] transition-all duration-500 ease-in-out cursor-pointer flex items-center justify-center ${canMove ? 'filter brightness-125' : ''}`}
+      className={`relative w-[85%] h-[85%] transition-all duration-500 ease-in-out cursor-pointer flex items-center justify-center ${canMove ? 'filter brightness-125' : ''}`}
     >
       <div className="relative w-full h-full animate-bounce-soft">
         {canMove && <div className="absolute -inset-1 rounded-full bg-white/50 animate-ping"></div>}
