@@ -4,7 +4,7 @@ import type { Player, PawnState, PlayerColor } from './types';
 // Each tile is 100/15 = 6.666% of the board width/height
 const TILE_SIZE = 100 / 15;
 // The pawn div is sized to match the tile size for easier positioning.
-const PAWN_CONTAINER_SIZE_PERCENT = `${TILE_SIZE}%`;
+const PAWN_CONTAINER_SIZE_PERCENT = `${TILE_SIZE * 0.8}%`;
 
 /**
  * Helper function to calculate the top/left CSS properties for the *center* of a tile.
@@ -37,22 +37,22 @@ const BASE_POSITIONS: Record<PlayerColor, React.CSSProperties[]> = {
  * The path is defined in 13-tile segments, from one player's start to the next.
  */
 const MAIN_PATH_COORDS = [
-    // Path from Red's start to Green's start (13 tiles, 0-12)
+    // Red's path segment (0-12)
     pos(6, 1), pos(6, 2), pos(6, 3), pos(6, 4), pos(6, 5),
-    pos(5, 6), pos(4, 6), pos(3, 6), pos(2, 6), pos(1, 6), pos(0, 6),
-    pos(0, 7), pos(0, 8),
-    // Path from Green's start to Yellow's start (13 tiles, 13-25)
+    pos(5, 6), pos(4, 6), pos(3, 6), pos(2, 6), pos(1, 6),
+    pos(0, 6), pos(0, 7), pos(0, 8),
+    // Green's path segment (13-25)
     pos(1, 8), pos(2, 8), pos(3, 8), pos(4, 8), pos(5, 8),
-    pos(6, 9), pos(6, 10), pos(6, 11), pos(6, 12), pos(6, 13), pos(6, 14),
-    pos(7, 14), pos(8, 14),
-    // Path from Yellow's start to Blue's start (13 tiles, 26-38)
+    pos(6, 9), pos(6, 10), pos(6, 11), pos(6, 12), pos(6, 13),
+    pos(6, 14), pos(7, 14), pos(8, 14),
+    // Yellow's path segment (26-38)
     pos(8, 13), pos(8, 12), pos(8, 11), pos(8, 10), pos(8, 9),
-    pos(9, 8), pos(10, 8), pos(11, 8), pos(12, 8), pos(13, 8), pos(14, 8),
-    pos(14, 7), pos(14, 6),
-    // Path from Blue's start to Red's start (13 tiles, 39-51)
+    pos(9, 8), pos(10, 8), pos(11, 8), pos(12, 8), pos(13, 8),
+    pos(14, 8), pos(14, 7), pos(14, 6),
+    // Blue's path segment (39-51)
     pos(13, 6), pos(12, 6), pos(11, 6), pos(10, 6), pos(9, 6),
-    pos(8, 5), pos(8, 4), pos(8, 3), pos(8, 2), pos(8, 1), pos(8, 0),
-    pos(7, 0), pos(6, 0),
+    pos(8, 5), pos(8, 4), pos(8, 3), pos(8, 2), pos(8, 1),
+    pos(8, 0), pos(7, 0), pos(6, 0),
 ];
 
 
