@@ -44,17 +44,17 @@ export default function Home() {
       <FloatingIcon icon={Trophy} className="w-11 h-11 bottom-[25%] right-[10%] -rotate-6" duration={5.5} delay={0.2} />
       
       <div className="z-10 flex flex-col items-center justify-center gap-8 w-full">
-        <div className="flex flex-col items-center gap-4 mb-4 animate-in fade-in-0 zoom-in-95 duration-500">
+        <div className="flex flex-col items-center gap-4 mb-4">
           <h1 className="font-bold text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
             <span
-              className="block text-7xl sm:text-8xl bg-gradient-to-b from-yellow-400 to-amber-500 bg-clip-text text-transparent"
+              className="block text-7xl sm:text-8xl bg-gradient-to-b from-yellow-400 to-amber-500 bg-clip-text text-transparent opacity-0 animate-title-drop"
               style={{ WebkitTextStroke: '2px #c2331a' }}
             >
               Ludo
             </span>
             <span
-              className="block text-4xl sm:text-5xl bg-gradient-to-b from-yellow-300 to-amber-400 bg-clip-text text-transparent"
-              style={{ WebkitTextStroke: '1px #c2331a' }}
+              className="block text-4xl sm:text-5xl bg-gradient-to-b from-yellow-300 to-amber-400 bg-clip-text text-transparent opacity-0 animate-pop-in"
+              style={{ WebkitTextStroke: '1px #c2331a', animationDelay: '200ms' }}
             >
               Learn & Play
             </span>
@@ -63,7 +63,7 @@ export default function Home() {
 
         <div className="flex flex-col items-center gap-6 w-full max-w-xs sm:max-w-sm">
           {/* Start Game button */}
-          <div className="w-full px-4 sm:px-0 animate-in fade-in-0 zoom-in-90 delay-100 duration-500">
+          <div className="w-full px-4 sm:px-0 opacity-0 animate-pop-in" style={{ animationDelay: '400ms' }}>
             <button
               className={`${buttonBaseClasses} w-full h-24 text-3xl bg-green-500 border-green-700 hover:bg-green-400`}
               onClick={handleOpenPlayerSelection}
@@ -77,28 +77,28 @@ export default function Home() {
           
           {/* 2x2 Grid for other options */}
           <div className="grid grid-cols-2 gap-4 sm:gap-6 w-full">
-            <div className="animate-in slide-in-from-left-20 duration-700 ease-out delay-200">
+            <div className="opacity-0 animate-pop-in" style={{ animationDelay: '600ms' }}>
               <Link href="/leaderboard" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-blue-500 border-blue-700 hover:bg-blue-400`}>
                   <Trophy className="h-10 w-10" />
                   <span>Leaderboard</span>
               </Link>
             </div>
 
-            <div className="animate-in slide-in-from-right-20 duration-700 ease-out delay-200">
+            <div className="opacity-0 animate-pop-in" style={{ animationDelay: '700ms' }}>
               <Link href="/instructions" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl text-black bg-yellow-400 border-yellow-600 hover:bg-yellow-300`}>
                   <Info className="h-10 w-10" />
                   <span>Instructions</span>
               </Link>
             </div>
 
-            <div className="animate-in slide-in-from-left-20 duration-700 ease-out delay-300">
+            <div className="opacity-0 animate-pop-in" style={{ animationDelay: '800ms' }}>
                 <Link href="/settings" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-red-500 border-red-700 hover:bg-red-400`}>
                     <Settings className="h-10 w-10" />
                     <span>Settings</span>
                 </Link>
             </div>
 
-            <div className="animate-in slide-in-from-right-20 duration-700 ease-out delay-300">
+            <div className="opacity-0 animate-pop-in" style={{ animationDelay: '900ms' }}>
                 <button
                   className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-pink-500 border-pink-700 hover:bg-pink-400`}
                   onClick={handleOpenDevelopers}
