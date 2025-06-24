@@ -305,13 +305,6 @@ export const GameClient = () => {
                     );
                 })
             )}
-             <div className="absolute top-4 left-4 z-20">
-                <Link href="/" passHref>
-                    <Button variant="ghost" size="icon" className="rounded-full bg-white/50">
-                        <ArrowLeft className="h-6 w-6" />
-                    </Button>
-                </Link>
-            </div>
         </div>
         
         <div className="w-full md:w-auto flex flex-col items-center gap-4">
@@ -319,20 +312,20 @@ export const GameClient = () => {
                 <h2 className="text-xl font-bold text-white text-center">{turnState !== 'game-over' ? `${currentPlayer.name}'s Turn` : `Game Over!`}</h2>
             </Card>
 
-            <Card className="w-full max-w-xs p-4 rounded-4xl shadow-lg flex flex-col items-center gap-4 min-h-[200px] sm:min-h-[220px] justify-center">
+            <Card className="w-full max-w-xs p-4 rounded-4xl shadow-lg flex flex-col items-center gap-4 min-h-[200px] sm:min-h-[220px] justify-center bg-white/10 backdrop-blur-sm border border-white/20">
                 {winner ? (
-                    <div className="text-center">
+                    <div className="text-center text-white">
                         <h2 className="text-3xl font-bold" style={{color: playerColors[winner.id as PlayerColor]}}>{winner.name} Wins!</h2>
                         <p className="text-muted-foreground">Congratulations!</p>
                     </div>
                 ) : (
                     <>
                         {animationState ? (
-                             <div className="flex flex-col items-center justify-center gap-2 text-center h-full">
-                                <p className="text-xl sm:text-2xl font-bold text-primary-foreground">Moving Pawn</p>
+                             <div className="flex flex-col items-center justify-center gap-2 text-center h-full text-white">
+                                <p className="text-xl sm:text-2xl font-bold">Moving Pawn</p>
                                 <p className="text-4xl sm:text-5xl font-bold">
                                     {animationState.totalSteps - animationState.path.length + 1}
-                                    <span className="text-2xl sm:text-3xl text-muted-foreground"> / {animationState.totalSteps}</span>
+                                    <span className="text-2xl sm:text-3xl opacity-70"> / {animationState.totalSteps}</span>
                                 </p>
                              </div>
                         ) : (
@@ -343,9 +336,9 @@ export const GameClient = () => {
                                     {dice ? <DieFace value={dice[2]} /> : <DicePlaceholder />}
                                 </div>
                                 {turnState === 'selecting' && dice && moveSteps && (
-                                    <div className="flex items-center text-3xl sm:text-4xl font-bold gap-2 pt-2">
-                                        <span className="text-muted-foreground">=</span>
-                                        <span className="text-4xl sm:text-5xl text-primary-foreground drop-shadow-md">{moveSteps}</span>
+                                    <div className="flex items-center text-3xl sm:text-4xl font-bold gap-2 pt-2 text-white">
+                                        <span className="opacity-70">=</span>
+                                        <span className="text-4xl sm:text-5xl drop-shadow-md">{moveSteps}</span>
                                     </div>
                                 )}
                             </div>
@@ -358,6 +351,15 @@ export const GameClient = () => {
                     </>
                 )}
             </Card>
+            <Link href="/" passHref className="w-full max-w-xs">
+                <Button 
+                    variant="secondary"
+                    className="w-full h-14 sm:h-16 text-xl sm:text-2xl rounded-3xl shadow-lg bg-white/10 hover:bg-white/20 text-white border-2 border-white/30"
+                >
+                    <ArrowLeft className="h-6 w-6 sm:h-8 sm:h-8" />
+                    Back to Menu
+                </Button>
+            </Link>
         </div>
     </div>
   );
