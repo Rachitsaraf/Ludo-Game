@@ -202,7 +202,7 @@ export const GameClient = () => {
                     return (
                         <div
                             key={`${player.id}-${pawn.id}`}
-                            className="absolute transition-all duration-500 ease-in-out flex items-center justify-center"
+                            className="absolute transition-all duration-700 ease-in-out flex items-center justify-center"
                             style={getPawnStyle(player, pawn)}
                         >
                             <Pawn 
