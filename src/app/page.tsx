@@ -5,49 +5,53 @@ import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-background font-headline flex flex-col items-center justify-center p-4">
+    <div className="relative min-h-screen w-full overflow-hidden bg-background font-headline flex flex-col items-center justify-between p-8 text-center">
       <Image
         src="https://placehold.co/1080x1920"
-        alt="White die background"
+        alt="Colorful Ludo board background"
         fill
-        className="object-contain opacity-30"
-        data-ai-hint="white dice"
+        className="object-cover opacity-20"
+        data-ai-hint="ludo board game"
       />
-      <div className="absolute top-4 right-4">
-        <Button variant="ghost" size="icon" className="rounded-full bg-white/50">
+      <div className="absolute top-4 right-4 z-20">
+        <Button variant="ghost" size="icon" className="rounded-full bg-white/50 backdrop-blur-sm">
           <Music className="h-6 w-6" />
         </Button>
       </div>
 
-      <div className="z-10 text-center flex flex-col items-center gap-8">
-        <h1 className="text-7xl font-bold text-primary-foreground drop-shadow-lg" style={{ WebkitTextStroke: '3px hsl(var(--primary))' }}>
-          Ludo Learn & Play
-        </h1>
-        
-        <div className="flex flex-col gap-4 w-full max-w-xs">
-          <Link href="/game" passHref>
-            <Button size="lg" className="w-full h-16 text-2xl rounded-4xl shadow-lg transform hover:scale-105 transition-transform duration-200">
-              <Play className="mr-2 h-8 w-8" />
-              Start Game
+      <div className="z-10 mt-16 sm:mt-24">
+        <div className="inline-block bg-white/60 p-4 rounded-4xl shadow-lg backdrop-blur-sm">
+          <h1 className="text-5xl sm:text-6xl font-bold text-primary-foreground drop-shadow-lg" style={{ WebkitTextStroke: '2px hsl(var(--primary))' }}>
+            Ludo Learn & Play
+          </h1>
+        </div>
+      </div>
+      
+      <div className="z-10 flex flex-col items-center gap-6 w-full max-w-xs sm:max-w-sm">
+        <Link href="/game" passHref className="w-full">
+          <Button size="lg" className="w-full h-24 text-4xl rounded-full shadow-2xl transform hover:scale-105 transition-transform duration-300 ease-in-out">
+            <Play className="mr-4 h-12 w-12" />
+            PLAY
+          </Button>
+        </Link>
+        <div className="flex gap-4 w-full">
+          <Link href="/instructions" passHref className="flex-1">
+            <Button size="lg" variant="secondary" className="w-full h-16 text-xl rounded-full shadow-lg transform hover:scale-105 transition-transform duration-200">
+              <HelpCircle className="mr-2 h-7 w-7" />
+              How to Play
             </Button>
           </Link>
-          <Link href="/instructions" passHref>
-            <Button size="lg" variant="secondary" className="w-full h-16 text-2xl rounded-4xl shadow-lg transform hover:scale-105 transition-transform duration-200">
-              <HelpCircle className="mr-2 h-8 w-8" />
-              Instructions
-            </Button>
-          </Link>
-          <Link href="/settings" passHref>
-            <Button size="lg" variant="secondary" className="w-full h-16 text-2xl rounded-4xl shadow-lg transform hover:scale-105 transition-transform duration-200">
-              <Settings className="mr-2 h-8 w-8" />
+          <Link href="/settings" passHref className="flex-1">
+            <Button size="lg" variant="secondary" className="w-full h-16 text-xl rounded-full shadow-lg transform hover:scale-105 transition-transform duration-200">
+              <Settings className="mr-2 h-7 w-7" />
               Settings
             </Button>
           </Link>
         </div>
       </div>
-      
-      <div className="absolute bottom-4 text-center text-primary-foreground/50 z-10">
-        <p className="font-bold text-lg">Koushiki Innovision</p>
+
+      <div className="z-10">
+        <p className="font-bold text-lg text-primary-foreground/80 drop-shadow-md">Koushiki Innovision</p>
       </div>
     </div>
   );

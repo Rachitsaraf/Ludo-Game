@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -29,7 +29,7 @@ const instructions = [
 export default function InstructionsPage() {
   return (
     <div className="min-h-screen w-full bg-background font-headline flex flex-col items-center justify-center p-4">
-       <div className="absolute top-4 left-4">
+       <div className="absolute top-4 left-4 z-10">
         <Link href="/" passHref>
           <Button variant="ghost" size="icon" className="rounded-full bg-white/50">
             <ArrowLeft className="h-8 w-8" />
@@ -50,6 +50,16 @@ export default function InstructionsPage() {
           </Card>
         ))}
       </div>
+      <Card className="w-full max-w-md mt-8 shadow-lg rounded-4xl bg-white">
+        <CardHeader>
+            <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
+                Made with <Heart className="text-destructive" fill="hsl(var(--destructive))" /> by
+            </CardTitle>
+        </CardHeader>
+        <CardContent>
+            <p className="text-lg text-center text-muted-foreground tracking-wider">Vipul, Rachir, Dhiraj, & Poonam</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
