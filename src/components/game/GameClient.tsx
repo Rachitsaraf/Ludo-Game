@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { produce } from 'immer';
 import { LudoBoard } from './LudoBoard';
 import { Pawn } from './Pawn';
@@ -20,21 +20,6 @@ const playerColors = {
   blue: '#60a5fa',   // blue-400
   yellow: '#facc15', // yellow-400
 };
-
-const allPossiblePlayers: Player[] = [
-  { id: 'red', name: 'Red', pawns: [
-    { id: 1, position: -1 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
-  ]},
-  { id: 'green', name: 'Green', pawns: [
-    { id: 1, position: -1 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
-  ]},
-  { id: 'blue', name: 'Blue', pawns: [
-    { id: 1, position: -1 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
-  ]},
-  { id: 'yellow', name: 'Yellow', pawns: [
-    { id: 1, position: -1 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
-  ]},
-];
 
 const SAFE_TILE_INDICES = [0, 8, 15, 23, 30, 38, 45, 53];
 
@@ -81,8 +66,17 @@ const OperatorPlaceholder = () => (
     </div>
 );
 
-export const GameClient = ({ playerCount }: { playerCount: number }) => {
-  const initialPlayers = allPossiblePlayers.slice(0, playerCount);
+export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
+  const initialPlayers = useMemo(() => {
+    const allColors: PlayerColor[] = ['red', 'green', 'blue', 'yellow'];
+    return allColors.map(color => ({
+        id: color,
+        name: color.charAt(0).toUpperCase() + color.slice(1),
+        pawns: Array.from({ length: 4 }, (_, i) => ({ id: i + 1, position: -1 })),
+        isBot: !humanColors.includes(color)
+    }));
+  }, [humanColors]);
+
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [dice, setDice] = useState<[number, Operator, number] | null>(null);
@@ -127,7 +121,7 @@ export const GameClient = ({ playerCount }: { playerCount: number }) => {
       return true;
   }, []);
 
-  const executeMove = (steps: number, pawnToMoveId: number) => {
+  const executeMove = useCallback((steps: number, pawnToMoveId: number) => {
     const player = players[currentPlayerIndex];
     const pawn = player.pawns.find(p => p.id === pawnToMoveId)!;
     const startPos = pawn.position;
@@ -154,7 +148,7 @@ export const GameClient = ({ playerCount }: { playerCount: number }) => {
     } else {
         nextTurn();
     }
-};
+  }, [players, currentPlayerIndex, nextTurn]);
 
   useEffect(() => {
     if (turnState !== 'moving' || !animationState) return;
@@ -181,7 +175,7 @@ export const GameClient = ({ playerCount }: { playerCount: number }) => {
                                     const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 60;
                                     if (otherPawnGlobalPos === targetPosOnBoard) {
                                         otherPawn.position = -1;
-                                        toastToShow = { title: "Collision!", description: `A ${otherPlayer.name} pawn was sent back to base!` };
+                                        toastToShow = { title: "Collision!", description: `${movedPlayer.name} knocked a ${otherPlayer.name} pawn back to base!` };
                                     }
                                 }
                             });
@@ -220,10 +214,7 @@ export const GameClient = ({ playerCount }: { playerCount: number }) => {
     return () => clearTimeout(animationTimeout);
   }, [turnState, animationState, players, nextTurn, toast]);
 
-
-  const handleRollDice = () => {
-    if (turnState !== 'rolling') return;
-    
+  const performRoll = useCallback((): number => {
     const d1 = Math.floor(Math.random() * 6) + 1;
     const ops: Operator[] = ['+', '-', 'Max', 'Min'];
     const op: Operator = ops[Math.floor(Math.random() * ops.length)];
@@ -238,6 +229,13 @@ export const GameClient = ({ playerCount }: { playerCount: number }) => {
       case 'Min': result = Math.min(d1, d3); break;
       default: result = 0;
     }
+    return result;
+  }, []);
+
+  const handleRollDice = () => {
+    if (turnState !== 'rolling' || currentPlayer.isBot) return;
+    
+    const result = performRoll();
     
     if (result === 0) {
         toast({ title: "No move!", description: "Result is 0, skipping turn." });
@@ -263,21 +261,79 @@ export const GameClient = ({ playerCount }: { playerCount: number }) => {
   };
 
   const handlePawnClick = (pawn: PawnState) => {
-    if (turnState !== 'selecting' || !moveSteps || !isPawnMovable(pawn, moveSteps)) return;
+    if (turnState !== 'selecting' || currentPlayer.isBot || !moveSteps || !isPawnMovable(pawn, moveSteps)) return;
     
     setSelectedPawnId(pawn.id);
     executeMove(moveSteps, pawn.id);
   };
 
+  const handleBotTurn = useCallback(() => {
+    if (turnState !== 'rolling' || !currentPlayer.isBot) return;
+
+    toast({ title: `${currentPlayer.name} is thinking...` });
+    
+    setTimeout(() => {
+      const result = performRoll();
+      toast({ title: `${currentPlayer.name} (Bot) rolled for ${result} steps` });
+
+      if (result === 0) {
+          setTimeout(() => nextTurn(), 1200);
+          return;
+      }
+
+      const movablePawns = currentPlayer.pawns.filter(p => isPawnMovable(p, result));
+
+      if (movablePawns.length === 0) {
+          setTimeout(() => nextTurn(), 1200);
+          return;
+      }
+
+      let pawnToMove: PawnState | null = null;
+      const pawnsInBase = movablePawns.filter(p => p.position === -1);
+      
+      if (result === 6 && pawnsInBase.length > 0) {
+          pawnToMove = pawnsInBase[0];
+      } else {
+          const sortedMovablePawns = [...movablePawns].sort((a, b) => b.position - a.position);
+          pawnToMove = sortedMovablePawns[0];
+      }
+      
+      if (pawnToMove) {
+        setMoveSteps(result);
+        setTimeout(() => {
+            executeMove(result, pawnToMove!.id);
+        }, 800);
+      } else {
+          setTimeout(() => nextTurn(), 1200);
+      }
+    }, 1000);
+  }, [turnState, currentPlayer, isPawnMovable, nextTurn, toast, performRoll, executeMove]);
+
+  useEffect(() => {
+    if (turnState === 'rolling' && currentPlayer.isBot && !winner) {
+      const timer = setTimeout(() => {
+        handleBotTurn();
+      }, 1500); // Bot "thinking" time
+      return () => clearTimeout(timer);
+    }
+  }, [turnState, currentPlayer, winner, handleBotTurn]);
+
   const getTurnMessage = () => {
     switch(turnState) {
-        case 'rolling': return 'Roll Dice';
+        case 'rolling': return currentPlayer.isBot ? 'Bot Rolling...' : 'Roll Dice';
         case 'selecting': return 'Select a Pawn';
         case 'moving': return 'Moving...';
         case 'game-over': return 'Game Over!';
         default: return 'Roll Dice';
     }
   }
+
+  const turnTitle = useMemo(() => {
+      if (winner) return `${winner.name} Wins!`;
+      if (turnState === 'game-over') return 'Game Over!';
+      const playerType = currentPlayer.isBot ? 'Bot' : 'Your';
+      return `${playerType} Turn - ${currentPlayer.name}`;
+  }, [currentPlayer, turnState, winner]);
 
   return (
     <div className="relative flex flex-col md:flex-row items-center justify-center p-2 sm:p-4 gap-4 sm:gap-6 w-full max-w-7xl mx-auto">
@@ -295,7 +351,7 @@ export const GameClient = ({ playerCount }: { playerCount: number }) => {
             {players.map((player) =>
                 player.pawns.map((pawn) => {
                     const isCurrentPlayerPawn = player.id === currentPlayer.id;
-                    const canBeSelected = turnState === 'selecting' && isCurrentPlayerPawn && moveSteps !== null && isPawnMovable(pawn, moveSteps);
+                    const canBeSelected = turnState === 'selecting' && isCurrentPlayerPawn && !currentPlayer.isBot && moveSteps !== null && isPawnMovable(pawn, moveSteps);
                     const isCurrentlySelected = pawn.id === selectedPawnId && isCurrentPlayerPawn;
 
                     return (
@@ -318,7 +374,7 @@ export const GameClient = ({ playerCount }: { playerCount: number }) => {
         
         <div className="w-full md:w-auto flex flex-col items-center gap-4">
             <Card className="p-2 px-4 rounded-2xl shadow-lg" style={{backgroundColor: playerColors[currentPlayer.id as PlayerColor]}}>
-                <h2 className="text-xl font-bold text-white text-center">{turnState !== 'game-over' ? `${currentPlayer.name}'s Turn` : `Game Over!`}</h2>
+                <h2 className="text-xl font-bold text-white text-center">{turnTitle}</h2>
             </Card>
 
             <Card className="w-full max-w-xs p-4 rounded-4xl shadow-lg flex flex-col items-center gap-4 min-h-[200px] sm:min-h-[220px] justify-center bg-white/10 backdrop-blur-sm border border-white/20">
@@ -353,7 +409,7 @@ export const GameClient = ({ playerCount }: { playerCount: number }) => {
                             </div>
                         )}
                         
-                        <Button onClick={handleRollDice} disabled={turnState !== 'rolling'} className="w-full h-14 sm:h-16 text-xl sm:text-2xl rounded-3xl shadow-lg">
+                        <Button onClick={handleRollDice} disabled={turnState !== 'rolling' || currentPlayer.isBot} className="w-full h-14 sm:h-16 text-xl sm:text-2xl rounded-3xl shadow-lg">
                             <Dices className="mr-2 h-6 w-6 sm:h-8 sm:h-8" />
                             {getTurnMessage()}
                         </Button>

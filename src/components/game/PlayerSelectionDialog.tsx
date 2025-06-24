@@ -18,7 +18,7 @@ export const PlayerSelectionDialog = ({ isOpen, onClose }: PlayerSelectionDialog
   }
 
   const handlePlayerSelect = (count: number) => {
-    router.push(`/game?players=${count}`);
+    router.push(`/select-color?humans=${count}`);
   };
 
   return (

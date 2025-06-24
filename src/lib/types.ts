@@ -20,6 +20,7 @@ export interface Player {
   id: PlayerColor;
   name: string;
   pawns: PawnState[];
+  isBot: boolean;
 }
 
 export interface GameState {
