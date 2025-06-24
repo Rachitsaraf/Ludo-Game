@@ -56,9 +56,15 @@ export const GameClient = () => {
   const [winner, setWinner] = useState<Player | null>(null);
   const [moveSteps, setMoveSteps] = useState<number | null>(null);
   const [selectedPawnId, setSelectedPawnId] = useState<number | null>(null);
-
   const { toast } = useToast();
   
+  const [animationState, setAnimationState] = useState<{
+    pawnId: number;
+    playerIndex: number;
+    path: number[];
+    totalSteps: number;
+  } | null>(null);
+
   const currentPlayer = players[currentPlayerIndex];
 
   const nextTurn = useCallback(() => {
@@ -77,16 +83,105 @@ export const GameClient = () => {
   }, [players]);
 
   const isPawnMovable = useCallback((pawn: PawnState, steps: number): boolean => {
-      if (pawn.position === 57) return false; // Already home
+      if (pawn.position === 57) return false;
 
-      // From base, can only move if steps is 6
       if (pawn.position === -1) {
         return steps === 6;
       }
 
-      if (pawn.position + steps > 57) return false; // Overshoots
+      if (pawn.position + steps > 57) return false;
       return true;
   }, []);
+
+  const handleCollision = useCallback((movedPlayerIndex: number, movedPawnId: number) => {
+    setPlayers(produce(draft => {
+        const toastsToShow: { title: string; description?: string }[] = [];
+        const movedPlayer = draft[movedPlayerIndex];
+        const movedPawn = movedPlayer.pawns.find(p => p.id === movedPawnId)!;
+        const finalPosition = movedPawn.position;
+        const playerConfig = PLAYER_CONFIG[movedPlayer.id];
+
+        if (finalPosition >= 0 && finalPosition <= 50) {
+            const targetPosOnBoard = (playerConfig.pathStart + finalPosition) % 52;
+            if (!SAFE_TILE_INDICES.includes(targetPosOnBoard)) {
+                draft.forEach(otherPlayer => {
+                    if (otherPlayer.id !== movedPlayer.id) {
+                        const otherPlayerConfig = PLAYER_CONFIG[otherPlayer.id];
+                        otherPlayer.pawns.forEach(otherPawn => {
+                            if (otherPawn.position >= 0 && otherPawn.position <= 50) {
+                                const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 52;
+                                if (otherPawnGlobalPos === targetPosOnBoard) {
+                                    otherPawn.position = -1;
+                                    toast({ title: "Collision!", description: `A ${otherPlayer.name} pawn was sent back to base!` });
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    }));
+  }, [toast]);
+
+  const executeMove = useCallback((steps: number, pawnToMoveId: number) => {
+    const player = players[currentPlayerIndex];
+    const pawn = player.pawns.find(p => p.id === pawnToMoveId)!;
+    const startPos = pawn.position;
+    const path: number[] = [];
+
+    if (startPos === -1 && steps === 6) {
+        path.push(0);
+    } else {
+        for (let i = 1; i <= steps; i++) {
+            const nextPos = startPos + i;
+            if (nextPos > 57) break; 
+            path.push(nextPos);
+        }
+    }
+    
+    if (path.length > 0) {
+        setTurnState('moving');
+        setAnimationState({
+            pawnId: pawnToMoveId,
+            playerIndex: currentPlayerIndex,
+            path: path,
+            totalSteps: path.length,
+        });
+    } else {
+        nextTurn();
+    }
+}, [currentPlayerIndex, players, nextTurn]);
+
+  useEffect(() => {
+    if (turnState !== 'moving' || !animationState) return;
+
+    if (animationState.path.length === 0) {
+        setTimeout(() => {
+            handleCollision(animationState.playerIndex, animationState.pawnId);
+            toast({ title: `${players[animationState.playerIndex].name} moved ${animationState.totalSteps} steps!` });
+            setAnimationState(null);
+            nextTurn();
+        }, 400);
+        return;
+    }
+
+    const animationTimeout = setTimeout(() => {
+        setPlayers(produce(draft => {
+            const player = draft[animationState.playerIndex];
+            const pawn = player.pawns.find(p => p.id === animationState.pawnId)!;
+            pawn.position = animationState.path[0];
+        }));
+
+        setAnimationState(produce(draft => {
+            if (draft) {
+                draft.path.shift();
+            }
+        }));
+    }, 400); // Delay between steps
+
+    return () => clearTimeout(animationTimeout);
+  }, [turnState, animationState, players, nextTurn, handleCollision, toast]);
+
 
   const handleRollDice = () => {
     if (turnState !== 'rolling') return;
@@ -114,11 +209,9 @@ export const GameClient = () => {
 
     const movablePawns = currentPlayer.pawns.filter(p => isPawnMovable(p, result));
     
-    // Special case for '6', if no pawns are out, one must move out.
     if (result === 6 && currentPlayer.pawns.every(p => p.position === -1)) {
         toast({ title: "Rolled a 6!", description: "A pawn comes out of the base." });
-        setTurnState('moving');
-        setTimeout(() => executeMove(result, 1), 500); // Move first pawn
+        executeMove(result, 1);
         return;
     }
 
@@ -130,8 +223,7 @@ export const GameClient = () => {
     
     if (movablePawns.length === 1) {
         toast({ title: "Dice Rolled!", description: `Auto-moving ${result} steps.` });
-        setTurnState('moving');
-        setTimeout(() => executeMove(result, movablePawns[0].id), 500);
+        executeMove(result, movablePawns[0].id);
     } else {
         setMoveSteps(result);
         setTurnState('selecting');
@@ -143,64 +235,8 @@ export const GameClient = () => {
     if (turnState !== 'selecting' || !moveSteps || !isPawnMovable(pawn, moveSteps)) return;
     
     setSelectedPawnId(pawn.id);
-    setTurnState('moving');
-
-    setTimeout(() => {
-        executeMove(moveSteps, pawn.id);
-    }, 300); // Short delay to show selection
+    executeMove(moveSteps, pawn.id);
   };
-
-  const executeMove = useCallback((steps: number, pawnToMoveId: number) => {
-    const toastsToShow: { title: string; description?: string }[] = [];
-    let movedPlayerName = '';
-
-    setPlayers(
-      produce(draft => {
-        const player = draft[currentPlayerIndex];
-        movedPlayerName = player.name;
-        const pawnToUpdate = player.pawns.find(p => p.id === pawnToMoveId)!;
-        const playerConfig = PLAYER_CONFIG[player.id];
-  
-        if (pawnToUpdate.position === -1) {
-            // This is handled by isPawnMovable check, assumes steps is 6
-            pawnToUpdate.position = 0;
-        } else {
-           pawnToUpdate.position += steps;
-        }
-    
-        if (pawnToUpdate.position > 57) {
-          pawnToUpdate.position = 57; 
-        }
-        
-        // Collision detection
-        if (pawnToUpdate.position >= 0 && pawnToUpdate.position <= 50) {
-            const targetPosOnBoard = (playerConfig.pathStart + pawnToUpdate.position) % 52;
-
-            if (!SAFE_TILE_INDICES.includes(targetPosOnBoard)) {
-                draft.forEach(other_player => {
-                    if (other_player.id !== player.id) {
-                        const otherPlayerConfig = PLAYER_CONFIG[other_player.id];
-                        other_player.pawns.forEach(otherPawn => {
-                            if (otherPawn.position >= 0 && otherPawn.position <= 50) {
-                                const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 52;
-                                if (otherPawnGlobalPos === targetPosOnBoard) {
-                                    otherPawn.position = -1; // Send back to base
-                                    toastsToShow.push({title: "Collision!", description: `A ${other_player.name} pawn was sent back to base!`});
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-        }
-      })
-    );
-    
-    toastsToShow.push({ title: `${movedPlayerName} moved ${steps} steps!`});
-    toastsToShow.forEach(t => toast(t));
-
-    setTimeout(() => nextTurn(), 500);
-  }, [currentPlayerIndex, nextTurn, toast]);
 
   const getTurnMessage = () => {
     switch(turnState) {
@@ -226,7 +262,7 @@ export const GameClient = () => {
                     return (
                         <div
                             key={`${player.id}-${pawn.id}`}
-                            className="absolute transition-all duration-700 ease-in-out flex items-center justify-center"
+                            className="absolute transition-all duration-300 ease-in-out flex items-center justify-center"
                             style={getPawnStyle(player, pawn)}
                         >
                             <Pawn 
@@ -253,7 +289,7 @@ export const GameClient = () => {
                 <h2 className="text-xl font-bold text-white text-center">{turnState !== 'game-over' ? `${currentPlayer.name}'s Turn` : `Game Over!`}</h2>
             </Card>
 
-            <Card className="w-full max-w-xs p-4 rounded-4xl shadow-lg flex flex-col items-center gap-4">
+            <Card className="w-full max-w-xs p-4 rounded-4xl shadow-lg flex flex-col items-center gap-4 min-h-[220px] justify-center">
                 {winner ? (
                     <div className="text-center">
                         <h2 className="text-3xl font-bold" style={{color: playerColors[winner.id as PlayerColor]}}>{winner.name} Wins!</h2>
@@ -261,11 +297,21 @@ export const GameClient = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="flex items-center justify-center gap-4">
-                            {dice ? <DiceIcon value={dice[0]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
-                            {dice ? <OperatorIcon op={dice[1]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
-                            {dice ? <DiceIcon value={dice[2]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
-                        </div>
+                        {animationState ? (
+                             <div className="flex flex-col items-center justify-center gap-2 text-center">
+                                <p className="text-2xl font-bold text-primary-foreground">Moving Pawn</p>
+                                <p className="text-5xl font-bold">
+                                    {animationState.totalSteps - animationState.path.length + 1}
+                                    <span className="text-3xl text-muted-foreground"> / {animationState.totalSteps}</span>
+                                </p>
+                             </div>
+                        ) : (
+                            <div className="flex items-center justify-center gap-4">
+                                {dice ? <DiceIcon value={dice[0]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
+                                {dice ? <OperatorIcon op={dice[1]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
+                                {dice ? <DiceIcon value={dice[2]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
+                            </div>
+                        )}
                         
                         <Button onClick={handleRollDice} disabled={turnState !== 'rolling'} className="w-full h-16 text-2xl rounded-3xl shadow-lg">
                             <Dices className="mr-2 h-8 w-8" />
