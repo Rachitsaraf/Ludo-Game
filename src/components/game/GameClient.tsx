@@ -16,10 +16,10 @@ import { Card } from '@/components/ui/card';
 import { getPawnStyle, PLAYER_CONFIG } from '@/lib/board';
 
 const playerColors = {
-  red: '#f87171',
-  green: '#4ade80',
-  blue: '#60a5fa',
-  yellow: '#facc15',
+  red: '#ef4444',    // bg-red-500
+  green: '#22c55e',  // bg-green-500
+  blue: '#3b82f6',   // bg-blue-500
+  yellow: '#f59e0b', // bg-yellow-500
 };
 
 const initialPawns: PawnState[] = [
@@ -31,8 +31,8 @@ const initialPawns: PawnState[] = [
 
 const initialPlayers: Player[] = [
   { id: 'red', name: 'Red', color: playerColors.red, pawns: JSON.parse(JSON.stringify(initialPawns)) },
-  { id: 'blue', name: 'Blue', color: playerColors.blue, pawns: JSON.parse(JSON.stringify(initialPawns)) },
   { id: 'green', name: 'Green', color: playerColors.green, pawns: JSON.parse(JSON.stringify(initialPawns)) },
+  { id: 'blue', name: 'Blue', color: playerColors.blue, pawns: JSON.parse(JSON.stringify(initialPawns)) },
   { id: 'yellow', name: 'Yellow', color: playerColors.yellow, pawns: JSON.parse(JSON.stringify(initialPawns)) },
 ];
 
@@ -94,51 +94,66 @@ export const GameClient = () => {
       produce(draft => {
         const player = draft[currentPlayerIndex];
         const { pawns } = player;
-  
-        // Find a pawn to move - prefer pawns on board
-        let pawnToMove = pawns.find(p => p.position >= 0 && p.position < 57 && (p.position + steps <= 57));
+
+        // A pawn can only leave base if the roll is a 6. In our game, the number of steps is the answer.
+        const canLeaveBase = steps === 6;
+
+        let movablePawns = pawns.filter(p => {
+            if (p.position === -1) return canLeaveBase; // Can move from base only on 6
+            if (p.position === 57) return false; // Cannot move finished pawns
+            return p.position + steps <= 57; // Can move if it doesn't overshoot
+        });
+
+        // Prefer moving pawns already on the board
+        let pawnToMove = movablePawns.find(p => p.position >= 0);
         if (!pawnToMove) {
-          pawnToMove = pawns.find(p => p.position === -1);
+            pawnToMove = movablePawns.find(p => p.position === -1);
         }
+
         if (!pawnToMove) {
           toast({ title: "No valid moves!", description: "Skipping turn." });
+          nextTurn();
           return;
         }
-  
-        if (pawnToMove.position === -1) {
-          pawnToMove.position = 0;
+
+        if (pawnToMove.position === -1 && canLeaveBase) {
+          pawnToMove.position = 0; // Moves to start
         } else {
           pawnToMove.position += steps;
         }
   
         if (pawnToMove.position > 56) {
           pawnToMove.position = 57; // Finished
-          setShowConfetti(true);
-          setTimeout(() => setShowConfetti(false), 4000);
-        } else {
-          // Collision detection
-          const targetPos = (PLAYER_CONFIG[player.id].start + pawnToMove.position) % 52;
-          const isSafe = PLAYER_CONFIG[player.id].safeTiles.includes(targetPos);
-          
-          if(!isSafe) {
-            draft.forEach(p => {
-              if (p.id !== player.id) {
-                p.pawns.forEach(otherPawn => {
-                  const otherPos = (PLAYER_CONFIG[p.id].start + otherPawn.position) % 52;
-                  if (otherPawn.position >= 0 && otherPos === targetPos) {
-                    otherPawn.position = -1; // Send back to base
-                    toast({title: "Collision!", description: `${p.name}'s pawn sent back to base!`})
-                  }
+        } 
+        
+        // Collision detection
+        if (pawnToMove.position < 51) { // Only check for collisions on the main path
+            const { path, safeTiles } = PLAYER_CONFIG[player.id];
+            const targetPos = path[pawnToMove.position];
+
+            if (!safeTiles.includes(targetPos)) {
+                draft.forEach(p_other => {
+                    if (p_other.id !== player.id) {
+                        const otherPlayerConfig = PLAYER_CONFIG[p_other.id];
+                        p_other.pawns.forEach(otherPawn => {
+                            if (otherPawn.position >= 0 && otherPawn.position < 51) {
+                                const otherPawnGlobalPos = otherPlayerConfig.path[otherPawn.position];
+                                if (otherPawnGlobalPos === targetPos) {
+                                    otherPawn.position = -1; // Send back to base
+                                    toast({title: "Collision!", description: `A ${p_other.name} pawn was sent back to base!`})
+                                }
+                            }
+                        });
+                    }
                 });
-              }
-            });
-          }
+            }
         }
         toast({ title: `${player.name} moved ${steps} steps!`})
       })
     );
     setTimeout(() => nextTurn(), 500);
   }, [currentPlayerIndex, nextTurn, toast]);
+
 
   const handleAnswer = (isCorrect: boolean, answer: number) => {
     setQuestion(null);
@@ -174,7 +189,7 @@ export const GameClient = () => {
                 player.pawns.map((pawn) => (
                     <div
                         key={`${player.id}-${pawn.id}`}
-                        className="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-700 ease-in-out"
+                        className="absolute transform -translate-x-1/2 -translate-y-1/2"
                         style={getPawnStyle(player, pawn)}
                     >
                         <Pawn color={player.color} />

@@ -4,7 +4,13 @@ export type PlayerColor = 'red' | 'green' | 'blue' | 'yellow';
 
 export interface PawnState {
   id: number;
-  position: number; // -1: base, 0-51: main path, 52-56: home run, 57: finished
+  /**
+   * -1: In base
+   * 0-50: Main path (relative to player start)
+   * 51-56: Home run
+   * 57: Finished
+   */
+  position: number;
 }
 
 export interface Player {
