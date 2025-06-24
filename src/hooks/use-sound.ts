@@ -26,6 +26,7 @@ const SoundContext = createContext<SoundContextType | undefined>(undefined);
 
 export const SoundProvider = ({ children }: { children: React.ReactNode }): React.ReactElement => {
   const [isMuted, setIsMuted] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
   const backgroundAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Effect to load mute state from localStorage on initial client load
@@ -34,10 +35,11 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }): Reac
     // Sound is enabled by default if no setting is saved
     const isSoundEnabled = savedSoundSetting ? JSON.parse(savedSoundSetting) : true;
     setIsMuted(!isSoundEnabled);
+    setIsMounted(true);
   }, []);
 
   const playSound = useCallback((type: SoundEffect) => {
-    if (isMuted) return;
+    if (isMuted || !isMounted) return;
     try {
       const audio = new Audio(SOUND_FILES[type]);
       audio.volume = 0.5;
@@ -45,9 +47,11 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }): Reac
     } catch (error) {
       console.error("Could not play sound", error);
     }
-  }, [isMuted]);
+  }, [isMuted, isMounted]);
 
   const playBackgroundMusic = useCallback(() => {
+    if (isMuted || !isMounted) return;
+
     try {
       if (!backgroundAudioRef.current) {
         backgroundAudioRef.current = new Audio(SOUND_FILES.background);
@@ -55,17 +59,13 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }): Reac
         backgroundAudioRef.current.volume = 0.2;
       }
       
-      backgroundAudioRef.current.muted = isMuted;
-
-      if (backgroundAudioRef.current.paused) {
-        // Browser autoplay policies might prevent this, which is expected.
-        // It will start on the first user interaction.
+      if (backgroundAudioRef.current.paused && !isMuted) {
         backgroundAudioRef.current.play().catch(e => {});
       }
     } catch (error) {
        console.error("Could not play background music", error);
     }
-  }, [isMuted]);
+  }, [isMuted, isMounted]);
 
   const stopBackgroundMusic = useCallback(() => {
     if (backgroundAudioRef.current) {
@@ -81,6 +81,7 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }): Reac
   }, [isMuted]);
   
   const toggleMute = useCallback(() => {
+    if (!isMounted) return;
     const newMutedState = !isMuted;
     setIsMuted(newMutedState);
     localStorage.setItem('ludoSoundEnabled', JSON.stringify(!newMutedState));
@@ -92,7 +93,7 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }): Reac
             backgroundAudioRef.current.play().catch(e => {});
         }
     }
-  }, [isMuted]);
+  }, [isMuted, isMounted]);
 
   const value = { isMuted, toggleMute, playSound, playBackgroundMusic, stopBackgroundMusic };
 
