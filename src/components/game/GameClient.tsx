@@ -94,8 +94,8 @@ export const GameClient = () => {
   }, []);
 
   const handleCollision = useCallback((movedPlayerIndex: number, movedPawnId: number) => {
+    let toastToShow: { title: string; description?: string } | null = null;
     setPlayers(produce(draft => {
-        const toastsToShow: { title: string; description?: string }[] = [];
         const movedPlayer = draft[movedPlayerIndex];
         const movedPawn = movedPlayer.pawns.find(p => p.id === movedPawnId)!;
         const finalPosition = movedPawn.position;
@@ -112,7 +112,7 @@ export const GameClient = () => {
                                 const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 52;
                                 if (otherPawnGlobalPos === targetPosOnBoard) {
                                     otherPawn.position = -1;
-                                    toast({ title: "Collision!", description: `A ${otherPlayer.name} pawn was sent back to base!` });
+                                    toastToShow = { title: "Collision!", description: `A ${otherPlayer.name} pawn was sent back to base!` };
                                 }
                             }
                         });
@@ -121,6 +121,9 @@ export const GameClient = () => {
             }
         }
     }));
+    if (toastToShow) {
+        toast(toastToShow);
+    }
   }, [toast]);
 
   const executeMove = useCallback((steps: number, pawnToMoveId: number) => {
@@ -154,30 +157,30 @@ export const GameClient = () => {
 
   useEffect(() => {
     if (turnState !== 'moving' || !animationState) return;
+    let animationTimeout: NodeJS.Timeout;
 
     if (animationState.path.length === 0) {
-        setTimeout(() => {
+        animationTimeout = setTimeout(() => {
             handleCollision(animationState.playerIndex, animationState.pawnId);
             toast({ title: `${players[animationState.playerIndex].name} moved ${animationState.totalSteps} steps!` });
             setAnimationState(null);
             nextTurn();
         }, 400);
-        return;
+    } else {
+        animationTimeout = setTimeout(() => {
+            setPlayers(produce(draft => {
+                const player = draft[animationState.playerIndex];
+                const pawn = player.pawns.find(p => p.id === animationState.pawnId)!;
+                pawn.position = animationState.path[0];
+            }));
+
+            setAnimationState(produce(draft => {
+                if (draft) {
+                    draft.path.shift();
+                }
+            }));
+        }, 400); // Delay between steps
     }
-
-    const animationTimeout = setTimeout(() => {
-        setPlayers(produce(draft => {
-            const player = draft[animationState.playerIndex];
-            const pawn = player.pawns.find(p => p.id === animationState.pawnId)!;
-            pawn.position = animationState.path[0];
-        }));
-
-        setAnimationState(produce(draft => {
-            if (draft) {
-                draft.path.shift();
-            }
-        }));
-    }, 400); // Delay between steps
 
     return () => clearTimeout(animationTimeout);
   }, [turnState, animationState, players, nextTurn, handleCollision, toast]);
@@ -209,12 +212,6 @@ export const GameClient = () => {
 
     const movablePawns = currentPlayer.pawns.filter(p => isPawnMovable(p, result));
     
-    if (result === 6 && currentPlayer.pawns.every(p => p.position === -1)) {
-        toast({ title: "Rolled a 6!", description: "A pawn comes out of the base." });
-        executeMove(result, 1);
-        return;
-    }
-
     if (movablePawns.length === 0) {
         toast({ title: "No valid moves!", description: `Cannot move ${result} steps. Skipping turn.` });
         setTimeout(() => nextTurn(), 1000);
@@ -227,7 +224,11 @@ export const GameClient = () => {
     } else {
         setMoveSteps(result);
         setTurnState('selecting');
-        toast({ title: "Select a Pawn", description: `Choose a pawn to move ${result} steps.` });
+        if (result === 6 && movablePawns.some(p => p.position === -1)) {
+             toast({ title: "It's a Six!", description: "Select a pawn to bring out, or move another pawn." });
+        } else {
+            toast({ title: "Select a Pawn", description: `Choose a pawn to move ${result} steps.` });
+        }
     }
   };
 
