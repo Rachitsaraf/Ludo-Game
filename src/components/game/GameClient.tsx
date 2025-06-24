@@ -15,6 +15,7 @@ import { getPawnStyle, PLAYER_CONFIG } from '@/lib/board';
 import { Confetti } from './Confetti';
 import { CHARACTER_DATA, CHARACTER_HINTS } from '@/lib/characters';
 import Image from 'next/image';
+import { useSound } from '@/hooks/use-sound';
 
 const playerColors = {
   red: '#f87171',    // red-400
@@ -89,6 +90,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
   const [moveSteps, setMoveSteps] = useState<number | null>(null);
   const [selectedPawnId, setSelectedPawnId] = useState<number | null>(null);
   const { toast } = useToast();
+  const { playSound } = useSound();
   
   const [animationState, setAnimationState] = useState<{
     pawnId: number;
@@ -104,6 +106,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     if (newWinner) {
         setWinner(newWinner);
         setTurnState('game-over');
+        playSound('win');
         return;
     }
 
@@ -112,7 +115,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     setDice(null);
     setMoveSteps(null);
     setSelectedPawnId(null);
-  }, [players]);
+  }, [players, playSound]);
 
   const isPawnMovable = useCallback((pawn: PawnState, steps: number): boolean => {
       if (pawn.position === 66) return false;
@@ -197,6 +200,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
         }, 300);
     } else {
         animationTimeout = setTimeout(() => {
+            playSound('move');
             setPlayers(produce(draft => {
                 const player = draft[animationState.playerIndex];
                 const pawn = player.pawns.find(p => p.id === animationState.pawnId)!;
@@ -216,9 +220,10 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     }
 
     return () => clearTimeout(animationTimeout);
-  }, [turnState, animationState, players, nextTurn, toast]);
+  }, [turnState, animationState, players, nextTurn, toast, playSound]);
 
   const performRoll = useCallback((): number => {
+    playSound('dice');
     const d1 = Math.floor(Math.random() * 6) + 1;
     const ops: Operator[] = ['+', '-', 'Max', 'Min'];
     const op: Operator = ops[Math.floor(Math.random() * ops.length)];
@@ -234,7 +239,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
       default: result = 0;
     }
     return result;
-  }, []);
+  }, [playSound]);
 
   const handleRollDice = () => {
     if (turnState !== 'rolling' || currentPlayer.isBot) return;
@@ -267,6 +272,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
   const handlePawnClick = (pawn: PawnState) => {
     if (turnState !== 'selecting' || currentPlayer.isBot || !moveSteps || !isPawnMovable(pawn, moveSteps)) return;
     
+    playSound('click');
     setSelectedPawnId(pawn.id);
     executeMove(moveSteps, pawn.id);
   };

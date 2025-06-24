@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users } from 'lucide-react';
+import { useSound } from '@/hooks/use-sound';
 
 interface PlayerSelectionDialogProps {
   isOpen: boolean;
@@ -12,14 +13,21 @@ interface PlayerSelectionDialogProps {
 
 export const PlayerSelectionDialog = ({ isOpen, onClose }: PlayerSelectionDialogProps) => {
   const router = useRouter();
+  const { playSound } = useSound();
 
   if (!isOpen) {
     return null;
   }
 
   const handlePlayerSelect = (count: number) => {
+    playSound('click');
     router.push(`/select-color?humans=${count}`);
   };
+  
+  const handleClose = () => {
+      playSound('click');
+      onClose();
+  }
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-in fade-in-0 duration-300">
@@ -43,7 +51,7 @@ export const PlayerSelectionDialog = ({ isOpen, onClose }: PlayerSelectionDialog
           ))}
           <Button
             variant="ghost"
-            onClick={onClose}
+            onClick={handleClose}
             className="mt-2 text-white/70 hover:text-white hover:bg-white/10"
           >
             Cancel

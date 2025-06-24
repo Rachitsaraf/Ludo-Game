@@ -2,6 +2,8 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme-provider';
+import { SoundProvider } from '@/hooks/use-sound';
+import { BackgroundMusicManager } from '@/components/BackgroundMusicManager';
 
 export const metadata: Metadata = {
   title: 'Ludo Learn & Play',
@@ -21,15 +23,18 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <SoundProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <BackgroundMusicManager />
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </SoundProvider>
       </body>
     </html>
   );

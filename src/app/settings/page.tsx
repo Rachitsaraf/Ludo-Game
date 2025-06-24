@@ -7,16 +7,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, RefreshCw, User, Paintbrush } from 'lucide-react';
+import { ArrowLeft, RefreshCw, User, Paintbrush, Music } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
+import { useSound } from '@/hooks/use-sound';
 
 export default function SettingsPage() {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
+  const { isMuted, toggleMute } = useSound();
   
   const [isMounted, setIsMounted] = useState(false);
-  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
   const [showNameInput, setShowNameInput] = useState(false);
   const [playerName, setPlayerName] = useState("Player 1");
 
@@ -26,8 +27,6 @@ export default function SettingsPage() {
     if (storedName) {
       setPlayerName(storedName);
     }
-    const soundSetting = localStorage.getItem('ludoSoundEnabled');
-    setIsSoundEnabled(soundSetting ? JSON.parse(soundSetting) : true);
   }, []);
 
   const handleReset = () => {
@@ -47,11 +46,6 @@ export default function SettingsPage() {
     const newName = e.target.value;
     setPlayerName(newName);
     localStorage.setItem('ludoPlayerName', newName);
-  };
-
-  const handleSoundToggle = (checked: boolean) => {
-    setIsSoundEnabled(checked);
-    localStorage.setItem('ludoSoundEnabled', JSON.stringify(checked));
   };
 
   if (!isMounted) {
@@ -99,9 +93,10 @@ export default function SettingsPage() {
           </div>
           <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20">
             <Label htmlFor="sound-music" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
-              🎵 Sound/Music
+              <Music className="h-5 w-5 sm:h-6 sm:w-6" />
+              Sound/Music
             </Label>
-            <Switch id="sound-music" checked={isSoundEnabled} onCheckedChange={handleSoundToggle} />
+            <Switch id="sound-music" checked={!isMuted} onCheckedChange={toggleMute} />
           </div>
           <Button
             variant="destructive"

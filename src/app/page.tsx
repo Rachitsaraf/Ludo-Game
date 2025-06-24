@@ -6,10 +6,22 @@ import { PlayerSelectionDialog } from '@/components/game/PlayerSelectionDialog';
 import { DevelopersDialog } from '@/components/DevelopersDialog';
 import Link from 'next/link';
 import { Settings, Info, Trophy, Users } from 'lucide-react';
+import { useSound } from '@/hooks/use-sound';
 
 export default function Home() {
   const [isPlayerSelectionOpen, setPlayerSelectionOpen] = useState(false);
   const [isDevelopersOpen, setDevelopersOpen] = useState(false);
+  const { playSound } = useSound();
+
+  const handleOpenPlayerSelection = () => {
+    playSound('click');
+    setPlayerSelectionOpen(true);
+  };
+  
+  const handleOpenDevelopers = () => {
+    playSound('click');
+    setDevelopersOpen(true);
+  };
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-800 to-red-600 font-headline flex flex-col items-center justify-center p-6 text-center text-white">
@@ -38,45 +50,54 @@ export default function Home() {
           <Button
             size="lg"
             className="w-full h-16 text-2xl rounded-2xl shadow-2xl bg-purple-600 hover:bg-purple-700 border-2 border-purple-400/50 transform hover:scale-105 transition-transform duration-300 ease-in-out"
-            onClick={() => setPlayerSelectionOpen(true)}
+            onClick={handleOpenPlayerSelection}
           >
             Start Game
           </Button>
-          <Link href="/leaderboard" passHref className="w-full">
+          <Link href="/leaderboard" passHref className="w-full" onClick={() => playSound('click')}>
             <Button
+              asChild
               size="lg"
               variant="outline"
               className="w-full h-16 text-2xl rounded-2xl shadow-xl bg-green-500 hover:bg-green-600 text-black border-2 border-green-300/50 transform hover:scale-105 transition-transform duration-200"
             >
-              <Trophy className="mr-2" />
-              Leaderboard
+              <div>
+                <Trophy className="mr-2" />
+                Leaderboard
+              </div>
             </Button>
           </Link>
-          <Link href="/instructions" passHref className="w-full">
+          <Link href="/instructions" passHref className="w-full" onClick={() => playSound('click')}>
             <Button
+              asChild
               size="lg"
               variant="outline"
               className="w-full h-16 text-2xl rounded-2xl shadow-xl bg-yellow-500 hover:bg-yellow-600 text-black border-2 border-yellow-300/50 transform hover:scale-105 transition-transform duration-200"
             >
-              <Info className="mr-2" />
-              Instructions
+              <div>
+                <Info className="mr-2" />
+                Instructions
+              </div>
             </Button>
           </Link>
-          <Link href="/settings" passHref className="w-full">
+          <Link href="/settings" passHref className="w-full" onClick={() => playSound('click')}>
             <Button
+              asChild
               size="lg"
               variant="outline"
               className="w-full h-16 text-2xl rounded-2xl shadow-xl bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-400/50 transform hover:scale-105 transition-transform duration-200"
             >
-              <Settings className="mr-2" />
-              Settings
+              <div>
+                <Settings className="mr-2" />
+                Settings
+              </div>
             </Button>
           </Link>
           <Button
             size="lg"
             variant="outline"
             className="w-full h-16 text-2xl rounded-2xl shadow-xl bg-pink-500 hover:bg-pink-600 text-white border-2 border-pink-300/50 transform hover:scale-105 transition-transform duration-200"
-            onClick={() => setDevelopersOpen(true)}
+            onClick={handleOpenDevelopers}
           >
             <Users className="mr-2" />
             Developers
