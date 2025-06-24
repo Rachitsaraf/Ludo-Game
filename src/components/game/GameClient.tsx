@@ -93,39 +93,6 @@ export const GameClient = () => {
       return true;
   }, []);
 
-  const handleCollision = useCallback((movedPlayerIndex: number, movedPawnId: number) => {
-    let toastToShow: { title: string; description?: string } | null = null;
-    setPlayers(produce(draft => {
-        const movedPlayer = draft[movedPlayerIndex];
-        const movedPawn = movedPlayer.pawns.find(p => p.id === movedPawnId)!;
-        const finalPosition = movedPawn.position;
-        const playerConfig = PLAYER_CONFIG[movedPlayer.id];
-
-        if (finalPosition >= 0 && finalPosition <= 50) {
-            const targetPosOnBoard = (playerConfig.pathStart + finalPosition) % 52;
-            if (!SAFE_TILE_INDICES.includes(targetPosOnBoard)) {
-                draft.forEach(otherPlayer => {
-                    if (otherPlayer.id !== movedPlayer.id) {
-                        const otherPlayerConfig = PLAYER_CONFIG[otherPlayer.id];
-                        otherPlayer.pawns.forEach(otherPawn => {
-                            if (otherPawn.position >= 0 && otherPawn.position <= 50) {
-                                const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 52;
-                                if (otherPawnGlobalPos === targetPosOnBoard) {
-                                    otherPawn.position = -1;
-                                    toastToShow = { title: "Collision!", description: `A ${otherPlayer.name} pawn was sent back to base!` };
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-        }
-    }));
-    if (toastToShow) {
-        toast(toastToShow);
-    }
-  }, [toast]);
-
   const executeMove = useCallback((steps: number, pawnToMoveId: number) => {
     const player = players[currentPlayerIndex];
     const pawn = player.pawns.find(p => p.id === pawnToMoveId)!;
@@ -160,9 +127,38 @@ export const GameClient = () => {
     let animationTimeout: NodeJS.Timeout;
 
     if (animationState.path.length === 0) {
+        let toastToShow: { title: string; description?: string } | null = null;
+        const nextPlayersState = produce(players, draft => {
+            const movedPlayer = draft[animationState.playerIndex];
+            const movedPawn = movedPlayer.pawns.find(p => p.id === animationState.pawnId)!;
+            const finalPosition = movedPawn.position;
+            const playerConfig = PLAYER_CONFIG[movedPlayer.id];
+            toastToShow = { title: `${movedPlayer.name} moved ${animationState.totalSteps} steps!` };
+
+            if (finalPosition >= 0 && finalPosition <= 50) {
+                const targetPosOnBoard = (playerConfig.pathStart + finalPosition) % 52;
+                if (!SAFE_TILE_INDICES.includes(targetPosOnBoard)) {
+                    draft.forEach(otherPlayer => {
+                        if (otherPlayer.id !== movedPlayer.id) {
+                            const otherPlayerConfig = PLAYER_CONFIG[otherPlayer.id];
+                            otherPlayer.pawns.forEach(otherPawn => {
+                                if (otherPawn.position >= 0 && otherPawn.position <= 50) {
+                                    const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 52;
+                                    if (otherPawnGlobalPos === targetPosOnBoard) {
+                                        otherPawn.position = -1;
+                                        toastToShow = { title: "Collision!", description: `A ${otherPlayer.name} pawn was sent back to base!` };
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+        
         animationTimeout = setTimeout(() => {
-            handleCollision(animationState.playerIndex, animationState.pawnId);
-            toast({ title: `${players[animationState.playerIndex].name} moved ${animationState.totalSteps} steps!` });
+            setPlayers(nextPlayersState);
+            if(toastToShow) toast(toastToShow);
             setAnimationState(null);
             nextTurn();
         }, 400);
@@ -183,7 +179,7 @@ export const GameClient = () => {
     }
 
     return () => clearTimeout(animationTimeout);
-  }, [turnState, animationState, players, nextTurn, handleCollision, toast]);
+  }, [turnState, animationState, players, nextTurn, toast]);
 
 
   const handleRollDice = () => {
@@ -218,17 +214,13 @@ export const GameClient = () => {
         return;
     }
     
-    if (movablePawns.length === 1) {
-        toast({ title: "Dice Rolled!", description: `Auto-moving ${result} steps.` });
-        executeMove(result, movablePawns[0].id);
+    // Always enter selection mode if there are valid moves.
+    setMoveSteps(result);
+    setTurnState('selecting');
+    if (result === 6 && movablePawns.some(p => p.position === -1)) {
+        toast({ title: "It's a Six!", description: "You can bring a pawn out! Select which pawn to move." });
     } else {
-        setMoveSteps(result);
-        setTurnState('selecting');
-        if (result === 6 && movablePawns.some(p => p.position === -1)) {
-             toast({ title: "It's a Six!", description: "Select a pawn to bring out, or move another pawn." });
-        } else {
-            toast({ title: "Select a Pawn", description: `Choose a pawn to move ${result} steps.` });
-        }
+        toast({ title: "Select a Pawn", description: `Choose a pawn to move ${result} steps.` });
     }
   };
 
