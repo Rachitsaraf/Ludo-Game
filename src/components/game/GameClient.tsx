@@ -28,13 +28,13 @@ const initialPlayers: Player[] = [
     { id: 1, position: -1 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
   ]},
   { id: 'green', name: 'Green', pawns: [
-    { id: 1, position: 0 }, { id: 2, position: 4 }, { id: 3, position: -1 }, { id: 4, position: -1 }
+    { id: 1, position: -1 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
   ]},
   { id: 'blue', name: 'Blue', pawns: [
     { id: 1, position: -1 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
   ]},
   { id: 'yellow', name: 'Yellow', pawns: [
-    { id: 1, position: 2 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
+    { id: 1, position: -1 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
   ]},
 ];
 
@@ -98,17 +98,10 @@ export const GameClient = () => {
         const { pawns } = player;
         const playerConfig = PLAYER_CONFIG[player.id];
   
-        const canLeaveBase = steps === 6;
-  
         let movablePawns = pawns.filter(p => {
-            if (p.position === -1) return canLeaveBase;
-            if (p.position === 57) return false;
-            if (p.position + steps > 57) return false;
-            // Check if moving into home stretch
-            if (p.position < playerConfig.homeEntry && p.position + steps > playerConfig.homeEntry) {
-              const overshoot = (p.position + steps) - playerConfig.homeEntry;
-              return overshoot <= 6; // 51-56 is home run
-            }
+            if (p.position === 57) return false; // Already finished
+            if (p.position === -1) return true; // Can always leave base
+            if (p.position + steps > 57) return false; // Cannot overshoot the end
             return true;
         });
 
@@ -125,31 +118,26 @@ export const GameClient = () => {
 
         const pawnToUpdate = player.pawns.find(p => p.id === pawnToMove!.id)!;
   
-        if (pawnToUpdate.position === -1 && canLeaveBase) {
-            pawnToUpdate.position = 0; // Move to start (relative position 0)
+        if (pawnToUpdate.position === -1) {
+            // position is 0-indexed, so a roll of 1 lands on tile 0.
+            pawnToUpdate.position = steps - 1; 
         } else {
-            // If pawn is about to enter home stretch
-            if (pawnToUpdate.position <= playerConfig.homeEntry && pawnToUpdate.position + steps > playerConfig.homeEntry) {
-                const stepsPastHomeEntry = (pawnToUpdate.position + steps) - playerConfig.homeEntry;
-                pawnToUpdate.position = 50 + stepsPastHomeEntry;
-            } else {
-                pawnToUpdate.position += steps;
-            }
+           pawnToUpdate.position += steps;
         }
     
-        if (pawnToUpdate.position > 56) {
+        if (pawnToUpdate.position > 57) {
           pawnToUpdate.position = 57; 
         }
         
         // Collision detection
-        if (pawnToUpdate.position < 51 && !playerConfig.safeTiles.includes(pawnToUpdate.position)) {
+        if (pawnToUpdate.position >= 0 && pawnToUpdate.position <= 51 && !playerConfig.safeTiles.includes(pawnToUpdate.position)) {
             const targetPos = (playerConfig.pathStart + pawnToUpdate.position) % 52;
 
             draft.forEach(other_player => {
                 if (other_player.id !== player.id) {
                     const otherPlayerConfig = PLAYER_CONFIG[other_player.id];
                     other_player.pawns.forEach(otherPawn => {
-                        if (otherPawn.position >= 0 && otherPawn.position < 51) {
+                        if (otherPawn.position >= 0 && otherPawn.position <= 51) {
                             const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 52;
                             if (otherPawnGlobalPos === targetPos) {
                                 otherPawn.position = -1; // Send back to base
@@ -188,7 +176,7 @@ export const GameClient = () => {
                 player.pawns.map((pawn) => (
                     <div
                         key={`${player.id}-${pawn.id}`}
-                        className="absolute transition-all duration-500 ease-in-out"
+                        className="absolute transition-all duration-500 ease-in-out flex items-center justify-center"
                         style={getPawnStyle(player, pawn)}
                     >
                         <Pawn color={playerColors[player.id as PlayerColor]} />
