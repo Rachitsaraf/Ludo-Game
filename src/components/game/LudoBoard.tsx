@@ -21,7 +21,7 @@ export const LudoBoard = () => {
   );
 
   const HomeBase = ({ bgColor }: { bgColor: string }) => (
-    <div className={`p-2 md:p-4 ${bgColor} flex items-center justify-center border-2 border-black`}>
+    <div className={`w-full h-full p-2 md:p-4 ${bgColor} flex items-center justify-center border-2 border-black`}>
       <div className="bg-white w-[75%] h-[75%] rounded-lg grid grid-cols-2 grid-rows-2 gap-2 p-2">
         <div className="rounded-full bg-white border-2 border-black/10"></div>
         <div className="rounded-full bg-white border-2 border-black/10"></div>
