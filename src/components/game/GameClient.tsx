@@ -279,7 +279,15 @@ export const GameClient = () => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center p-2 sm:p-4 gap-4 sm:gap-6 w-full max-w-7xl mx-auto">
+    <div className="relative flex flex-col md:flex-row items-center justify-center p-2 sm:p-4 gap-4 sm:gap-6 w-full max-w-7xl mx-auto">
+        <div className="absolute top-4 left-4 z-10">
+            <Link href="/" passHref>
+                <Button variant="ghost" size="icon" className="rounded-full bg-white/50 text-white hover:bg-white/70 hover:text-black">
+                    <ArrowLeft className="h-6 w-6 sm:h-8 sm:h-8" />
+                </Button>
+            </Link>
+        </div>
+        
         {winner && <Confetti />}
         <div className="relative w-full max-w-[95vw] sm:max-w-md md:max-w-xl aspect-square">
             <LudoBoard />
@@ -351,15 +359,6 @@ export const GameClient = () => {
                     </>
                 )}
             </Card>
-            <Link href="/" passHref className="w-full max-w-xs">
-                <Button 
-                    variant="secondary"
-                    className="w-full h-14 sm:h-16 text-xl sm:text-2xl rounded-3xl shadow-lg bg-white/10 hover:bg-white/20 text-white border-2 border-white/30"
-                >
-                    <ArrowLeft className="h-6 w-6 sm:h-8 sm:h-8" />
-                    Back to Menu
-                </Button>
-            </Link>
         </div>
     </div>
   );
