@@ -5,79 +5,62 @@ import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-purple-600 to-fuchsia-600 font-headline flex flex-col items-center justify-between p-6 text-center text-white">
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-800 to-red-600 font-headline flex flex-col items-center justify-around p-6 text-center text-white">
       {/* Background effects */}
       <div className="absolute inset-0 z-0">
          <Image
             src="https://placehold.co/1080x1920.png"
-            alt="Vibrant magenta and purple gradient with glowing stars and sparkles"
+            alt="Vibrant cosmic background with glowing stars and sparkles"
             fill
-            className="object-cover opacity-20"
-            data-ai-hint="glowing stars sparkles bokeh"
+            className="object-cover opacity-30"
+            data-ai-hint="cosmic stars sparkles"
         />
       </div>
-      
-      {/* Spacer to push content down from top */}
-      <div />
 
-      <div className="z-10 flex flex-col items-center gap-8">
-        <h1 className="text-5xl sm:text-6xl font-bold text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
-          Ludo Learn & Play
+      <div className="z-10 flex flex-col items-center gap-4">
+        <h1 className="font-bold text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
+          <span className="block text-7xl sm:text-8xl bg-gradient-to-b from-yellow-400 to-amber-500 bg-clip-text text-transparent" style={{ WebkitTextStroke: '2px #c2331a' }}>
+            Ludo
+          </span>
+          <span className="block text-4xl sm:text-5xl bg-gradient-to-b from-yellow-300 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTextStroke: '1px #c2331a' }}>
+            Learn & Play
+          </span>
         </h1>
-        <div className="relative z-10 flex items-center justify-center w-60 h-60 sm:w-72 sm:h-72">
+        <div className="relative z-10 my-4 flex items-center justify-center w-64 h-64 sm:w-80 sm:h-80">
           <Image
-              src="https://placehold.co/300x300.png"
-              alt="Classic Ludo board"
-              width={230}
-              height={230}
+              src="https://placehold.co/400x400.png"
+              alt="A Ludo board tilted at an angle with two dice (one white, one blue) floating above it."
+              width={320}
+              height={320}
               className="object-contain drop-shadow-2xl"
-              data-ai-hint="ludo board"
-          />
-          <Image
-              src="https://placehold.co/100x100.png"
-              alt="Floating white 3D die"
-              width={70}
-              height={70}
-              className="absolute -top-5 -left-5 object-contain transform -rotate-12 drop-shadow-2xl"
-              data-ai-hint="white die"
-          />
-          <Image
-              src="https://placehold.co/100x100.png"
-              alt="Floating blue 3D die"
-              width={70}
-              height={70}
-              className="absolute -top-2 right-0 object-contain transform rotate-12 drop-shadow-2xl"
-              data-ai-hint="blue die"
+              data-ai-hint="ludo board dice"
           />
         </div>
       </div>
       
       <div className="z-10 flex flex-col items-center gap-4 w-full max-w-xs">
         <Link href="/game" passHref className="w-full">
-          <Button size="lg" className="w-full h-14 sm:h-16 text-xl sm:text-2xl rounded-full shadow-2xl bg-white text-fuchsia-600 hover:bg-white/90 transform hover:scale-105 transition-transform duration-300 ease-in-out">
-            <Play className="mr-3 h-6 w-6 sm:h-8 sm:w-8" />
+          <Button size="lg" className="w-full h-14 sm:h-16 text-xl sm:text-2xl rounded-2xl shadow-2xl bg-purple-600 hover:bg-purple-700 border-2 border-purple-400/50 transform hover:scale-105 transition-transform duration-300 ease-in-out">
             Start Game
           </Button>
         </Link>
         <Link href="/instructions" passHref className="w-full">
-          <Button size="lg" variant="secondary" className="w-full h-12 sm:h-14 text-lg sm:text-xl rounded-full shadow-lg bg-white/20 backdrop-blur-sm border-white/40 border hover:bg-white/30 transform hover:scale-105 transition-transform duration-200">
-            <HelpCircle className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
+          <Button size="lg" className="w-full h-14 sm:h-16 text-xl sm:text-2xl rounded-2xl shadow-xl bg-yellow-500 hover:bg-yellow-600 text-black border-2 border-yellow-300/50 transform hover:scale-105 transition-transform duration-200">
             Instructions
           </Button>
         </Link>
         <Link href="/settings" passHref className="w-full">
-          <Button size="lg" variant="secondary" className="w-full h-12 sm:h-14 text-lg sm:text-xl rounded-full shadow-lg bg-white/20 backdrop-blur-sm border-white/40 border hover:bg-white/30 transform hover:scale-105 transition-transform duration-200">
-            <Settings className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
+          <Button size="lg" className="w-full h-14 sm:h-16 text-xl sm:text-2xl rounded-2xl shadow-xl bg-blue-600 hover:bg-blue-700 border-2 border-blue-400/50 transform hover:scale-105 transition-transform duration-200">
             Settings
           </Button>
         </Link>
       </div>
 
-      <div className="z-10 text-center">
+      <div className="z-10 text-center pb-2">
         <Image
           src="https://placehold.co/750x200.png"
           alt="Koushiki Innovision Logo with tagline"
-          width={260}
+          width={280}
           height={70}
           className="object-contain mx-auto"
           data-ai-hint="company logo tagline"
