@@ -59,7 +59,7 @@ export default function InstructionsPage() {
         </h1>
         <div className="w-full max-w-md space-y-4">
           {instructions.map((item, index) => (
-             <div key={index} className="opacity-0 animate-pop-in" style={{ animationFillMode: 'backwards', animationDelay: `${200 + index * 150}ms` }}>
+             <div key={index} className="opacity-0 animate-in fade-in-0 slide-in-from-bottom-10 duration-500 ease-out" style={{ animationFillMode: 'backwards', animationDelay: `${200 + index * 150}ms` }}>
                 <Card 
                   className="shadow-2xl rounded-4xl bg-white/20 dark:bg-black/20 backdrop-blur-md border-2 border-white/30 transition-all duration-300 hover:border-white/50 hover:scale-[1.02]"
                 >
