@@ -4,7 +4,7 @@ import type { Player, PawnState, PlayerColor } from './types';
 // Each tile is 100/15 = 6.666% of the board width/height
 const TILE_SIZE = 100 / 15;
 const TILE_SIZE_PERCENT = `${TILE_SIZE}%`;
-const PAWN_SIZE_PERCENT = `${TILE_SIZE * 0.85}%`;
+const PAWN_SIZE_PERCENT = `${TILE_SIZE}%`;
 
 /**
  * Helper function to calculate the top/left CSS properties for a tile.
@@ -28,19 +28,19 @@ const BASE_POSITIONS: Record<PlayerColor, React.CSSProperties[]> = {
     red: [
         { top: '10%', left: '10%' }, { top: '10%', left: '30%' },
         { top: '30%', left: '10%' }, { top: '30%', left: '30%' }
-    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)' })),
+    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(0, 0)' })),
     green: [
         { top: '10%', left: '70%' }, { top: '10%', left: '90%' },
         { top: '30%', left: '70%' }, { top: '30%', left: '90%' }
-    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)' })),
+    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(0, 0)' })),
     blue: [
         { top: '70%', left: '10%' }, { top: '70%', left: '30%' },
         { top: '90%', left: '10%' }, { top: '90%', left: '30%' }
-    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)' })),
+    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(0, 0)' })),
     yellow: [
         { top: '70%', left: '70%' }, { top: '70%', left: '90%' },
         { top: '90%', left: '70%' }, { top: '90%', left: '90%' }
-    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(-50%, -50%)' })),
+    ].map(p => ({ ...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(0, 0)' })),
 };
 
 /**
@@ -64,7 +64,7 @@ const MAIN_PATH_COORDS = [
     pos(13, 6), pos(12, 6), pos(11, 6), pos(10, 6), pos(9, 6),
     pos(8, 5), pos(8, 4), pos(8, 3), pos(8, 2), pos(8, 1),
     pos(7, 0), pos(6, 0)
-].map(p => ({...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(10%, 10%)'}));
+].map(p => ({...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(0, 0)'}));
 
 
 /**
@@ -78,7 +78,7 @@ const HOME_PATH_COORDS: Record<PlayerColor, React.CSSProperties[]> = {
 };
 
 Object.keys(HOME_PATH_COORDS).forEach(key => {
-    HOME_PATH_COORDS[key as PlayerColor] = HOME_PATH_COORDS[key as PlayerColor].map(p => ({...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(10%, 10%)'}));
+    HOME_PATH_COORDS[key as PlayerColor] = HOME_PATH_COORDS[key as PlayerColor].map(p => ({...p, width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(0, 0)'}));
 });
 
 /**
@@ -93,7 +93,7 @@ export const PLAYER_CONFIG: Record<PlayerColor, { pathStart: number; }> = {
 };
 
 // The central finishing position for all pawns.
-const FINISH_POSITION = {...pos(7, 7), width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(10%, 10%)'};
+const FINISH_POSITION = {...pos(7, 7), width: PAWN_SIZE_PERCENT, height: PAWN_SIZE_PERCENT, transform: 'translate(0, 0)'};
 
 /**
  * Calculates the CSS style for a pawn based on its state.
