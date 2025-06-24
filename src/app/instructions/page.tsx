@@ -54,12 +54,12 @@ export default function InstructionsPage() {
       </div>
 
       <div className="z-10 flex flex-col items-center">
-        <h1 className="text-4xl sm:text-5xl font-bold drop-shadow-lg mb-8 text-center opacity-0 animate-title-drop">
+        <h1 className="text-4xl sm:text-5xl font-bold drop-shadow-lg mb-8 text-center animate-title-drop">
           How to Play
         </h1>
         <div className="w-full max-w-md space-y-4">
           {instructions.map((item, index) => (
-             <div key={index} className="opacity-0 animate-in fade-in-0 slide-in-from-bottom-10 duration-500 ease-out" style={{ animationFillMode: 'backwards', animationDelay: `${200 + index * 150}ms` }}>
+             <div key={index} className="animate-in fade-in-0 slide-in-from-bottom-10 duration-500 ease-out" style={{ animationFillMode: 'forwards', animationDelay: `${200 + index * 150}ms` }}>
                 <Card 
                   className="shadow-2xl rounded-4xl bg-white/20 dark:bg-black/20 backdrop-blur-md border-2 border-white/30 transition-all duration-300 hover:border-white/50 hover:scale-[1.02]"
                 >
