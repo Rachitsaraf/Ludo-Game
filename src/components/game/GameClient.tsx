@@ -42,81 +42,27 @@ const SAFE_TILE_INDICES = [0, 8, 13, 21, 26, 34, 39, 47];
 const DieFace = ({ value }: { value: number }) => {
   const Dot = () => <div className="w-3 h-3 bg-black rounded-full" />;
 
+  const faceClasses = "w-16 h-16 border-2 rounded-lg p-2 bg-white shadow-inner flex";
+  const justifyContentClasses = {
+    1: 'justify-center items-center',
+    2: 'justify-between',
+    3: 'justify-between',
+    4: 'justify-between',
+    5: 'justify-between',
+    6: 'justify-between',
+  };
+
   return (
-    <div className="w-16 h-16 border-2 rounded-lg p-2 bg-white shadow-inner flex flex-col justify-between">
-      {value === 1 && (
-        <div className="flex justify-center items-center h-full">
-          <Dot />
-        </div>
-      )}
-      {value === 2 && (
-        <>
-          <div className="self-start">
-            <Dot />
-          </div>
-          <div className="self-end">
-            <Dot />
-          </div>
-        </>
-      )}
-      {value === 3 && (
-        <>
-          <div className="self-start">
-            <Dot />
-          </div>
-          <div className="self-center">
-            <Dot />
-          </div>
-          <div className="self-end">
-            <Dot />
-          </div>
-        </>
-      )}
-      {value === 4 && (
-        <div className="flex justify-between h-full">
-          <div className="flex flex-col justify-between">
-            <Dot />
-            <Dot />
-          </div>
-          <div className="flex flex-col justify-between">
-            <Dot />
-            <Dot />
-          </div>
-        </div>
-      )}
-      {value === 5 && (
-        <div className="flex justify-between h-full">
-          <div className="flex flex-col justify-between">
-            <Dot />
-            <Dot />
-          </div>
-          <div className="flex flex-col justify-center">
-            <Dot />
-          </div>
-          <div className="flex flex-col justify-between">
-            <Dot />
-            <Dot />
-          </div>
-        </div>
-      )}
-      {value === 6 && (
-        <div className="flex justify-between h-full">
-          <div className="flex flex-col justify-between">
-            <Dot />
-            <Dot />
-            <Dot />
-          </div>
-          <div className="flex flex-col justify-between">
-            <Dot />
-            <Dot />
-            <Dot />
-          </div>
-        </div>
-      )}
+    <div className={`${faceClasses} ${justifyContentClasses[value as keyof typeof justifyContentClasses]}`}>
+        {value === 1 && <Dot />}
+        {value === 2 && <><div className="self-start"><Dot /></div><div className="self-end"><Dot /></div></>}
+        {value === 3 && <><div className="self-start"><Dot /></div><div className="self-center"><Dot /></div><div className="self-end"><Dot /></div></>}
+        {value === 4 && <><div className="flex flex-col justify-between"><Dot /><Dot /></div><div className="flex flex-col justify-between"><Dot /><Dot /></div></>}
+        {value === 5 && <><div className="flex flex-col justify-between"><Dot /><Dot /></div><div className="flex flex-col justify-center"><Dot /></div><div className="flex flex-col justify-between"><Dot /><Dot /></div></>}
+        {value === 6 && <><div className="flex flex-col justify-between"><Dot /><Dot /><Dot /></div><div className="flex flex-col justify-between"><Dot /><Dot /><Dot /></div></>}
     </div>
   );
 };
-
 
 const DicePlaceholder = () => (
     <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">
@@ -249,7 +195,7 @@ export const GameClient = () => {
             if(toastToShow) toast(toastToShow);
             setAnimationState(null);
             nextTurn();
-        }, 300);
+        }, 500);
     } else {
         animationTimeout = setTimeout(() => {
             setPlayers(produce(draft => {
@@ -263,7 +209,7 @@ export const GameClient = () => {
                     draft.path.shift();
                 }
             }));
-        }, 300); // Delay between steps
+        }, 500); // Delay between steps
     }
 
     return () => clearTimeout(animationTimeout);
@@ -302,7 +248,6 @@ export const GameClient = () => {
         return;
     }
     
-    // Always enter selection mode if there are valid moves.
     setMoveSteps(result);
     setTurnState('selecting');
     if (result === 6 && movablePawns.some(p => p.position === -1)) {
@@ -387,10 +332,18 @@ export const GameClient = () => {
                                 </p>
                              </div>
                         ) : (
-                            <div className="flex items-center justify-center gap-4">
-                                {dice ? <DieFace value={dice[0]} /> : <DicePlaceholder />}
-                                {dice ? <OperatorIcon op={dice[1]} /> : <OperatorPlaceholder />}
-                                {dice ? <DieFace value={dice[2]} /> : <DicePlaceholder />}
+                            <div className="flex flex-col items-center justify-center gap-2">
+                                <div className="flex items-center justify-center gap-4">
+                                    {dice ? <DieFace value={dice[0]} /> : <DicePlaceholder />}
+                                    {dice ? <OperatorIcon op={dice[1]} /> : <OperatorPlaceholder />}
+                                    {dice ? <DieFace value={dice[2]} /> : <DicePlaceholder />}
+                                </div>
+                                {turnState === 'selecting' && dice && moveSteps && (
+                                    <div className="flex items-center text-4xl font-bold gap-2 pt-2">
+                                        <span className="text-muted-foreground">=</span>
+                                        <span className="text-5xl text-primary-foreground drop-shadow-md">{moveSteps}</span>
+                                    </div>
+                                )}
                             </div>
                         )}
                         
