@@ -29,16 +29,16 @@ export const MathQuestionModal = ({ questionData, onAnswer }: { questionData: an
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
       <Card className={`w-full max-w-md rounded-4xl shadow-2xl text-center transform transition-transform ${isWrong ? 'animate-shake' : 'animate-confetti-pop'}`}>
         <CardHeader>
-          <CardTitle className="text-3xl font-bold">{questionData.question}</CardTitle>
-          <CardDescription className="text-lg">Select the correct answer!</CardDescription>
+          <CardTitle className="text-2xl sm:text-3xl font-bold">{questionData.question}</CardTitle>
+          <CardDescription className="text-md sm:text-lg">Select the correct answer!</CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-4 p-6">
+        <CardContent className="grid grid-cols-2 gap-3 sm:gap-4 p-4 sm:p-6">
           {questionData.options.map((option: number, i: number) => (
             <Button
               key={i}
               onClick={() => handleSelect(option)}
               disabled={selected !== null}
-              className={`h-24 text-4xl rounded-3xl shadow-lg transition-all duration-300 ${
+              className={`h-20 sm:h-24 text-3xl sm:text-4xl rounded-3xl shadow-lg transition-all duration-300 ${
                 selected !== null && option === questionData.answer ? 'bg-green-500 hover:bg-green-600' : ''
               } ${
                 selected === option && option !== questionData.answer ? 'bg-destructive hover:bg-destructive/90' : ''

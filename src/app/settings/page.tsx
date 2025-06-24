@@ -27,41 +27,41 @@ export default function SettingsPage() {
       <div className="absolute top-4 left-4">
         <Link href="/" passHref>
           <Button variant="ghost" size="icon" className="rounded-full bg-white/50">
-            <ArrowLeft className="h-8 w-8" />
+            <ArrowLeft className="h-6 w-6 sm:h-8 sm:w-8" />
           </Button>
         </Link>
       </div>
       <Card className="w-full max-w-md shadow-lg rounded-4xl bg-white">
         <CardHeader>
-          <CardTitle className="text-4xl text-center">Settings</CardTitle>
+          <CardTitle className="text-3xl sm:text-4xl text-center">Settings</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/20 opacity-50">
-            <Label htmlFor="player-name" className="text-xl flex items-center gap-2">
-              <User className="h-6 w-6" />
+        <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+          <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20 opacity-50">
+            <Label htmlFor="player-name" className="text-lg sm:text-xl flex items-center gap-2">
+              <User className="h-5 w-5 sm:h-6 sm:w-6" />
               Change Player Name
             </Label>
             <Switch id="player-name" disabled />
           </div>
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/20 opacity-50">
-            <Label htmlFor="theme-mode" className="text-xl flex items-center gap-2">
-              <Paintbrush className="h-6 w-6" />
+          <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20 opacity-50">
+            <Label htmlFor="theme-mode" className="text-lg sm:text-xl flex items-center gap-2">
+              <Paintbrush className="h-5 w-5 sm:h-6 sm:w-6" />
               Theme Mode
             </Label>
             <Switch id="theme-mode" disabled />
           </div>
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/20">
-            <Label htmlFor="sound-music" className="text-xl flex items-center gap-2">
+          <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20">
+            <Label htmlFor="sound-music" className="text-lg sm:text-xl flex items-center gap-2">
               🎵 Sound/Music
             </Label>
             <Switch id="sound-music" defaultChecked />
           </div>
           <Button
             variant="destructive"
-            className="w-full h-14 text-xl rounded-2xl"
+            className="w-full h-12 sm:h-14 text-lg sm:text-xl rounded-2xl"
             onClick={handleReset}
           >
-            <RefreshCw className="mr-2 h-6 w-6" />
+            <RefreshCw className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
             Reset Game Data
           </Button>
         </CardContent>

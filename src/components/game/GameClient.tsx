@@ -40,9 +40,9 @@ const SAFE_TILE_INDICES = [0, 8, 13, 21, 26, 34, 39, 47];
 
 
 const DieFace = ({ value }: { value: number }) => {
-  const Dot = () => <div className="w-3 h-3 bg-black rounded-full" />;
+  const Dot = () => <div className="w-2 h-2 sm:w-3 sm:h-3 bg-black rounded-full" />;
 
-  const faceClasses = "w-16 h-16 border-2 rounded-lg p-2 bg-white shadow-inner flex";
+  const faceClasses = "w-14 h-14 sm:w-16 sm:h-16 border-2 rounded-lg p-2 bg-white shadow-inner flex";
   const justifyContentClasses = {
     1: 'justify-center items-center',
     2: 'justify-between',
@@ -65,19 +65,19 @@ const DieFace = ({ value }: { value: number }) => {
 };
 
 const DicePlaceholder = () => (
-    <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">
-      <Dices size={40} />
+    <div className="text-3xl border-2 rounded-lg p-2 w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-gray-200">
+      <Dices size={32} />
     </div>
 );
 
 const OperatorIcon = ({op}: {op: Operator}) => {
-    const icons = { '+': <Plus size={32}/>, '-': <Minus size={32}/>, 'Max': 'Max', 'Min': 'Min'};
-    return <div className="text-3xl font-bold border-2 rounded-lg p-2 bg-white shadow-inner w-16 h-16 flex items-center justify-center">{icons[op]}</div>
+    const icons = { '+': <Plus size={28}/>, '-': <Minus size={28}/>, 'Max': 'Max', 'Min': 'Min'};
+    return <div className="text-2xl sm:text-3xl font-bold border-2 rounded-lg p-2 bg-white shadow-inner w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center">{icons[op]}</div>
 }
 
 const OperatorPlaceholder = () => (
-    <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">
-      <HelpCircle size={40} />
+    <div className="text-3xl border-2 rounded-lg p-2 w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-gray-200">
+      <HelpCircle size={32} />
     </div>
 );
 
@@ -275,7 +275,7 @@ export const GameClient = () => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center p-4 gap-6 w-full max-w-6xl mx-auto">
+    <div className="flex flex-col md:flex-row items-center justify-center p-2 sm:p-4 gap-4 sm:gap-6 w-full max-w-6xl mx-auto">
         {winner && <Confetti />}
         <div className="relative w-full max-w-[90vw] md:max-w-[500px] lg:max-w-[600px] aspect-square">
             <LudoBoard />
@@ -315,7 +315,7 @@ export const GameClient = () => {
                 <h2 className="text-xl font-bold text-white text-center">{turnState !== 'game-over' ? `${currentPlayer.name}'s Turn` : `Game Over!`}</h2>
             </Card>
 
-            <Card className="w-full max-w-xs p-4 rounded-4xl shadow-lg flex flex-col items-center gap-4 min-h-[220px] justify-center">
+            <Card className="w-full max-w-xs p-4 rounded-4xl shadow-lg flex flex-col items-center gap-4 min-h-[200px] sm:min-h-[220px] justify-center">
                 {winner ? (
                     <div className="text-center">
                         <h2 className="text-3xl font-bold" style={{color: playerColors[winner.id as PlayerColor]}}>{winner.name} Wins!</h2>
@@ -325,30 +325,30 @@ export const GameClient = () => {
                     <>
                         {animationState ? (
                              <div className="flex flex-col items-center justify-center gap-2 text-center">
-                                <p className="text-2xl font-bold text-primary-foreground">Moving Pawn</p>
-                                <p className="text-5xl font-bold">
+                                <p className="text-xl sm:text-2xl font-bold text-primary-foreground">Moving Pawn</p>
+                                <p className="text-4xl sm:text-5xl font-bold">
                                     {animationState.totalSteps - animationState.path.length + 1}
-                                    <span className="text-3xl text-muted-foreground"> / {animationState.totalSteps}</span>
+                                    <span className="text-2xl sm:text-3xl text-muted-foreground"> / {animationState.totalSteps}</span>
                                 </p>
                              </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center gap-2">
-                                <div className="flex items-center justify-center gap-4">
+                                <div className="flex items-center justify-center gap-2 sm:gap-4">
                                     {dice ? <DieFace value={dice[0]} /> : <DicePlaceholder />}
                                     {dice ? <OperatorIcon op={dice[1]} /> : <OperatorPlaceholder />}
                                     {dice ? <DieFace value={dice[2]} /> : <DicePlaceholder />}
                                 </div>
                                 {turnState === 'selecting' && dice && moveSteps && (
-                                    <div className="flex items-center text-4xl font-bold gap-2 pt-2">
+                                    <div className="flex items-center text-3xl sm:text-4xl font-bold gap-2 pt-2">
                                         <span className="text-muted-foreground">=</span>
-                                        <span className="text-5xl text-primary-foreground drop-shadow-md">{moveSteps}</span>
+                                        <span className="text-4xl sm:text-5xl text-primary-foreground drop-shadow-md">{moveSteps}</span>
                                     </div>
                                 )}
                             </div>
                         )}
                         
-                        <Button onClick={handleRollDice} disabled={turnState !== 'rolling'} className="w-full h-16 text-2xl rounded-3xl shadow-lg">
-                            <Dices className="mr-2 h-8 w-8" />
+                        <Button onClick={handleRollDice} disabled={turnState !== 'rolling'} className="w-full h-14 sm:h-16 text-xl sm:text-2xl rounded-3xl shadow-lg">
+                            <Dices className="mr-2 h-6 w-6 sm:h-8 sm:h-8" />
                             {getTurnMessage()}
                         </Button>
                     </>
