@@ -1,9 +1,9 @@
+
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 // Using web URLs for sound files as a placeholder.
-// For a production app, you would typically store these in `/public/sounds`
 const SOUND_FILES = {
   dice: 'https://cdn.pixabay.com/audio/2022/03/10/audio_c35f8e5f8f.mp3',
   move: 'https://cdn.pixabay.com/audio/2021/08/04/audio_a47d2f3148.mp3',
@@ -25,18 +25,26 @@ interface SoundContextType {
 const SoundContext = createContext<SoundContextType | undefined>(undefined);
 
 export const SoundProvider = ({ children }: { children: React.ReactNode }): React.ReactElement => {
-  const [isMuted, setIsMuted] = useState(true);
+  // Default to unmuted state, which is more intuitive for a game.
+  const [isMuted, setIsMuted] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const backgroundAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Effect to load mute state from localStorage on initial client load
   useEffect(() => {
-    const savedSoundSetting = localStorage.getItem('ludoSoundEnabled');
-    // Sound is enabled by default if no setting is saved
-    const isSoundEnabled = savedSoundSetting ? JSON.parse(savedSoundSetting) : true;
-    setIsMuted(!isSoundEnabled);
     setIsMounted(true);
+    const savedMuteState = localStorage.getItem('ludoMuted');
+    if (savedMuteState !== null) {
+      setIsMuted(JSON.parse(savedMuteState));
+    }
   }, []);
+
+  // Effect to sync the actual audio element's muted property with our state
+  useEffect(() => {
+    if (backgroundAudioRef.current) {
+      backgroundAudioRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
 
   const playSound = useCallback((type: SoundEffect) => {
     if (isMuted || !isMounted) return;
@@ -50,6 +58,7 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }): Reac
   }, [isMuted, isMounted]);
 
   const playBackgroundMusic = useCallback(() => {
+    // Top-level guard to prevent playing when muted.
     if (isMuted || !isMounted) return;
 
     try {
@@ -59,41 +68,38 @@ export const SoundProvider = ({ children }: { children: React.ReactNode }): Reac
         backgroundAudioRef.current.volume = 0.2;
       }
       
-      if (backgroundAudioRef.current.paused && !isMuted) {
-        backgroundAudioRef.current.play().catch(e => {});
-      }
+      // Always try to play if not muted. The browser will prevent it if there's
+      // no interaction, and calling play() on an already playing element is a no-op.
+      backgroundAudioRef.current.play().catch(e => {
+        // This catch is expected to fire on first load until user interaction.
+      });
+
     } catch (error) {
        console.error("Could not play background music", error);
     }
   }, [isMuted, isMounted]);
 
   const stopBackgroundMusic = useCallback(() => {
-    if (backgroundAudioRef.current) {
+    if (backgroundAudioRef.current && !backgroundAudioRef.current.paused) {
       backgroundAudioRef.current.pause();
     }
   }, []);
-
-  // This effect ensures the background music's mute state is always in sync with the state.
-  useEffect(() => {
-    if (backgroundAudioRef.current) {
-      backgroundAudioRef.current.muted = isMuted;
-    }
-  }, [isMuted]);
   
   const toggleMute = useCallback(() => {
     if (!isMounted) return;
+    
     const newMutedState = !isMuted;
     setIsMuted(newMutedState);
-    localStorage.setItem('ludoSoundEnabled', JSON.stringify(!newMutedState));
-    
-    if (backgroundAudioRef.current) {
-        backgroundAudioRef.current.muted = newMutedState;
-        // If unmuting, and music should be playing, try to play it.
-        if(!newMutedState && backgroundAudioRef.current.paused) {
-            backgroundAudioRef.current.play().catch(e => {});
-        }
+    localStorage.setItem('ludoMuted', JSON.stringify(newMutedState));
+
+    // Explicitly stop or start music based on the new state
+    if (newMutedState) {
+      stopBackgroundMusic();
+    } else {
+      // When un-muting, always try to play the music.
+      playBackgroundMusic();
     }
-  }, [isMuted, isMounted]);
+  }, [isMuted, isMounted, playBackgroundMusic, stopBackgroundMusic]);
 
   const value = { isMuted, toggleMute, playSound, playBackgroundMusic, stopBackgroundMusic };
 
