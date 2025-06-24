@@ -1,22 +1,9 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Play, HelpCircle, Settings } from 'lucide-react';
-import Image from 'next/image';
 
 export default function Home() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-800 to-red-600 font-headline flex flex-col items-center justify-around p-6 text-center text-white">
-      {/* Background effects */}
-      <div className="absolute inset-0 z-0">
-         <Image
-            src="https://placehold.co/1080x1920.png"
-            alt="Vibrant cosmic background with glowing stars and sparkles"
-            fill
-            className="object-cover opacity-30"
-            data-ai-hint="cosmic stars sparkles"
-        />
-      </div>
-
       <div className="z-10 flex flex-col items-center gap-4">
         <h1 className="font-bold text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
           <span className="block text-7xl sm:text-8xl bg-gradient-to-b from-yellow-400 to-amber-500 bg-clip-text text-transparent" style={{ WebkitTextStroke: '2px #c2331a' }}>
