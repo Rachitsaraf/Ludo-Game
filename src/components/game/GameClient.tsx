@@ -6,7 +6,7 @@ import { produce } from 'immer';
 import { LudoBoard } from './LudoBoard';
 import { Pawn } from './Pawn';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Dices, Minus, Plus } from 'lucide-react';
+import { ArrowLeft, Dices, Minus, Plus, HelpCircle } from 'lucide-react';
 import type { Operator, Player, PlayerColor, PawnState } from '@/lib/types';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
@@ -43,10 +43,22 @@ const DiceIcon = ({value}: {value: number}) => {
     return <div className="text-3xl border-2 rounded-lg p-2 bg-white shadow-inner w-16 h-16 flex items-center justify-center font-bold">{value}</div>;
 }
 
+const DicePlaceholder = () => (
+    <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">
+      <Dices size={40} />
+    </div>
+);
+
 const OperatorIcon = ({op}: {op: Operator}) => {
     const icons = { '+': <Plus size={32}/>, '-': <Minus size={32}/>, 'Max': 'Max', 'Min': 'Min'};
     return <div className="text-3xl font-bold border-2 rounded-lg p-2 bg-white shadow-inner w-16 h-16 flex items-center justify-center">{icons[op]}</div>
 }
+
+const OperatorPlaceholder = () => (
+    <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">
+      <HelpCircle size={40} />
+    </div>
+);
 
 export const GameClient = () => {
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
@@ -161,7 +173,7 @@ export const GameClient = () => {
             if(toastToShow) toast(toastToShow);
             setAnimationState(null);
             nextTurn();
-        }, 300);
+        }, 200);
     } else {
         animationTimeout = setTimeout(() => {
             setPlayers(produce(draft => {
@@ -175,7 +187,7 @@ export const GameClient = () => {
                     draft.path.shift();
                 }
             }));
-        }, 300); // Delay between steps
+        }, 200); // Delay between steps
     }
 
     return () => clearTimeout(animationTimeout);
@@ -300,9 +312,9 @@ export const GameClient = () => {
                              </div>
                         ) : (
                             <div className="flex items-center justify-center gap-4">
-                                {dice ? <DiceIcon value={dice[0]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
-                                {dice ? <OperatorIcon op={dice[1]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
-                                {dice ? <DiceIcon value={dice[2]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
+                                {dice ? <DiceIcon value={dice[0]} /> : <DicePlaceholder />}
+                                {dice ? <OperatorIcon op={dice[1]} /> : <OperatorPlaceholder />}
+                                {dice ? <DiceIcon value={dice[2]} /> : <DicePlaceholder />}
                             </div>
                         )}
                         
