@@ -1,5 +1,3 @@
-'use server';
-
 import type { PlayerColor } from './types';
 
 export interface Character {
