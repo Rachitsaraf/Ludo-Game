@@ -2,9 +2,11 @@
 
 export const Pawn = ({ color, canMove }: { color: string; canMove?: boolean }) => {
   const SvgIcon = () => (
-    <svg viewBox="0 0 100 125" className="w-5 h-7 md:w-6 md:h-8 drop-shadow-lg">
+    <svg viewBox="0 0 100 125" className="w-full h-full drop-shadow-lg">
       <path
         fill={color}
+        stroke="#000000"
+        strokeWidth="3"
         d="M50,5C27.9,5,10,22.9,10,45c0,16.5,9.8,30.8,23.8,37.3c1,0.5,2.2,0.7,3.3,0.7c2.1,0,4.1-0.9,5.5-2.6l2.9-3.4 c1.3-1.5,3.2-2.4,5.2-2.4s3.9,0.9,5.2,2.4l2.9,3.4c1.4,1.7,3.4,2.6,5.5,2.6c1.1,0,2.2-0.2,3.3-0.7C80.2,75.8,90,61.5,90,45 C90,22.9,72.1,5,50,5z"
       />
       <path
@@ -13,6 +15,8 @@ export const Pawn = ({ color, canMove }: { color: string; canMove?: boolean }) =
       />
       <path
         fill={color}
+        stroke="#000000"
+        strokeWidth="2"
         d="M48.5,82.4l-2.9,3.4c-1.4,1.7-3.4,2.6-5.5,2.6c-1.1,0-2.2-0.2-3.3-0.7c-0.5-0.2-1-0.5-1.5-0.8l1.7,2.1 c1.3,1.6,3.2,2.5,5.1,2.5c2.1,0,4.1-0.9,5.5-2.6l2.9-3.4c1.3-1.5,3.2-2.4,5.2-2.4s3.9,0.9,5.2,2.4l2.9,3.4 c1.4,1.7,3.4,2.6,5.5,2.6c2,0,3.8-0.9,5.1-2.5l1.7-2.1c-0.5,0.3-1,0.6-1.5,0.8c-1,0.5-2.2,0.7-3.3,0.7c-2.1,0-4.1-0.9-5.5-2.6 l-2.9-3.4c-1.3-1.5-3.2-2.4-5.2-2.4S49.8,80.9,48.5,82.4z M45.8,92.2L45.8,92.2l5.4,6.3l5.4-6.3L45.8,92.2z"
       />
       <polygon fill="#333" points="48.5,95.5 50,97.3 51.5,95.5 50,93.2 " />
@@ -21,9 +25,9 @@ export const Pawn = ({ color, canMove }: { color: string; canMove?: boolean }) =
 
   return (
     <div
-      className={`relative transition-all duration-500 ease-in-out cursor-pointer flex items-center justify-center ${canMove ? 'filter brightness-125' : ''}`}
+      className={`relative w-[70%] h-[70%] transition-all duration-500 ease-in-out cursor-pointer flex items-center justify-center ${canMove ? 'filter brightness-125' : ''}`}
     >
-      <div className="relative animate-bounce-soft">
+      <div className="relative w-full h-full animate-bounce-soft">
         {canMove && <div className="absolute -inset-1 rounded-full bg-white/50 animate-ping"></div>}
         <SvgIcon />
       </div>

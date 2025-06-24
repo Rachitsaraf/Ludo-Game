@@ -17,24 +17,25 @@ import { Card } from '@/components/ui/card';
 import { getPawnStyle, PLAYER_CONFIG } from '@/lib/board';
 
 const playerColors = {
-  red: '#ef4444',    // bg-red-500
-  green: '#22c55e',  // bg-green-500
-  blue: '#3b82f6',   // bg-blue-500
-  yellow: '#f59e0b', // bg-yellow-500
+  red: '#f87171',    // red-400
+  green: '#4ade80',  // green-400
+  blue: '#60a5fa',   // blue-400
+  yellow: '#facc15', // yellow-400
 };
 
-const initialPawns: PawnState[] = [
-  { id: 1, position: -1 },
-  { id: 2, position: -1 },
-  { id: 3, position: -1 },
-  { id: 4, position: -1 },
-];
-
 const initialPlayers: Player[] = [
-  { id: 'red', name: 'Red', pawns: JSON.parse(JSON.stringify(initialPawns)) },
-  { id: 'green', name: 'Green', pawns: JSON.parse(JSON.stringify(initialPawns)) },
-  { id: 'blue', name: 'Blue', pawns: JSON.parse(JSON.stringify(initialPawns)) },
-  { id: 'yellow', name: 'Yellow', pawns: JSON.parse(JSON.stringify(initialPawns)) },
+  { id: 'red', name: 'Red', pawns: [
+    { id: 1, position: -1 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
+  ]},
+  { id: 'green', name: 'Green', pawns: [
+    { id: 1, position: 0 }, { id: 2, position: 4 }, { id: 3, position: -1 }, { id: 4, position: -1 }
+  ]},
+  { id: 'blue', name: 'Blue', pawns: [
+    { id: 1, position: -1 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
+  ]},
+  { id: 'yellow', name: 'Yellow', pawns: [
+    { id: 1, position: 2 }, { id: 2, position: -1 }, { id: 3, position: -1 }, { id: 4, position: -1 }
+  ]},
 ];
 
 const DiceIcon = ({value}: {value: number}) => {
@@ -96,38 +97,53 @@ export const GameClient = () => {
         const player = draft[currentPlayerIndex];
         const { pawns } = player;
         const playerConfig = PLAYER_CONFIG[player.id];
-
+  
         const canLeaveBase = steps === 6;
-
+  
         let movablePawns = pawns.filter(p => {
             if (p.position === -1) return canLeaveBase;
             if (p.position === 57) return false;
-            return p.position + steps <= 57;
+            if (p.position + steps > 57) return false;
+            // Check if moving into home stretch
+            if (p.position < playerConfig.homeEntry && p.position + steps > playerConfig.homeEntry) {
+              const overshoot = (p.position + steps) - playerConfig.homeEntry;
+              return overshoot <= 6; // 51-56 is home run
+            }
+            return true;
         });
 
-        let pawnToMove = movablePawns.find(p => p.position >= 0);
-        if (!pawnToMove) {
-            pawnToMove = movablePawns.find(p => p.position === -1);
-        }
-
+        // Simple AI: move the pawn that is furthest along the path
+        movablePawns.sort((a, b) => b.position - a.position);
+  
+        let pawnToMove = movablePawns[0];
+  
         if (!pawnToMove) {
           toast({ title: "No valid moves!", description: "Skipping turn." });
           nextTurn();
           return;
         }
 
-        if (pawnToMove.position === -1 && canLeaveBase) {
-          pawnToMove.position = playerConfig.start;
-        } else {
-          pawnToMove.position += steps;
-        }
+        const pawnToUpdate = player.pawns.find(p => p.id === pawnToMove!.id)!;
   
-        if (pawnToMove.position > 56) {
-          pawnToMove.position = 57; 
-        } 
+        if (pawnToUpdate.position === -1 && canLeaveBase) {
+            pawnToUpdate.position = 0; // Move to start (relative position 0)
+        } else {
+            // If pawn is about to enter home stretch
+            if (pawnToUpdate.position <= playerConfig.homeEntry && pawnToUpdate.position + steps > playerConfig.homeEntry) {
+                const stepsPastHomeEntry = (pawnToUpdate.position + steps) - playerConfig.homeEntry;
+                pawnToUpdate.position = 50 + stepsPastHomeEntry;
+            } else {
+                pawnToUpdate.position += steps;
+            }
+        }
+    
+        if (pawnToUpdate.position > 56) {
+          pawnToUpdate.position = 57; 
+        }
         
-        if (pawnToMove.position < 51 && !playerConfig.safeTiles.includes(pawnToMove.position)) {
-            const targetPos = (playerConfig.pathStart + pawnToMove.position) % 52;
+        // Collision detection
+        if (pawnToUpdate.position < 51 && !playerConfig.safeTiles.includes(pawnToUpdate.position)) {
+            const targetPos = (playerConfig.pathStart + pawnToUpdate.position) % 52;
 
             draft.forEach(other_player => {
                 if (other_player.id !== player.id) {
@@ -136,7 +152,7 @@ export const GameClient = () => {
                         if (otherPawn.position >= 0 && otherPawn.position < 51) {
                             const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 52;
                             if (otherPawnGlobalPos === targetPos) {
-                                otherPawn.position = -1;
+                                otherPawn.position = -1; // Send back to base
                                 toast({title: "Collision!", description: `A ${other_player.name} pawn was sent back to base!`})
                             }
                         }
@@ -165,20 +181,7 @@ export const GameClient = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-background font-headline flex flex-col items-center justify-center p-4 gap-6">
-        <div className="absolute top-4 left-4 z-20">
-            <Link href="/" passHref>
-                <Button variant="ghost" size="icon" className="rounded-full bg-white/50">
-                    <ArrowLeft className="h-6 w-6" />
-                </Button>
-            </Link>
-        </div>
-        <div className="absolute top-4 right-4 z-20">
-          <Card className="p-2 px-4 rounded-2xl shadow-lg" style={{backgroundColor: playerColors[currentPlayer.id]}}>
-            <h2 className="text-lg font-bold text-white text-center">{turnState !== 'game-over' ? `${currentPlayer.name}'s Turn` : `Game Over!`}</h2>
-          </Card>
-        </div>
-        
+    <div className="flex flex-col md:flex-row items-center justify-center p-4 gap-6 w-full max-w-6xl mx-auto">
         <div className="relative w-full max-w-[90vw] md:max-w-[500px] lg:max-w-[600px] aspect-square">
             <LudoBoard />
             {players.map((player) =>
@@ -188,33 +191,46 @@ export const GameClient = () => {
                         className="absolute transition-all duration-500 ease-in-out"
                         style={getPawnStyle(player, pawn)}
                     >
-                        <Pawn color={playerColors[player.id]} />
+                        <Pawn color={playerColors[player.id as PlayerColor]} />
                     </div>
                 ))
             )}
-        </div>
-
-        <Card className="w-full max-w-md p-4 rounded-4xl shadow-lg flex flex-col items-center gap-4">
-            {winner ? (
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold" style={{color: playerColors[winner.id]}}>{winner.name} Wins!</h2>
-                    <p className="text-muted-foreground">Congratulations!</p>
-                </div>
-            ) : (
-                <>
-                    <div className="flex items-center justify-center gap-4">
-                        {dice ? <DiceIcon value={dice[0]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
-                        {dice ? <OperatorIcon op={dice[1]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
-                        {dice ? <DiceIcon value={dice[2]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
-                    </div>
-                    
-                    <Button onClick={handleRollDice} disabled={turnState !== 'rolling'} className="w-full h-16 text-2xl rounded-3xl shadow-lg">
-                        <Dices className="mr-2 h-8 w-8" />
-                        {turnState === 'rolling' ? 'Roll Dice' : 'Waiting...'}
+             <div className="absolute top-4 left-4 z-20">
+                <Link href="/" passHref>
+                    <Button variant="ghost" size="icon" className="rounded-full bg-white/50">
+                        <ArrowLeft className="h-6 w-6" />
                     </Button>
-                </>
-            )}
-        </Card>
+                </Link>
+            </div>
+        </div>
+        
+        <div className="w-full md:w-auto flex flex-col items-center gap-4">
+            <Card className="p-2 px-4 rounded-2xl shadow-lg" style={{backgroundColor: playerColors[currentPlayer.id as PlayerColor]}}>
+                <h2 className="text-xl font-bold text-white text-center">{turnState !== 'game-over' ? `${currentPlayer.name}'s Turn` : `Game Over!`}</h2>
+            </Card>
+
+            <Card className="w-full max-w-xs p-4 rounded-4xl shadow-lg flex flex-col items-center gap-4">
+                {winner ? (
+                    <div className="text-center">
+                        <h2 className="text-3xl font-bold" style={{color: playerColors[winner.id as PlayerColor]}}>{winner.name} Wins!</h2>
+                        <p className="text-muted-foreground">Congratulations!</p>
+                    </div>
+                ) : (
+                    <>
+                        <div className="flex items-center justify-center gap-4">
+                            {dice ? <DiceIcon value={dice[0]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
+                            {dice ? <OperatorIcon op={dice[1]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
+                            {dice ? <DiceIcon value={dice[2]} /> : <div className="text-3xl border-2 rounded-lg p-2 w-16 h-16 flex items-center justify-center bg-gray-200">?</div>}
+                        </div>
+                        
+                        <Button onClick={handleRollDice} disabled={turnState !== 'rolling'} className="w-full h-16 text-2xl rounded-3xl shadow-lg">
+                            <Dices className="mr-2 h-8 w-8" />
+                            {turnState === 'rolling' ? 'Roll Dice' : 'Waiting...'}
+                        </Button>
+                    </>
+                )}
+            </Card>
+        </div>
 
         {question && (
             <MathQuestionModal

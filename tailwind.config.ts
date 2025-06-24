@@ -9,6 +9,18 @@ export default {
   ],
   theme: {
     extend: {
+       gridTemplateColumns: {
+        '15': 'repeat(15, minmax(0, 1fr))',
+      },
+      gridTemplateRows: {
+        '15': 'repeat(15, minmax(0, 1fr))',
+      },
+      gridColumn: {
+        'span-15': 'span 15 / span 15',
+      },
+      gridRow: {
+        'span-15': 'span 15 / span 15',
+      },
       fontFamily: {
         body: ['"Baloo 2"', 'sans-serif'],
         headline: ['"Baloo 2"', 'sans-serif'],

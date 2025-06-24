@@ -3,106 +3,129 @@ import { Star } from 'lucide-react';
 
 const Arrow = ({ direction, colorClass }: { direction: 'up' | 'down' | 'left' | 'right'; colorClass: string }) => {
     const rotations = {
-        up: '-rotate-90',
+        up: 'rotate-[270deg]',
         right: 'rotate-0',
         down: 'rotate-90',
         left: 'rotate-180'
     };
     return (
         <svg viewBox="0 0 24 24" className={`w-3/4 h-3/4 ${colorClass} transform ${rotations[direction]}`}>
-            <path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z" />
+            <path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
         </svg>
     );
 };
 
 export const LudoBoard = () => {
-  const PathSquare = ({ className = "", children }: { className?: string, children?: React.ReactNode }) => 
-    <div className={`border border-black/10 flex items-center justify-center ${className}`}>{children}</div>;
+  const Tile = ({ className = "", children, ...props }: { className?: string, children?: React.ReactNode, style?: React.CSSProperties }) => 
+    <div className={`border border-black/10 flex items-center justify-center ${className}`} {...props}>{children}</div>;
   
   const HomePawnSpot = () => 
-    <div className="aspect-square bg-white/60 rounded-full shadow-inner"></div>;
+    <div className="aspect-square bg-white/80 rounded-full border-2 border-white/90 shadow-inner"></div>;
 
-  const HomeBase = ({ bgColor, innerBgColor }: { bgColor: string, innerBgColor: string }) => (
-    <div className={`p-1 sm:p-2 ${bgColor}`}>
-      <div className={`grid h-full w-full grid-cols-2 grid-rows-2 gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg ${innerBgColor}`}>
-        <HomePawnSpot /> <HomePawnSpot />
-        <HomePawnSpot /> <HomePawnSpot />
+  const HomeBase = ({ bgColor, children }: { bgColor: string, children?: React.ReactNode }) => (
+    <div className={`p-4 ${bgColor} flex items-center justify-center`}>
+      <div className="grid h-2/3 w-2/3 grid-cols-2 grid-rows-2 gap-3 p-3 rounded-lg bg-white/40">
+        {children || <><HomePawnSpot /> <HomePawnSpot /> <HomePawnSpot /> <HomePawnSpot /></>}
       </div>
     </div>
   );
 
-  const SafeStar = () => <Star className="text-white/80 h-3/4 w-3/4" fill="currentColor" />;
+  const SafeStar = () => <Star className="text-black/50 h-3/4 w-3/4" fill="currentColor" />;
 
-  const cells: React.ReactNode[] = [];
-  
-  // Corners
-  cells.push(<div key="red-home" className="col-span-6 row-span-6 rounded-tl-xl overflow-hidden"><HomeBase bgColor="bg-red-500" innerBgColor="bg-red-400" /></div>);
-  cells.push(<div key="green-home" className="col-span-6 row-span-6 col-start-10 rounded-tr-xl overflow-hidden"><HomeBase bgColor="bg-green-500" innerBgColor="bg-green-400" /></div>);
-  cells.push(<div key="blue-home" className="col-span-6 row-span-6 row-start-10 rounded-bl-xl overflow-hidden"><HomeBase bgColor="bg-blue-500" innerBgColor="bg-blue-400" /></div>);
-  cells.push(<div key="yellow-home" className="col-span-6 row-span-6 col-start-10 row-start-10 rounded-br-xl overflow-hidden"><HomeBase bgColor="bg-yellow-400" innerBgColor="bg-yellow-300" /></div>);
+  const boardCells = [];
 
-  // Center
-  cells.push(
-    <div key="center" className="col-start-7 col-span-3 row-start-7 row-span-3">
-         <div className="w-full h-full relative">
-            <div style={{ clipPath: 'polygon(50% 100%, 0 0, 100% 0)'}} className="absolute inset-0 bg-red-500"></div>
-            <div style={{ clipPath: 'polygon(0 50%, 100% 0, 100% 100%)'}} className="absolute inset-0 bg-green-500"></div>
-            <div style={{ clipPath: 'polygon(50% 0, 0 100%, 100% 100%)'}} className="absolute inset-0 bg-yellow-400"></div>
-            <div style={{ clipPath: 'polygon(0 0, 0 100%, 100% 50%)'}} className="absolute inset-0 bg-blue-500"></div>
-        </div>
-    </div>
-  );
+  // This defines the visual layout of the 15x15 board
+  // R=Red, G=Green, B=Blue, Y=Yellow
+  // s=safe, .
+  // r/g/b/y are home path tiles
+  const layout = [
+    'R R R R R R . g s . G G G G G G',
+    'R R R R R R . g . . G G G G G G',
+    'R R R R R R . g . . G G G G G G',
+    'R R R R R R . g . . G G G G G G',
+    'R R R R R R . g . . G G G G G G',
+    'R R R R R R . g . . G G G G G G',
+    '. . . . . s r g g g s . . . . .',
+    'b b b b b . R G Y B . y y y y y',
+    '. . . . . s b y y y s . . . . .',
+    'B B B B B B . b . . Y Y Y Y Y Y',
+    'B B B B B B . b . . Y Y Y Y Y Y',
+    'B B B B B B . b . . Y Y Y Y Y Y',
+    'B B B B B B . b . . Y Y Y Y Y Y',
+    'B B B B B B . b . . Y Y Y Y Y Y',
+    'B B B B B B . s . . Y Y Y Y Y Y',
+  ].map(row => row.split(' '));
 
-  // Paths
-  const pathCoordinates = [
-    // Top arm
-    ...Array.from({length: 6}, (_, i) => ({r: i, c: 6})),
-    ...Array.from({length: 6}, (_, i) => ({r: i, c: 8})),
-    // Right arm
-    ...Array.from({length: 6}, (_, i) => ({r: 6, c: 9+i})),
-    ...Array.from({length: 6}, (_, i) => ({r: 8, c: 9+i})),
-    // Bottom arm
-    ...Array.from({length: 6}, (_, i) => ({r: 9+i, c: 6})),
-    ...Array.from({length: 6}, (_, i) => ({r: 9+i, c: 8})),
-    // Left arm
-    ...Array.from({length: 6}, (_, i) => ({r: 6, c: i})),
-    ...Array.from({length: 6}, (_, i) => ({r: 8, c: i})),
-    // Home runs
-    ...Array.from({length: 5}, (_, i) => ({r: i+1, c: 7, bg: 'bg-red-500'})),
-    ...Array.from({length: 5}, (_, i) => ({r: 7, c: 9+i, bg: 'bg-green-500'})),
-    ...Array.from({length: 5}, (_, i) => ({r: 9+i, c: 7, bg: 'bg-yellow-400'})),
-    ...Array.from({length: 5}, (_, i) => ({r: 7, c: i+1, bg: 'bg-blue-500'})),
-  ];
+  const colorMap: { [key: string]: string } = {
+    '.': 'bg-white',
+    's': 'bg-white',
+    // Home Bases
+    'R': 'bg-red-400',
+    'G': 'bg-green-400',
+    'B': 'bg-blue-400',
+    'Y': 'bg-yellow-400',
+    // Home paths
+    'r': 'bg-red-400',
+    'g': 'bg-green-400',
+    'b': 'bg-blue-400',
+    'y': 'bg-yellow-400'
+  };
 
-  pathCoordinates.forEach(({r, c, bg}, index) => {
-    cells.push(<PathSquare key={`path-${r}-${c}-${index}`} className={`${bg ?? ''}`} style={{gridRow: r+1, gridColumn: c+1}}/>);
-  });
-  
-  // Arrows & Stars
-  const markers = [
-    // Red
-    {r: 6, c: 1, el: <Arrow direction="up" colorClass="text-red-500"/>, safe: true},
-    {r: 1, c: 6, safe: true},
-    // Green
-    {r: 1, c: 8, el: <Arrow direction="right" colorClass="text-green-500"/>, safe: true},
-    {r: 6, c: 13, safe: true},
-    // Yellow
-    {r: 8, c: 13, el: <Arrow direction="down" colorClass="text-yellow-500"/>, safe: true},
-    {r: 13, c: 8, safe: true},
-    // Blue
-    {r: 13, c: 6, el: <Arrow direction="left" colorClass="text-blue-500"/>, safe: true},
-    {r: 8, c: 1, safe: true},
-  ];
+  const startingTiles = { '6-1': 'red', '1-8': 'green', '8-13': 'yellow', '13-6': 'blue' };
+  const arrowDirections: {[key: string]: 'up' | 'down' | 'left' | 'right'} = {
+    red: 'up', green: 'right', yellow: 'down', blue: 'left'
+  };
+  const safeTiles = ['0-8', '1-6', '6-0', '6-14', '8-1', '8-13', '13-8', '14-6'];
 
-  markers.forEach(({r,c,el, safe}) => {
-    cells.push(<PathSquare key={`marker-${r}-${c}`} className={safe ? 'bg-gray-200' : ''} style={{gridRow: r+1, gridColumn: c+1}}>{el ?? (safe ? <SafeStar /> : null)}</PathSquare>);
-  })
+  for (let r = 0; r < 15; r++) {
+    for (let c = 0; c < 15; c++) {
+      const key = `${r}-${c}`;
+      let cellContent = null;
+      let cellType = layout[r][c];
+
+      // Handle corner Home Bases
+      if (cellType === 'R' && r < 6 && c < 6) {
+        if (r === 0 && c === 0) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-red-400"/></div>);
+      } else if (cellType === 'G' && r < 6 && c > 8) {
+        if (r === 0 && c === 9) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-green-400"/></div>);
+      } else if (cellType === 'B' && r > 8 && c < 6) {
+        if (r === 9 && c === 0) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-blue-400"/></div>);
+      } else if (cellType === 'Y' && r > 8 && c > 8) {
+        if (r === 9 && c === 9) boardCells.push(<div key={key} className="col-span-6 row-span-6"><HomeBase bgColor="bg-yellow-400"/></div>);
+      } 
+      // Handle center
+      else if (['R','G','B','Y'].includes(cellType) && r>5 && r<9 && c>5 && c<9) {
+          if (r === 7 && c === 7) {
+            boardCells.push(
+            <div key="center" className="col-start-7 col-span-3 row-start-7 row-span-3">
+                <div className="w-full h-full relative">
+                    <div style={{ clipPath: 'polygon(50% 100%, 0 0, 100% 0)'}} className="absolute inset-0 bg-red-400"></div>
+                    <div style={{ clipPath: 'polygon(0 50%, 100% 0, 100% 100%)'}} className="absolute inset-0 bg-green-400"></div>
+                    <div style={{ clipPath: 'polygon(50% 0, 0 100%, 100% 100%)'}} className="absolute inset-0 bg-yellow-400"></div>
+                    <div style={{ clipPath: 'polygon(0 0, 0 100%, 100% 50%)'}} className="absolute inset-0 bg-blue-400"></div>
+                </div>
+            </div>);
+          }
+      }
+      else if (cellType !== 'R' && cellType !== 'G' && cellType !== 'B' && cellType !== 'Y') {
+        const startColor = startingTiles[key as keyof typeof startingTiles];
+        if (startColor) {
+            cellContent = <Arrow direction={arrowDirections[startColor]} colorClass={`text-${startColor}-600`} />;
+            colorMap[key] = `bg-${startColor}-400`;
+        } else if (safeTiles.includes(key)) {
+            cellContent = <SafeStar />;
+        }
+
+        boardCells.push(<Tile key={key} className={colorMap[cellType]}>{cellContent}</Tile>);
+      }
+    }
+  }
 
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[90vw] rounded-2xl bg-white p-1 shadow-lg sm:p-2 md:max-w-[500px] lg:max-w-[600px]">
-      <div className="grid h-full w-full grid-cols-15 grid-rows-15">
-        {cells}
+    <div className="relative mx-auto aspect-square w-full max-w-[95vw] rounded-2xl bg-[#fefce8] p-2 shadow-lg sm:p-3 md:max-w-[500px] lg:max-w-[600px] border-4 border-yellow-800">
+      <div className="grid h-full w-full grid-cols-15 grid-rows-15 gap-px">
+        {boardCells}
       </div>
     </div>
   );
