@@ -90,7 +90,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
   } | null>(null);
 
   useEffect(() => {
-    const savedPlayerName = localStorage.getItem('ludoPlayerName') || "Player 1";
+    const savedPlayerName = typeof window !== 'undefined' ? localStorage.getItem('ludoPlayerName') || "Player 1" : "Player 1";
     const humanPlayerCount = humanColors.length;
     const allPossibleColors: PlayerColor[] = ['red', 'green', 'blue', 'yellow'];
 
@@ -110,7 +110,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
         activePlayersSetup = humanColors.map(color => ({ color, isBot: false }));
     }
 
-    const initialPlayers = activePlayersSetup.map((playerSetup) => {
+    const initialPlayers = activePlayersSetup.map((playerSetup, index) => {
         const isFirstHuman = !playerSetup.isBot && playerSetup.color === humanColors[0];
         const characterName = CHARACTER_DATA[playerSetup.color].name;
         // The player's name for the leaderboard is the custom name, otherwise the character's name
@@ -301,7 +301,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
   }, [playSound]);
 
   const handleRollDice = () => {
-    if (turnState !== 'rolling' || currentPlayer.isBot) return;
+    if (turnState !== 'rolling' || currentPlayer?.isBot) return;
     
     const result = performRoll(currentPlayer);
     setTurnMessage(`You rolled for ${result} steps!`);
@@ -325,7 +325,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
   };
 
   const handlePawnClick = (pawn: PawnState) => {
-    if (turnState !== 'selecting' || currentPlayer.isBot || !moveSteps || !isPawnMovable(pawn, moveSteps)) return;
+    if (turnState !== 'selecting' || currentPlayer?.isBot || !moveSteps || !isPawnMovable(pawn, moveSteps)) return;
     
     playSound('click');
     setSelectedPawnId(pawn.id);
@@ -333,7 +333,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
   };
 
   const handleBotTurn = useCallback(() => {
-    if (turnState !== 'rolling' || !currentPlayer.isBot) return;
+    if (turnState !== 'rolling' || !currentPlayer?.isBot) return;
 
     setTurnMessage(`${currentPlayer.characterName} is thinking...`);
     
