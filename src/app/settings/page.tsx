@@ -14,7 +14,7 @@ import { useSound } from '@/hooks/use-sound';
 
 const FloatingIcon = ({ icon: Icon, className, duration = 10, delay = 0 }: { icon: React.ElementType, className: string, duration?: number, delay?: number }) => {
     return (
-        <div className={`absolute text-white/10 animate-bounce-slow ${className}`} style={{ animationDuration: `${duration}s`, animationDelay: `${delay}s` }}>
+        <div className={`absolute text-amber-400/10 animate-bounce-slow ${className}`} style={{ animationDuration: `${duration}s`, animationDelay: `${delay}s` }}>
             <Icon className="w-full h-full" />
         </div>
     );
@@ -61,7 +61,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 font-headline flex flex-col items-center justify-center p-4">
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-black font-headline flex flex-col items-center justify-center p-4">
       <FloatingIcon icon={Settings} className="w-16 h-16 top-[15%] left-[10%] rotate-12" duration={8} />
       <FloatingIcon icon={Music} className="w-12 h-12 top-[70%] left-[20%] -rotate-12" duration={12} delay={1} />
       <FloatingIcon icon={User} className="w-14 h-14 top-[20%] right-[15%] rotate-6" duration={10} delay={0.5} />
