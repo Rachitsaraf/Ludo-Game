@@ -370,7 +370,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
         </div>
         
         <div className="w-full md:w-auto flex flex-col items-center gap-4">
-            <Card className="p-4 rounded-4xl shadow-lg w-full max-w-sm flex flex-col items-center gap-4 bg-white/10 backdrop-blur-sm border border-white/20">
+            <Card className="p-4 rounded-4xl shadow-lg w-full max-w-md flex flex-col items-center gap-4 bg-white/10 backdrop-blur-sm border border-white/20">
                  <div className="w-full p-2 rounded-lg flex items-center gap-3" style={{ backgroundColor: playerColors[winner?.id || currentPlayer.id] }}>
                     <Image 
                         src={winner?.characterImage || currentPlayer.characterImage} 
