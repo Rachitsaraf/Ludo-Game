@@ -11,7 +11,6 @@ interface DevelopersDialogProps {
 const developers = [
   {
     name: 'Vipul Vadhe',
-    role: 'Game Interface & Multiplayer Setup',
     email: 'vipulmilindvadhe@gmail.com',
     linkedin: 'https://www.linkedin.com/in/vipul-vadhe/',
     icon: <Cog className="h-8 w-8 text-white/90" />,
@@ -65,7 +64,7 @@ export const DevelopersDialog = ({ isOpen, onClose }: DevelopersDialogProps) => 
                 {dev.icon}
                 <h3 className="text-lg font-bold">{dev.name}</h3>
               </div>
-              <p className="text-sm font-semibold text-white/90 mb-2 ml-12">{dev.role}</p>
+              {dev.role && <p className="text-sm font-semibold text-white/90 mb-2 ml-12">{dev.role}</p>}
               <div className="space-y-1 ml-12">
                 {dev.email && (
                   <div className="flex items-center gap-2 text-xs text-white/80">
