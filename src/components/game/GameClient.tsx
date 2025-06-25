@@ -101,8 +101,8 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
 
   const currentPlayer = players[currentPlayerIndex];
 
-  const nextTurn = useCallback(() => {
-    const newWinner = players.find(p => p.pawns.every(pawn => pawn.position === 66));
+  const nextTurn = useCallback((updatedPlayers: Player[] = players) => {
+    const newWinner = updatedPlayers.find(p => p.pawns.every(pawn => pawn.position === 66));
     if (newWinner) {
         setWinner(newWinner);
         setTurnState('game-over');
@@ -163,15 +163,32 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
 
     if (animationState.path.length === 0) {
         let toastToShow: { title: string; description?: string } | null = null;
+        
         const nextPlayersState = produce(players, draft => {
             const movedPlayer = draft[animationState.playerIndex];
             const movedPawn = movedPlayer.pawns.find(p => p.id === animationState.pawnId)!;
             const finalPosition = movedPawn.position;
-            const playerConfig = PLAYER_CONFIG[movedPlayer.id];
-            
+
+            // Default message for a normal move
             toastToShow = { title: `${movedPlayer.characterName} moved ${animationState.totalSteps} steps!` };
 
+            // Check if a pawn has reached the final block
+            if (finalPosition === 66) {
+                const finishedPawnsCount = movedPlayer.pawns.filter(p => p.position === 66).length;
+                const remainingPawns = 4 - finishedPawnsCount;
+                if (remainingPawns > 0) { // Don't show for the last pawn, win toast is better
+                    toastToShow = {
+                        title: `One pawn is home!`,
+                        description: `${remainingPawns} more to go for ${movedPlayer.characterName}.`
+                    };
+                } else {
+                    toastToShow = null; // No toast for the winning move, nextTurn handles it
+                }
+            }
+
+            // Collision logic
             if (finalPosition >= 0 && finalPosition < 60) {
+                const playerConfig = PLAYER_CONFIG[movedPlayer.id];
                 const targetPosOnBoard = (playerConfig.pathStart + finalPosition) % 60;
                 if (!SAFE_TILE_INDICES.includes(targetPosOnBoard)) {
                     draft.forEach(otherPlayer => {
@@ -182,6 +199,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                                     const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 60;
                                     if (otherPawnGlobalPos === targetPosOnBoard) {
                                         otherPawn.position = -1;
+                                        // This toast will correctly override the 'moved' toast.
                                         toastToShow = { title: "Collision!", description: `${movedPlayer.characterName} knocked a ${otherPlayer.characterName} pawn back to base!` };
                                     }
                                 }
@@ -196,7 +214,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
             setPlayers(nextPlayersState);
             if(toastToShow) toast(toastToShow);
             setAnimationState(null);
-            nextTurn();
+            nextTurn(nextPlayersState);
         }, 300);
     } else {
         animationTimeout = setTimeout(() => {
@@ -350,7 +368,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
         <div className="absolute top-4 left-4 z-10">
             <Link href="/" passHref>
                 <Button variant="ghost" size="icon" className="rounded-full bg-white/50 text-white hover:bg-white/70 hover:text-black">
-                    <ArrowLeft className="h-6 w-6 sm:h-8 sm:h-8" />
+                    <ArrowLeft className="h-6 w-6 sm:h-8 sm:w-8" />
                 </Button>
             </Link>
         </div>
