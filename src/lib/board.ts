@@ -76,8 +76,13 @@ export const PLAYER_CONFIG: Record<PlayerColor, { pathStart: number; }> = {
   blue:   { pathStart: 45 },
 };
 
-// The central finishing position for all pawns.
-const FINISH_POSITION = pos(8, 8);
+// The central finishing positions for all pawns, inside their color's triangle.
+const FINISH_POSITIONS: Record<PlayerColor, React.CSSProperties> = {
+    red:    pos(8, 7.5),
+    green:  pos(7.5, 8),
+    yellow: pos(8, 8.5),
+    blue:   pos(8.5, 8),
+};
 
 /**
  * Calculates the CSS style for a pawn based on its state.
@@ -98,7 +103,7 @@ export function getPawnStyle(player: Player, pawn: PawnState): React.CSSProperti
   }
   // Case 2: Pawn has finished the game.
   else if (pawn.position === 66) {
-     style = FINISH_POSITION;
+     style = FINISH_POSITIONS[player.id];
   }
   // Case 3: Pawn is on the final home stretch.
   // Home stretch positions are 60-65.
