@@ -37,7 +37,7 @@ export const SplashScreen = () => {
           Ludo Learn & Play
         </h1>
         <div className="w-24 h-2 mt-4 bg-white/20 rounded-full overflow-hidden">
-            <div className="h-full bg-white animate-pulse" style={{animationDuration: '4s'}}></div>
+            <div className="h-full bg-white animate-pulse" style={{animationDuration: '1.8s'}}></div>
         </div>
       </div>
     </div>
