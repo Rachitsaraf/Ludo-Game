@@ -247,8 +247,26 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     return () => clearTimeout(animationTimeout);
   }, [turnState, animationState, players, nextTurn, playSound]);
 
-  const performRoll = useCallback((): number => {
+  const performRoll = useCallback((player: Player): number => {
     playSound('dice');
+
+    const hasPawnsInBase = player.pawns.some(p => p.position === -1);
+    
+    // Give a 1 in 3 chance to roll a 6 if a pawn is in the home base.
+    if (hasPawnsInBase && Math.random() < (1/3)) {
+        // To make it look real, we'll set the dice to a combination that makes 6.
+        const useAddition = Math.random() > 0.5;
+        if (useAddition) {
+            const sixAdds: [number, number][] = [[1, 5], [2, 4], [3, 3]];
+            const [d1, d3] = sixAdds[Math.floor(Math.random() * sixAdds.length)];
+            setDice([d1, '+', d3]);
+        } else {
+             const d3 = Math.floor(Math.random() * 6) + 1;
+             setDice([6, 'Max', d3]);
+        }
+        return 6;
+    }
+    
     const d1 = Math.floor(Math.random() * 6) + 1;
     const ops: Operator[] = ['+', '-', 'Max', 'Min'];
     const op: Operator = ops[Math.floor(Math.random() * ops.length)];
@@ -269,7 +287,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
   const handleRollDice = () => {
     if (turnState !== 'rolling' || currentPlayer.isBot) return;
     
-    const result = performRoll();
+    const result = performRoll(currentPlayer);
     setTurnMessage(`You rolled for ${result} steps!`);
     
     if (result === 0) {
@@ -304,7 +322,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     setTurnMessage(`${currentPlayer.characterName} is thinking...`);
     
     setTimeout(() => {
-      const result = performRoll();
+      const result = performRoll(currentPlayer);
       setTurnMessage(`${currentPlayer.characterName} (Bot) rolled for ${result} steps`);
 
       if (result === 0) {
