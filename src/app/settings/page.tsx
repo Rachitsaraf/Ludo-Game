@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -24,7 +25,6 @@ export default function SettingsPage() {
   const { isMuted, toggleMute } = useSound();
   
   const [isMounted, setIsMounted] = useState(false);
-  const [showNameInput, setShowNameInput] = useState(false);
   const [playerName, setPlayerName] = useState("Player 1");
 
   useEffect(() => {
@@ -78,24 +78,21 @@ export default function SettingsPage() {
           <CardTitle className="text-3xl sm:text-4xl text-center text-card-foreground">Settings</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
-          <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20">
-            <Label htmlFor="player-name-toggle" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
+          <div className="space-y-2 p-3 sm:p-4 rounded-2xl bg-primary/20">
+            <Label htmlFor="player-name" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
               <User className="h-5 w-5 sm:h-6 sm:w-6" />
-              Change Player Name
+              Player Name
             </Label>
-            <Switch id="player-name-toggle" checked={showNameInput} onCheckedChange={setShowNameInput} />
+            <Input
+              id="player-name"
+              type="text"
+              value={playerName}
+              onChange={handlePlayerNameChange}
+              placeholder="Enter your name"
+              className="text-lg bg-white dark:bg-slate-700"
+            />
           </div>
-          {showNameInput && (
-            <div className="pl-4 pr-4 pb-2 animate-accordion-down">
-              <Input
-                type="text"
-                value={playerName}
-                onChange={handlePlayerNameChange}
-                placeholder="Enter player name"
-                className="text-lg bg-white dark:bg-slate-700"
-              />
-            </div>
-          )}
+          
           <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20">
             <Label htmlFor="sound-music" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
               <Music className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -103,6 +100,7 @@ export default function SettingsPage() {
             </Label>
             <Switch id="sound-music" checked={!isMuted} onCheckedChange={toggleMute} />
           </div>
+          
           <Button
             variant="destructive"
             className="w-full h-12 sm:h-14 text-lg sm:text-xl rounded-2xl"
