@@ -59,7 +59,7 @@ const DicePlaceholder = () => (
 
 const OperatorIcon = ({op}: {op: Operator}) => {
     const icons = { '+': <Plus size={28}/>, '-': <Minus size={28}/>, 'Max': 'Max', 'Min': 'Min'};
-    return <div className="text-2xl sm:text-3xl font-bold border-2 rounded-lg p-2 bg-white shadow-inner w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center">{icons[op]}</div>
+    return <div className="text-2xl sm:text-3xl font-bold border-2 rounded-lg p-2 bg-background text-foreground shadow-inner w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center">{icons[op]}</div>
 }
 
 const OperatorPlaceholder = () => (
