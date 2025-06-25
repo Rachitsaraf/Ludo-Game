@@ -91,26 +91,42 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
 
   useEffect(() => {
     const savedPlayerName = localStorage.getItem('ludoPlayerName') || "Player 1";
-    const allColors: PlayerColor[] = ['red', 'green', 'blue', 'yellow'];
-    
-    const initialPlayers = allColors.map(color => {
-        const isHuman = humanColors.includes(color);
-        let playerName = CHARACTER_DATA[color].name;
+    const humanPlayerCount = humanColors.length;
+    const allPossibleColors: PlayerColor[] = ['red', 'green', 'blue', 'yellow'];
 
-        // Apply custom name to the first human player
-        if (isHuman && humanColors.indexOf(color) === 0) {
-            playerName = savedPlayerName;
-        }
+    let activePlayersSetup: {color: PlayerColor, isBot: boolean}[] = [];
+
+    if (humanPlayerCount === 1) {
+        // 1 Human vs 1 Bot
+        const humanColor = humanColors[0];
+        activePlayersSetup.push({ color: humanColor, isBot: false });
+        
+        // Find the next available color for the bot
+        const humanColorIndex = allPossibleColors.indexOf(humanColor);
+        const botColor = allPossibleColors[(humanColorIndex + 1) % allPossibleColors.length];
+        activePlayersSetup.push({ color: botColor, isBot: true });
+    } else {
+        // 2, 3, or 4 human players. No bots.
+        activePlayersSetup = humanColors.map(color => ({ color, isBot: false }));
+    }
+
+    const initialPlayers = activePlayersSetup.map((playerSetup) => {
+        const isFirstHuman = !playerSetup.isBot && playerSetup.color === humanColors[0];
+        const characterName = CHARACTER_DATA[playerSetup.color].name;
+        // The player's name for the leaderboard is the custom name, otherwise the character's name
+        const playerName = isFirstHuman ? savedPlayerName : characterName;
 
         return {
-            id: color,
+            id: playerSetup.color,
             name: playerName, // Name for leaderboard
             pawns: Array.from({ length: 4 }, (_, i) => ({ id: i + 1, position: -1 })),
-            isBot: !isHuman,
-            characterName: playerName, // Name for UI display
-            characterImage: CHARACTER_DATA[color].image,
+            isBot: playerSetup.isBot,
+            // For the UI, we always show the character's canonical name.
+            characterName: characterName, 
+            characterImage: CHARACTER_DATA[playerSetup.color].image,
         };
     });
+    
     setPlayers(initialPlayers);
   }, [humanColors]);
 
@@ -377,12 +393,18 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
 
   const getTurnStatusMessage = () => {
     switch(turnState) {
-        case 'rolling': return currentPlayer.isBot ? 'Bot is Rolling...' : 'Roll Your Dice!';
+        case 'rolling': return currentPlayer.isBot ? `${currentPlayer.characterName} is Rolling...` : 'Roll Your Dice!';
         case 'selecting': return 'Select a Pawn to Move';
         case 'moving': return 'Moving...';
         case 'game-over': return 'Game Over!';
         default: return 'Roll Dice';
     }
+  }
+  
+  const getDisplayName = () => {
+      if (winner) return `${winner.name} Wins!`;
+      if (currentPlayer.isBot) return `${currentPlayer.characterName}'s Turn`;
+      return `${currentPlayer.name}'s Turn`;
   }
 
   return (
@@ -437,7 +459,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                     />
                     <div className="flex-grow text-left">
                         <h2 className="text-lg font-bold text-white truncate">
-                            {winner ? `${winner.characterName} Wins!` : `${currentPlayer.characterName}'s Turn`}
+                           {getDisplayName()}
                         </h2>
                         <p className="text-sm text-white/90">{getTurnStatusMessage()}</p>
                     </div>
