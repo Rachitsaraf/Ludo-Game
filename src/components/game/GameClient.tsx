@@ -399,7 +399,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                             <Dices className="mr-2 h-6 w-6 sm:h-8 sm:h-8" />
                             Roll Dice
                         </Button>
-                        <div className="h-6 mt-1 text-center text-white font-semibold">
+                        <div className="h-12 mt-1 text-center text-white font-semibold flex items-center justify-center">
                           {turnMessage && <p className="animate-in fade-in-0">{turnMessage}</p>}
                         </div>
                     </>
