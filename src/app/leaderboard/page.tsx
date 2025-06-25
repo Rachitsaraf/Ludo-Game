@@ -125,10 +125,12 @@ export default function LeaderboardPage() {
   };
   
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-black font-headline flex flex-col items-center p-4">
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-950 via-blue-900 to-indigo-950 font-headline flex flex-col items-center p-4">
       <FloatingIcon icon={Trophy} className="w-16 h-16 top-[15%] left-[10%] rotate-12" duration={8} />
       <FloatingIcon icon={Star} className="w-12 h-12 top-[70%] left-[20%] -rotate-12" duration={12} delay={1} />
       <FloatingIcon icon={Award} className="w-14 h-14 top-[20%] right-[15%] rotate-6" duration={10} delay={0.5} />
+      <FloatingIcon icon={Trophy} className="w-10 h-10 bottom-[10%] right-[12%] -rotate-10" duration={9} delay={1.8} />
+      <FloatingIcon icon={Star} className="w-11 h-11 bottom-[20%] left-[8%] rotate-8" duration={14} delay={0.2} />
 
       <div className="absolute top-4 left-4 z-10">
         <Link href="/" passHref>

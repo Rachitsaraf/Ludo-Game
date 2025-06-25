@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { PlayerColor } from '@/lib/types';
-import { CheckCircle, Circle, Palette, Users, Gamepad2 } from 'lucide-react';
+import { CheckCircle, Circle, Palette, Users, Gamepad2, Star } from 'lucide-react';
 import { CHARACTER_DATA, CHARACTER_HINTS } from '@/lib/characters';
 import Image from 'next/image';
 
@@ -59,10 +59,12 @@ export default function SelectColorPage() {
   }, [humanPlayerCount, selectedColors]);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-black font-headline flex flex-col items-center justify-center p-6 text-center text-white">
-       <FloatingIcon icon={Palette} className="w-16 h-16 top-[15%] left-[10%] rotate-12" duration={8} />
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-950 via-blue-900 to-indigo-950 font-headline flex flex-col items-center justify-center p-6 text-center text-white">
+      <FloatingIcon icon={Palette} className="w-16 h-16 top-[15%] left-[10%] rotate-12" duration={8} />
       <FloatingIcon icon={Users} className="w-12 h-12 top-[70%] left-[20%] -rotate-12" duration={12} delay={1} />
       <FloatingIcon icon={Gamepad2} className="w-14 h-14 top-[20%] right-[15%] rotate-6" duration={10} delay={0.5} />
+      <FloatingIcon icon={Star} className="w-10 h-10 bottom-[10%] right-[12%] -rotate-10" duration={9} delay={1.8} />
+      <FloatingIcon icon={Palette} className="w-11 h-11 bottom-[20%] left-[8%] rotate-8" duration={14} delay={0.2} />
 
       <Card className="w-full max-w-md rounded-4xl shadow-2xl text-center bg-white/10 backdrop-blur-md border-2 border-white/20 z-10">
         <CardHeader>

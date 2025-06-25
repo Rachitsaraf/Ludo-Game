@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { PlayerSelectionDialog } from '@/components/game/PlayerSelectionDialog';
 import { DevelopersDialog } from '@/components/DevelopersDialog';
 import Link from 'next/link';
@@ -35,12 +36,15 @@ export default function Home() {
   const buttonBaseClasses = "flex flex-col items-center justify-center gap-2 p-2 text-white font-semibold rounded-2xl shadow-lg border-b-4 transform transition-all duration-150 ease-in-out hover:-translate-y-1 active:translate-y-0 active:border-b-2 active:brightness-90";
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-black font-headline flex flex-col items-center justify-center p-6 text-center text-white">
+    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-950 via-blue-900 to-indigo-950 font-headline flex flex-col items-center justify-center p-6 text-center text-white">
       {/* Background Decorative Icons */}
       <FloatingIcon icon={Dice5} className="w-16 h-16 top-[10%] left-[10%] rotate-12" duration={5} delay={0.5} />
       <FloatingIcon icon={Star} className="w-10 h-10 top-[20%] right-[8%] -rotate-12" duration={6} />
       <FloatingIcon icon={Gamepad2} className="w-12 h-12 bottom-[15%] left-[12%] rotate-6" duration={4} delay={1}/>
       <FloatingIcon icon={Trophy} className="w-11 h-11 bottom-[25%] right-[10%] -rotate-6" duration={5.5} delay={0.2} />
+      <FloatingIcon icon={Dice5} className="w-8 h-8 top-[50%] right-[15%] rotate-10" duration={7} delay={0.8}/>
+      <FloatingIcon icon={Star} className="w-9 h-9 bottom-[55%] left-[5%] -rotate-8" duration={8} delay={0.1}/>
+      <FloatingIcon icon={Gamepad2} className="w-14 h-14 top-[5%] left-[30%]" duration={6.5} />
       
       <div className="z-10 flex flex-col items-center justify-center gap-8 w-full">
         <div className="flex flex-col items-center gap-4 mb-4">

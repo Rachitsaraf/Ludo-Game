@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Gamepad2, Trophy, Star, Dice5 } from 'lucide-react';
+import { ArrowLeft, Gamepad2, Trophy, Star, Dice5, Plus, Minus, Maximize, Minimize } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -38,12 +38,16 @@ const FloatingIcon = ({ icon: Icon, className, duration = 10, delay = 0 }: { ico
 
 export default function InstructionsPage() {
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-black font-headline flex flex-col items-center justify-center p-4 text-white">
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-950 via-blue-900 to-indigo-950 font-headline flex flex-col items-center justify-center p-4 text-white">
       {/* Background floating icons */}
       <FloatingIcon icon={Dice5} className="w-12 h-12 top-[15%] left-[10%] rotate-12" duration={8} />
       <FloatingIcon icon={Gamepad2} className="w-10 h-10 top-[70%] left-[20%] -rotate-12" duration={12} delay={1} />
       <FloatingIcon icon={Star} className="w-14 h-14 top-[20%] right-[15%] rotate-6" duration={10} delay={0.5} />
       <FloatingIcon icon={Trophy} className="w-12 h-12 bottom-[10%] right-[12%] -rotate-6" duration={9} delay={1.5} />
+      <FloatingIcon icon={Plus} className="w-8 h-8 top-[5%] right-[30%] rotate-2" duration={11} />
+      <FloatingIcon icon={Minus} className="w-9 h-9 bottom-[15%] left-[35%] -rotate-10" duration={13} delay={0.8} />
+      <FloatingIcon icon={Maximize} className="w-10 h-10 top-[40%] left-[5%] rotate-10" duration={10} delay={1.2} />
+      <FloatingIcon icon={Minimize} className="w-11 h-11 bottom-[30%] right-[8%]" duration={9} delay={0.3} />
 
       <div className="absolute top-4 left-4 z-20">
         <Link href="/" passHref>

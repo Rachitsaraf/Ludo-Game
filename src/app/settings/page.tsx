@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, RefreshCw, User, Paintbrush, Music, Settings } from 'lucide-react';
+import { ArrowLeft, RefreshCw, User, Paintbrush, Music, Settings, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
 import { useSound } from '@/hooks/use-sound';
@@ -61,10 +61,12 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-black font-headline flex flex-col items-center justify-center p-4">
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-950 via-blue-900 to-indigo-950 font-headline flex flex-col items-center justify-center p-4">
       <FloatingIcon icon={Settings} className="w-16 h-16 top-[15%] left-[10%] rotate-12" duration={8} />
       <FloatingIcon icon={Music} className="w-12 h-12 top-[70%] left-[20%] -rotate-12" duration={12} delay={1} />
       <FloatingIcon icon={User} className="w-14 h-14 top-[20%] right-[15%] rotate-6" duration={10} delay={0.5} />
+      <FloatingIcon icon={Star} className="w-10 h-10 bottom-[10%] right-[12%] -rotate-10" duration={9} delay={1.8} />
+      <FloatingIcon icon={Paintbrush} className="w-11 h-11 bottom-[20%] left-[8%] rotate-8" duration={14} delay={0.2} />
       
       <div className="absolute top-4 left-4 z-10">
         <Link href="/" passHref>
