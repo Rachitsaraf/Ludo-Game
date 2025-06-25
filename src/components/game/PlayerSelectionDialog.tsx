@@ -39,7 +39,7 @@ export const PlayerSelectionDialog = ({ isOpen, onClose }: PlayerSelectionDialog
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 p-6">
-          {[2, 3, 4].map((count) => (
+          {[1, 2, 3, 4].map((count) => (
             <Button
               key={count}
               onClick={() => handlePlayerSelect(count)}
