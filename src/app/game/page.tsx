@@ -14,7 +14,7 @@ export default function GamePage({
     : ['red', 'green'] as PlayerColor[];
 
   return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-red-600 p-1">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 p-1">
           <GameClient humanColors={humanColors} />
       </div>
   );

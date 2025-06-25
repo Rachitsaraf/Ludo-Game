@@ -35,7 +35,7 @@ export default function Home() {
   const buttonBaseClasses = "flex flex-col items-center justify-center gap-2 p-2 text-white font-semibold rounded-2xl shadow-lg border-b-4 transform transition-all duration-150 ease-in-out hover:-translate-y-1 active:translate-y-0 active:border-b-2 active:brightness-90";
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-800 to-red-600 font-headline flex flex-col items-center justify-center p-6 text-center text-white">
+    <main className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 font-headline flex flex-col items-center justify-center p-6 text-center text-white">
       {/* Background Decorative Icons */}
       <FloatingIcon icon={Dice5} className="w-16 h-16 top-[10%] left-[10%] rotate-12" duration={5} delay={0.5} />
       <FloatingIcon icon={Star} className="w-10 h-10 top-[20%] right-[8%] -rotate-12" duration={6} />

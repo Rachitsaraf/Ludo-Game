@@ -7,10 +7,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, RefreshCw, User, Paintbrush, Music } from 'lucide-react';
+import { ArrowLeft, RefreshCw, User, Paintbrush, Music, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
 import { useSound } from '@/hooks/use-sound';
+
+const FloatingIcon = ({ icon: Icon, className, duration = 10, delay = 0 }: { icon: React.ElementType, className: string, duration?: number, delay?: number }) => {
+    return (
+        <div className={`absolute text-white/10 animate-bounce-slow ${className}`} style={{ animationDuration: `${duration}s`, animationDelay: `${delay}s` }}>
+            <Icon className="w-full h-full" />
+        </div>
+    );
+};
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -53,15 +61,19 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-indigo-900 via-purple-800 to-red-600 font-headline flex flex-col items-center justify-center p-4">
-      <div className="absolute top-4 left-4">
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 font-headline flex flex-col items-center justify-center p-4">
+      <FloatingIcon icon={Settings} className="w-16 h-16 top-[15%] left-[10%] rotate-12" duration={8} />
+      <FloatingIcon icon={Music} className="w-12 h-12 top-[70%] left-[20%] -rotate-12" duration={12} delay={1} />
+      <FloatingIcon icon={User} className="w-14 h-14 top-[20%] right-[15%] rotate-6" duration={10} delay={0.5} />
+      
+      <div className="absolute top-4 left-4 z-10">
         <Link href="/" passHref>
           <Button variant="ghost" size="icon" className="rounded-full bg-white/50 text-white hover:bg-white/70 hover:text-black">
             <ArrowLeft className="h-6 w-6 sm:h-8 sm:w-8" />
           </Button>
         </Link>
       </div>
-      <Card className="w-full max-w-md shadow-lg rounded-4xl bg-white/90 dark:bg-slate-800/80 backdrop-blur-sm border-white/20">
+      <Card className="w-full max-w-md shadow-lg rounded-4xl bg-white/90 dark:bg-slate-800/80 backdrop-blur-sm border-white/20 z-10">
         <CardHeader>
           <CardTitle className="text-3xl sm:text-4xl text-center text-card-foreground">Settings</CardTitle>
         </CardHeader>

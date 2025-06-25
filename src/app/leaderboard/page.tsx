@@ -12,12 +12,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, RefreshCw, Share2, Trophy } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Share2, Trophy, Star, Award } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 type SortOption = 'score' | 'gamesWon' | 'gamesPlayed';
+
+const FloatingIcon = ({ icon: Icon, className, duration = 10, delay = 0 }: { icon: React.ElementType, className: string, duration?: number, delay?: number }) => {
+    return (
+        <div className={`absolute text-white/10 animate-bounce-slow ${className}`} style={{ animationDuration: `${duration}s`, animationDelay: `${delay}s` }}>
+            <Icon className="w-full h-full" />
+        </div>
+    );
+};
 
 export default function LeaderboardPage() {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
@@ -117,7 +125,11 @@ export default function LeaderboardPage() {
   };
   
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-indigo-900 via-purple-800 to-red-600 font-headline flex flex-col items-center p-4">
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 font-headline flex flex-col items-center p-4">
+      <FloatingIcon icon={Trophy} className="w-16 h-16 top-[15%] left-[10%] rotate-12" duration={8} />
+      <FloatingIcon icon={Star} className="w-12 h-12 top-[70%] left-[20%] -rotate-12" duration={12} delay={1} />
+      <FloatingIcon icon={Award} className="w-14 h-14 top-[20%] right-[15%] rotate-6" duration={10} delay={0.5} />
+
       <div className="absolute top-4 left-4 z-10">
         <Link href="/" passHref>
           <Button variant="ghost" size="icon" className="rounded-full bg-white/50 text-white hover:bg-white/70 hover:text-black transition-colors">
@@ -126,7 +138,7 @@ export default function LeaderboardPage() {
         </Link>
       </div>
       
-      <Card className="w-full max-w-2xl mt-16 mb-4 shadow-lg rounded-4xl bg-white/90 dark:bg-slate-800/80 backdrop-blur-sm border-white/20">
+      <Card className="w-full max-w-2xl mt-16 mb-4 shadow-lg rounded-4xl bg-white/90 dark:bg-slate-800/80 backdrop-blur-sm border-white/20 z-10">
         <CardHeader className="flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <CardTitle className="text-3xl sm:text-4xl text-card-foreground flex items-center gap-2">
                 <Trophy className="h-8 w-8 text-yellow-500"/>

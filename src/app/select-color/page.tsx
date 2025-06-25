@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { PlayerColor } from '@/lib/types';
-import { CheckCircle, Circle, Palette } from 'lucide-react';
+import { CheckCircle, Circle, Palette, Users, Gamepad2 } from 'lucide-react';
 import { CHARACTER_DATA, CHARACTER_HINTS } from '@/lib/characters';
 import Image from 'next/image';
 
@@ -15,6 +15,14 @@ const colorOptions: { id: PlayerColor; hex: string; name: string; image: string;
   { id: 'blue',   hex: '#60a5fa', name: CHARACTER_DATA.blue.name, image: CHARACTER_DATA.blue.image, hint: CHARACTER_HINTS.blue },
   { id: 'yellow', hex: '#facc15', name: CHARACTER_DATA.yellow.name, image: CHARACTER_DATA.yellow.image, hint: CHARACTER_HINTS.yellow },
 ];
+
+const FloatingIcon = ({ icon: Icon, className, duration = 10, delay = 0 }: { icon: React.ElementType, className: string, duration?: number, delay?: number }) => {
+    return (
+        <div className={`absolute text-white/10 animate-bounce-slow ${className}`} style={{ animationDuration: `${duration}s`, animationDelay: `${delay}s` }}>
+            <Icon className="w-full h-full" />
+        </div>
+    );
+};
 
 export default function SelectColorPage() {
   const router = useRouter();
@@ -51,8 +59,12 @@ export default function SelectColorPage() {
   }, [humanPlayerCount, selectedColors]);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-800 to-red-600 font-headline flex flex-col items-center justify-center p-6 text-center text-white">
-      <Card className="w-full max-w-md rounded-4xl shadow-2xl text-center bg-white/10 backdrop-blur-md border-2 border-white/20">
+    <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 font-headline flex flex-col items-center justify-center p-6 text-center text-white">
+       <FloatingIcon icon={Palette} className="w-16 h-16 top-[15%] left-[10%] rotate-12" duration={8} />
+      <FloatingIcon icon={Users} className="w-12 h-12 top-[70%] left-[20%] -rotate-12" duration={12} delay={1} />
+      <FloatingIcon icon={Gamepad2} className="w-14 h-14 top-[20%] right-[15%] rotate-6" duration={10} delay={0.5} />
+
+      <Card className="w-full max-w-md rounded-4xl shadow-2xl text-center bg-white/10 backdrop-blur-md border-2 border-white/20 z-10">
         <CardHeader>
           <CardTitle className="text-3xl sm:text-4xl font-bold text-white drop-shadow-lg flex items-center justify-center gap-3">
             <Palette className="h-8 w-8" />
@@ -84,7 +96,7 @@ export default function SelectColorPage() {
         onClick={handleStartGame}
         disabled={selectedColors.length !== humanPlayerCount}
         size="lg"
-        className="mt-6 w-full max-w-md h-16 text-2xl rounded-2xl shadow-2xl bg-purple-600 hover:bg-purple-700 border-2 border-purple-400/50 transform hover:scale-105 transition-transform duration-300 ease-in-out disabled:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-6 w-full max-w-md h-16 text-2xl rounded-2xl shadow-2xl bg-purple-600 hover:bg-purple-700 border-2 border-purple-400/50 transform hover:scale-105 transition-transform duration-300 ease-in-out disabled:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed z-10"
       >
         Start Game
       </Button>
