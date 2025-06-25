@@ -2,7 +2,7 @@
 "use client";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { BrainCircuit, Cog, Mail, Puzzle, Feather, Users, Linkedin } from 'lucide-react';
+import { Mail, Users, Linkedin } from 'lucide-react';
 
 interface DevelopersDialogProps {
   isOpen: boolean;
@@ -14,7 +14,6 @@ const developers = [
     name: 'Vipul Vadhe',
     email: 'vipulmilindvadhe@gmail.com',
     linkedin: 'https://www.linkedin.com/in/vipul-vadhe/',
-    icon: <Cog className="h-8 w-8 text-white/90" />,
     gradient: 'from-orange-500 to-pink-500',
     animation: 'animate-in fade-in-from-right-20 slide-in-from-right-20 duration-500 ease-out delay-150',
   },
@@ -22,7 +21,6 @@ const developers = [
     name: 'Rachit Saraf',
     email: 'sararachit20@gmail.com',
     linkedin: 'https://www.linkedin.com/in/rachit-saraf-a64205365',
-    icon: <BrainCircuit className="h-8 w-8 text-white/90" />,
     gradient: 'from-blue-500 to-purple-600',
     animation: 'animate-in fade-in-from-left-20 slide-in-from-left-20 duration-500 ease-out',
   },
@@ -30,7 +28,6 @@ const developers = [
     name: 'Dhiraj Giri',
     email: 'dhirajgiri91124@gmail.com',
     linkedin: 'http://www.linkedin.com/in/dhirajgiri18',
-    icon: <Puzzle className="h-8 w-8 text-white/90" />,
     gradient: 'from-green-500 to-teal-500',
     animation: 'animate-in fade-in-from-left-20 slide-in-from-left-20 duration-500 ease-out delay-300',
   },
@@ -38,7 +35,6 @@ const developers = [
     name: 'Poonam Dhake',
     email: 'poonamdhake91@gmail.com',
     linkedin: 'https://www.linkedin.com/in/poonam-dhake',
-    icon: <Feather className="h-8 w-8 text-white/90" />,
     gradient: 'from-pink-400 to-yellow-400',
     animation: 'animate-in fade-in-from-right-20 slide-in-from-right-20 duration-500 ease-out delay-450',
   }
@@ -58,11 +54,8 @@ export const DevelopersDialog = ({ isOpen, onClose }: DevelopersDialogProps) => 
         <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
           {developers.map((dev, index) => (
             <div key={index} className={`p-4 rounded-2xl shadow-lg border border-white/20 bg-gradient-to-br ${dev.gradient} ${dev.animation}`}>
-              <div className="flex items-center gap-4 mb-2">
-                {dev.icon}
-                <h3 className="text-lg font-bold">{dev.name}</h3>
-              </div>
-              <div className="space-y-1 ml-12">
+              <h3 className="text-lg font-bold mb-2">{dev.name}</h3>
+              <div className="space-y-1">
                 {dev.email && (
                   <div className="flex items-center gap-2 text-xs text-white/80">
                     <Mail className="h-4 w-4" />
