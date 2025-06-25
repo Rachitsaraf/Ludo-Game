@@ -381,7 +381,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                         data-ai-hint={CHARACTER_HINTS[winner?.id || currentPlayer.id]}
                     />
                     <div className="flex-grow text-left">
-                        <h2 className="text-xl font-bold text-white">
+                        <h2 className="text-lg font-bold text-white">
                             {winner ? `${winner.characterName} Wins!` : `${currentPlayer.characterName}'s Turn`}
                         </h2>
                         <p className="text-sm text-white/90">{getTurnStatusMessage()}</p>
