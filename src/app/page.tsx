@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Settings, Info, Trophy, Users, Gamepad2, Star, Dice5 } from 'lucide-react';
 import { useSound } from '@/hooks/use-sound';
 import { SplashScreen } from '@/components/SplashScreen';
+import { useRouter } from 'next/navigation';
 
 // A component for decorative floating icons that gently bob and fade
 const FloatingIcon = ({ icon: Icon, className, duration = 4, delay = 0 }: { icon: React.ElementType, className: string, duration?: number, delay?: number }) => {
@@ -24,6 +25,7 @@ export default function Home() {
   const [isDevelopersOpen, setDevelopersOpen] = useState(false);
   const { playSound } = useSound();
   const [showSplash, setShowSplash] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,6 +42,11 @@ export default function Home() {
   const handleOpenDevelopers = () => {
     playSound('click');
     setDevelopersOpen(true);
+  };
+
+  const handleOpenSettings = () => {
+    playSound('click');
+    router.push('/settings');
   };
 
   // Base classes for the 3D-style buttons
@@ -107,10 +114,12 @@ export default function Home() {
                 </div>
 
                 <div className="opacity-0 animate-pop-in" style={{ animationDelay: '800ms' }}>
-                    <Link href="/settings" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-red-500 border-red-700 hover:bg-red-400`}>
+                    <button
+                      onClick={handleOpenSettings}
+                      className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-red-500 border-red-700 hover:bg-red-400`}>
                         <Settings className="h-10 w-10" />
                         <span>Settings</span>
-                    </Link>
+                    </button>
                 </div>
 
                 <div className="opacity-0 animate-pop-in" style={{ animationDelay: '900ms' }}>
