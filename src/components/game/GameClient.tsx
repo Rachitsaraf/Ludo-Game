@@ -371,11 +371,21 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
         
         <div className="w-full md:w-auto flex flex-col items-center gap-4">
             <Card className="p-4 rounded-4xl shadow-lg w-full max-w-sm flex flex-col items-center gap-4 bg-white/10 backdrop-blur-sm border border-white/20">
-                 <div className="w-full text-center p-2 rounded-lg" style={{ backgroundColor: playerColors[currentPlayer.id] }}>
-                    <h2 className="text-xl font-bold text-white">
-                        {winner ? `${winner.characterName} Wins!` : `${currentPlayer.characterName}'s Turn`}
-                    </h2>
-                    <p className="text-sm text-white/90">{getTurnStatusMessage()}</p>
+                 <div className="w-full p-2 rounded-lg flex items-center gap-3" style={{ backgroundColor: playerColors[winner?.id || currentPlayer.id] }}>
+                    <Image 
+                        src={winner?.characterImage || currentPlayer.characterImage} 
+                        alt={winner?.characterName || currentPlayer.characterName}
+                        width={48}
+                        height={48}
+                        className="rounded-full bg-white/30 border-2 border-white/50"
+                        data-ai-hint={CHARACTER_HINTS[winner?.id || currentPlayer.id]}
+                    />
+                    <div className="flex-grow text-left">
+                        <h2 className="text-xl font-bold text-white">
+                            {winner ? `${winner.characterName} Wins!` : `${currentPlayer.characterName}'s Turn`}
+                        </h2>
+                        <p className="text-sm text-white/90">{getTurnStatusMessage()}</p>
+                    </div>
                  </div>
                 {winner ? (
                     <div className="text-center text-white flex-grow flex flex-col justify-center items-center h-[180px]">
