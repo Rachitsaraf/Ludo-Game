@@ -14,28 +14,28 @@ const developers = [
     email: 'vipulmilindvadhe@gmail.com',
     linkedin: 'https://www.linkedin.com/in/vipul-vadhe/',
     gradient: 'from-orange-500 to-pink-500',
-    animation: 'animate-in fade-in-from-right-20 slide-in-from-right-20 duration-500 ease-out delay-150',
+    animation: 'animate-in fade-in duration-500 ease-out delay-150',
   },
   {
     name: 'Rachit Saraf',
     email: 'sararachit20@gmail.com',
     linkedin: 'https://www.linkedin.com/in/rachit-saraf-a64205365',
     gradient: 'from-blue-500 to-purple-600',
-    animation: 'animate-in fade-in-from-left-20 slide-in-from-left-20 duration-500 ease-out',
+    animation: 'animate-in fade-in duration-500 ease-out',
   },
   {
     name: 'Dhiraj Giri',
     email: 'dhirajgiri91124@gmail.com',
     linkedin: 'http://www.linkedin.com/in/dhirajgiri18',
     gradient: 'from-green-500 to-teal-500',
-    animation: 'animate-in fade-in-from-left-20 slide-in-from-left-20 duration-500 ease-out delay-300',
+    animation: 'animate-in fade-in duration-500 ease-out delay-300',
   },
   {
     name: 'Poonam Dhake',
     email: 'poonamdhake91@gmail.com',
     linkedin: 'https://www.linkedin.com/in/poonam-dhake',
     gradient: 'from-pink-400 to-yellow-400',
-    animation: 'animate-in fade-in-from-right-20 slide-in-from-right-20 duration-500 ease-out delay-450',
+    animation: 'animate-in fade-in duration-500 ease-out delay-450',
   }
 ];
 
