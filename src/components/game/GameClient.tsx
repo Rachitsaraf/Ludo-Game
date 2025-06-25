@@ -15,6 +15,8 @@ import { Confetti } from './Confetti';
 import { CHARACTER_DATA, CHARACTER_HINTS } from '@/lib/characters';
 import Image from 'next/image';
 import { useSound } from '@/hooks/use-sound';
+import { updateLeaderboard } from '@/app/actions';
+import { useToast } from '@/hooks/use-toast';
 
 const playerColors = {
   red: '#f87171',    // red-400
@@ -90,6 +92,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
   const [selectedPawnId, setSelectedPawnId] = useState<number | null>(null);
   const { playSound } = useSound();
   const [turnMessage, setTurnMessage] = useState<string | null>(null);
+  const { toast } = useToast();
   
   const [animationState, setAnimationState] = useState<{
     pawnId: number;
@@ -100,12 +103,25 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
 
   const currentPlayer = players[currentPlayerIndex];
 
+  const handleWin = useCallback(async (winningPlayer: Player) => {
+    const result = await updateLeaderboard(winningPlayer);
+    if (result.error) {
+        toast({
+            title: 'Leaderboard Error',
+            description: "Could not save game results. Make sure Firebase is configured correctly in .env.local.",
+            variant: 'destructive',
+            duration: 8000,
+        });
+    }
+  }, [toast]);
+
   const nextTurn = useCallback((updatedPlayers: Player[] = players) => {
     const newWinner = updatedPlayers.find(p => p.pawns.every(pawn => pawn.position === 66));
     if (newWinner) {
         setWinner(newWinner);
         setTurnState('game-over');
         playSound('win');
+        handleWin(newWinner);
         return;
     }
 
@@ -115,7 +131,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     setMoveSteps(null);
     setSelectedPawnId(null);
     setTurnMessage(null);
-  }, [players, playSound]);
+  }, [players, playSound, handleWin]);
 
   const isPawnMovable = useCallback((pawn: PawnState, steps: number): boolean => {
       if (pawn.position === 66) return false;
