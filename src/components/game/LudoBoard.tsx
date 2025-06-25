@@ -43,7 +43,7 @@ export const LudoBoard = () => {
   const boardCells = [];
   
   const layout = [
-    'R R R R R R R . g . G G G G G G G',
+    'R R R R R R R . . . G G G G G G G',
     'R R R R R R R . g . G G G G G G G',
     'R R R R R R R . g . G G G G G G G',
     'R R R R R R R . g . G G G G G G G',
@@ -51,7 +51,7 @@ export const LudoBoard = () => {
     'R R R R R R R . g . G G G G G G G',
     'R R R R R R R . g . G G G G G G G',
     '. . . . . . . C C C . . . . . . .',
-    'r r r r r r r C C C y y y y y y y',
+    '. r r r r r r C C C y y y y y y .',
     '. . . . . . . C C C . . . . . . .',
     'B B B B B B B . b . Y Y Y Y Y Y Y',
     'B B B B B B B . b . Y Y Y Y Y Y Y',
@@ -59,7 +59,7 @@ export const LudoBoard = () => {
     'B B B B B B B . b . Y Y Y Y Y Y Y',
     'B B B B B B B . b . Y Y Y Y Y Y Y',
     'B B B B B B B . b . Y Y Y Y Y Y Y',
-    'B B B B B B B . b . Y Y Y Y Y Y Y',
+    'B B B B B B B . . . Y Y Y Y Y Y Y',
   ].map(row => row.split(/\s+/));
 
   const colorMap: { [key: string]: string } = {
@@ -69,10 +69,10 @@ export const LudoBoard = () => {
   };
 
   const startingTiles: { [key: string]: { dir: 'up' | 'down' | 'left' | 'right'; color: string; tileColor: string } } = {
-    '7-1': { dir: 'right', color: 'text-red-400', tileColor: 'bg-black'},
-    '1-9': { dir: 'down', color: 'text-green-400', tileColor: 'bg-black'},
-    '9-15': { dir: 'left', color: 'text-yellow-400', tileColor: 'bg-black'},
-    '15-7': { dir: 'up', color: 'text-blue-400', tileColor: 'bg-black'},
+    '8-1': { dir: 'right', color: 'text-red-400', tileColor: 'bg-black'},
+    '1-8': { dir: 'down', color: 'text-green-400', tileColor: 'bg-black'},
+    '8-15': { dir: 'left', color: 'text-yellow-400', tileColor: 'bg-black'},
+    '15-8': { dir: 'up', color: 'text-blue-400', tileColor: 'bg-black'},
   };
 
   const safeTiles: { [key: string]: string } = {
