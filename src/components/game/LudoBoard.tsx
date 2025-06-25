@@ -69,10 +69,10 @@ export const LudoBoard = () => {
   };
 
   const startingTiles: { [key: string]: { dir: 'up' | 'down' | 'left' | 'right'; color: string; tileColor: string } } = {
-    '7-1': { dir: 'right', color: 'text-red-600', tileColor: 'bg-red-500'},
-    '1-9': { dir: 'down', color: 'text-green-600', tileColor: 'bg-green-500'},
-    '9-15': { dir: 'left', color: 'text-yellow-500', tileColor: 'bg-yellow-400'},
-    '15-7': { dir: 'up', color: 'text-blue-600', tileColor: 'bg-blue-500'},
+    '7-1': { dir: 'right', color: 'text-red-400', tileColor: 'bg-black'},
+    '1-9': { dir: 'down', color: 'text-green-400', tileColor: 'bg-black'},
+    '9-15': { dir: 'left', color: 'text-yellow-400', tileColor: 'bg-black'},
+    '15-7': { dir: 'up', color: 'text-blue-400', tileColor: 'bg-black'},
   };
 
   const safeTiles: { [key: string]: string } = {
