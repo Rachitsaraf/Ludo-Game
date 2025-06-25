@@ -162,29 +162,10 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     let animationTimeout: NodeJS.Timeout;
 
     if (animationState.path.length === 0) {
-        let toastToShow: { title: string; description?: string } | null = null;
-        
         const nextPlayersState = produce(players, draft => {
             const movedPlayer = draft[animationState.playerIndex];
             const movedPawn = movedPlayer.pawns.find(p => p.id === animationState.pawnId)!;
             const finalPosition = movedPawn.position;
-
-            // Default message for a normal move
-            toastToShow = { title: `${movedPlayer.characterName} moved ${animationState.totalSteps} steps!` };
-
-            // Check if a pawn has reached the final block
-            if (finalPosition === 66) {
-                const finishedPawnsCount = movedPlayer.pawns.filter(p => p.position === 66).length;
-                const remainingPawns = 4 - finishedPawnsCount;
-                if (remainingPawns > 0) { // Don't show for the last pawn, win toast is better
-                    toastToShow = {
-                        title: `One pawn is home!`,
-                        description: `${remainingPawns} more to go for ${movedPlayer.characterName}.`
-                    };
-                } else {
-                    toastToShow = null; // No toast for the winning move, nextTurn handles it
-                }
-            }
 
             // Collision logic
             if (finalPosition >= 0 && finalPosition < 60) {
@@ -199,8 +180,6 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                                     const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 60;
                                     if (otherPawnGlobalPos === targetPosOnBoard) {
                                         otherPawn.position = -1;
-                                        // This toast will correctly override the 'moved' toast.
-                                        toastToShow = { title: "Collision!", description: `${movedPlayer.characterName} knocked a ${otherPlayer.characterName} pawn back to base!` };
                                     }
                                 }
                             });
@@ -212,7 +191,6 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
         
         animationTimeout = setTimeout(() => {
             setPlayers(nextPlayersState);
-            if(toastToShow) toast(toastToShow);
             setAnimationState(null);
             nextTurn(nextPlayersState);
         }, 300);
@@ -238,7 +216,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     }
 
     return () => clearTimeout(animationTimeout);
-  }, [turnState, animationState, players, nextTurn, toast, playSound]);
+  }, [turnState, animationState, players, nextTurn, playSound]);
 
   const performRoll = useCallback((): number => {
     playSound('dice');
