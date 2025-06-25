@@ -30,7 +30,7 @@ export const SplashScreen = () => {
           alt="Company Logo"
           width={200}
           height={200}
-          className="rounded-full shadow-2xl shadow-black/50"
+          className="rounded-full shadow-2xl shadow-black/50 animate-logo-pulse"
           data-ai-hint="game studio logo"
         />
         <h1 className="text-4xl font-bold text-white drop-shadow-lg mt-4">
