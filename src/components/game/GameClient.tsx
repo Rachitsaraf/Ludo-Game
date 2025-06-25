@@ -280,11 +280,6 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     
     setMoveSteps(result);
     setTurnState('selecting');
-    if (result === 6 && movablePawns.some(p => p.position === -1)) {
-        toast({ title: "It's a Six!", description: "You can bring a pawn out! Select which pawn to move." });
-    } else {
-        toast({ title: "Select a Pawn", description: `Choose a pawn to move ${result} steps.` });
-    }
   };
 
   const handlePawnClick = (pawn: PawnState) => {
@@ -435,9 +430,14 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                                     {dice ? <DieFace value={dice[2]} /> : <DicePlaceholder />}
                                 </div>
                                 {turnState === 'selecting' && dice && moveSteps && (
-                                    <div className="flex items-center text-3xl sm:text-4xl font-bold gap-2 pt-2 text-white">
-                                        <span className="opacity-70">=</span>
-                                        <span className="text-4xl sm:text-5xl drop-shadow-md">{moveSteps}</span>
+                                    <div className="flex flex-col items-center justify-center gap-1 text-center text-white pt-2">
+                                        <div className="flex items-center text-3xl sm:text-4xl font-bold gap-2">
+                                            <span className="opacity-70">=</span>
+                                            <span className="text-4xl sm:text-5xl drop-shadow-md">{moveSteps}</span>
+                                        </div>
+                                        <p className="text-lg font-semibold animate-pulse">
+                                            {moveSteps === 6 ? "It's a Six! Select a pawn." : `Move ${moveSteps} steps.`}
+                                        </p>
                                     </div>
                                 )}
                             </div>
@@ -450,15 +450,6 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                     </>
                 )}
             </Card>
-
-            <div className="w-full max-w-xs grid grid-cols-2 gap-2">
-                {players.map(p => (
-                    <Card key={p.id} className={`p-2 rounded-xl flex items-center gap-2 transition-all duration-300 ${p.id === currentPlayer.id ? 'border-2 border-white scale-105' : 'opacity-70'}`} style={{backgroundColor: playerColors[p.id as PlayerColor]}}>
-                        <Image src={p.characterImage} alt={p.characterName} width={32} height={32} className="rounded-full bg-white/30" data-ai-hint={CHARACTER_HINTS[p.id]} />
-                        <div className="text-white font-semibold text-sm truncate">{p.name} {p.isBot && '(Bot)'}</div>
-                    </Card>
-                ))}
-            </div>
         </div>
     </div>
   );
