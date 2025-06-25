@@ -71,19 +71,7 @@ const OperatorPlaceholder = () => (
 );
 
 export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
-  const initialPlayers = useMemo(() => {
-    const allColors: PlayerColor[] = ['red', 'green', 'blue', 'yellow'];
-    return allColors.map(color => ({
-        id: color,
-        name: CHARACTER_DATA[color].name,
-        pawns: Array.from({ length: 4 }, (_, i) => ({ id: i + 1, position: -1 })),
-        isBot: !humanColors.includes(color),
-        characterName: CHARACTER_DATA[color].name,
-        characterImage: CHARACTER_DATA[color].image,
-    }));
-  }, [humanColors]);
-
-  const [players, setPlayers] = useState<Player[]>(initialPlayers);
+  const [players, setPlayers] = useState<Player[]>([]);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [dice, setDice] = useState<[number, Operator, number] | null>(null);
   const [turnState, setTurnState] = useState<'rolling' | 'selecting' | 'moving' | 'game-over'>('rolling');
@@ -100,6 +88,31 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     path: number[];
     totalSteps: number;
   } | null>(null);
+
+  useEffect(() => {
+    const savedPlayerName = localStorage.getItem('ludoPlayerName') || "Player 1";
+    const allColors: PlayerColor[] = ['red', 'green', 'blue', 'yellow'];
+    
+    const initialPlayers = allColors.map(color => {
+        const isHuman = humanColors.includes(color);
+        let playerName = CHARACTER_DATA[color].name;
+
+        // Apply custom name to the first human player
+        if (isHuman && humanColors.indexOf(color) === 0) {
+            playerName = savedPlayerName;
+        }
+
+        return {
+            id: color,
+            name: playerName, // Name for leaderboard
+            pawns: Array.from({ length: 4 }, (_, i) => ({ id: i + 1, position: -1 })),
+            isBot: !isHuman,
+            characterName: playerName, // Name for UI display
+            characterImage: CHARACTER_DATA[color].image,
+        };
+    });
+    setPlayers(initialPlayers);
+  }, [humanColors]);
 
   const currentPlayer = players[currentPlayerIndex];
 
@@ -328,13 +341,21 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
   }, [turnState, currentPlayer, isPawnMovable, nextTurn, performRoll, executeMove]);
 
   useEffect(() => {
-    if (turnState === 'rolling' && currentPlayer.isBot && !winner) {
+    if (turnState === 'rolling' && currentPlayer?.isBot && !winner) {
       const timer = setTimeout(() => {
         handleBotTurn();
       }, 1500);
       return () => clearTimeout(timer);
     }
   }, [turnState, currentPlayer, winner, handleBotTurn]);
+
+  if (players.length === 0 || !currentPlayer) {
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-950 via-blue-900 to-indigo-950">
+            <p className="text-white text-xl">Loading Game...</p>
+        </div>
+    );
+  }
 
   const getTurnStatusMessage = () => {
     switch(turnState) {
@@ -397,7 +418,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                         data-ai-hint={CHARACTER_HINTS[winner?.id || currentPlayer.id]}
                     />
                     <div className="flex-grow text-left">
-                        <h2 className="text-lg font-bold text-white">
+                        <h2 className="text-lg font-bold text-white truncate">
                             {winner ? `${winner.characterName} Wins!` : `${currentPlayer.characterName}'s Turn`}
                         </h2>
                         <p className="text-sm text-white/90">{getTurnStatusMessage()}</p>

@@ -1,14 +1,14 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, RefreshCw, User, Music, Paintbrush, Settings, Star } from 'lucide-react';
+import { ArrowLeft, RefreshCw, User, Music, Paintbrush, Settings, Star, Vibrate } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
 import { useSound } from '@/hooks/use-sound';
@@ -26,8 +26,37 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const { isMuted, toggleMute } = useSound();
   
-  const [isEditingName, setIsEditingName] = useState(false);
   const [playerName, setPlayerName] = useState("Player 1");
+  const [isVibrationOn, setIsVibrationOn] = useState(true);
+  
+  useEffect(() => {
+    const savedName = localStorage.getItem('ludoPlayerName');
+    if (savedName) {
+      setPlayerName(savedName);
+    }
+    const savedVibration = localStorage.getItem('ludoVibrationOn');
+    if (savedVibration !== null) {
+      setIsVibrationOn(JSON.parse(savedVibration));
+    } else {
+        // Default to true if not set
+        setIsVibrationOn(true);
+    }
+  }, []);
+
+  const handlePlayerNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setPlayerName(newName);
+    localStorage.setItem('ludoPlayerName', newName);
+  };
+  
+  const toggleVibration = () => {
+    const newState = !isVibrationOn;
+    setIsVibrationOn(newState);
+    localStorage.setItem('ludoVibrationOn', JSON.stringify(newState));
+    if (newState && typeof window.navigator.vibrate === 'function') {
+      window.navigator.vibrate(200);
+    }
+  };
 
   const handleReset = () => {
     const isConfirmed = window.confirm('Are you sure you want to reset all data? This cannot be undone.');
@@ -61,33 +90,35 @@ export default function SettingsPage() {
           <CardTitle className="text-3xl sm:text-4xl text-center text-card-foreground">Settings</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
-          <div className="space-y-2 p-3 sm:p-4 rounded-2xl bg-primary/20">
-            <div className="flex items-center justify-between">
-                <Label htmlFor="change-name" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
-                    <User className="h-5 w-5 sm:h-6 sm:w-6" />
-                    Change Player Name
-                </Label>
-                <Switch id="change-name" checked={isEditingName} onCheckedChange={setIsEditingName} />
-            </div>
-            {isEditingName && (
-                <div className="pt-2 animate-in fade-in-0 duration-300">
-                    <Input
-                      type="text"
-                      value={playerName}
-                      onChange={(e) => setPlayerName(e.target.value)}
-                      placeholder="Enter your name"
-                      className="text-lg bg-white dark:bg-slate-700"
-                    />
-                </div>
-            )}
+           <div className="space-y-2 p-3 sm:p-4 rounded-2xl bg-primary/20">
+            <Label htmlFor="player-name" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
+                <User className="h-5 w-5 sm:h-6 sm:w-6" />
+                Player Name
+            </Label>
+            <Input
+              id="player-name"
+              type="text"
+              value={playerName}
+              onChange={handlePlayerNameChange}
+              placeholder="Enter your name"
+              className="text-lg bg-white dark:bg-slate-700"
+            />
           </div>
           
           <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20">
             <Label htmlFor="sound-music" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
               <Music className="h-5 w-5 sm:h-6 sm:w-6" />
-              Sound/Music
+              Sound & Music
             </Label>
             <Switch id="sound-music" checked={!isMuted} onCheckedChange={toggleMute} />
+          </div>
+
+          <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20">
+            <Label htmlFor="vibration" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
+              <Vibrate className="h-5 w-5 sm:h-6 sm:w-6" />
+              Vibration (Mobile)
+            </Label>
+            <Switch id="vibration" checked={isVibrationOn} onCheckedChange={toggleVibration} />
           </div>
           
           <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20">
