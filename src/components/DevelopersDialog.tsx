@@ -21,7 +21,7 @@ const developers = [
     name: 'Rachit Saraf',
     role: 'Game Logic and AI Logic',
     email: 'sararachit20@gmail.com',
-    linkedin: 'https://www.linkedin.com/in/rachit-saraf',
+    linkedin: 'https://www.linkedin.com/in/rachit-saraf-a64205365',
     icon: <BrainCircuit className="h-8 w-8 text-white/90" />,
     gradient: 'from-blue-500 to-purple-600',
     animation: 'animate-in fade-in-from-left-20 slide-in-from-left-20 duration-500 ease-out',
