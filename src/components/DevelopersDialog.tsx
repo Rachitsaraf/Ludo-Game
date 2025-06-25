@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -19,7 +20,6 @@ const developers = [
   },
   {
     name: 'Rachit Saraf',
-    role: 'Game Logic and AI Logic',
     email: 'sararachit20@gmail.com',
     linkedin: 'https://www.linkedin.com/in/rachit-saraf-a64205365',
     icon: <BrainCircuit className="h-8 w-8 text-white/90" />,
@@ -28,7 +28,6 @@ const developers = [
   },
   {
     name: 'Dhiraj Giri',
-    role: 'Project Contributor',
     email: 'dhirajgiri91124@gmail.com',
     linkedin: 'http://www.linkedin.com/in/dhirajgiri18',
     icon: <Puzzle className="h-8 w-8 text-white/90" />,
@@ -37,7 +36,6 @@ const developers = [
   },
   {
     name: 'Poonam Dhake',
-    role: 'Project Contributor',
     email: 'poonamdhake91@gmail.com',
     linkedin: 'https://www.linkedin.com/in/poonam-dhake',
     icon: <Feather className="h-8 w-8 text-white/90" />,
@@ -64,7 +62,6 @@ export const DevelopersDialog = ({ isOpen, onClose }: DevelopersDialogProps) => 
                 {dev.icon}
                 <h3 className="text-lg font-bold">{dev.name}</h3>
               </div>
-              {dev.role && <p className="text-sm font-semibold text-white/90 mb-2 ml-12">{dev.role}</p>}
               <div className="space-y-1 ml-12">
                 {dev.email && (
                   <div className="flex items-center gap-2 text-xs text-white/80">
