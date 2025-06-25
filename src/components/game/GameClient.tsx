@@ -407,17 +407,6 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                                     {dice ? <OperatorIcon op={dice[1]} /> : <OperatorPlaceholder />}
                                     {dice ? <DieFace value={dice[2]} /> : <DicePlaceholder />}
                                 </div>
-                                {turnState === 'selecting' && dice && moveSteps && (
-                                    <div className="flex flex-col items-center justify-center gap-1 text-center text-white pt-2">
-                                        <div className="flex items-center text-3xl sm:text-4xl font-bold gap-2">
-                                            <span className="opacity-70">=</span>
-                                            <span className="text-4xl sm:text-5xl drop-shadow-md">{moveSteps}</span>
-                                        </div>
-                                        <p className="text-lg font-semibold animate-pulse">
-                                            {moveSteps === 6 ? "It's a Six! Select a pawn." : `Move ${moveSteps} steps.`}
-                                        </p>
-                                    </div>
-                                )}
                             </div>
                         )}
                         
@@ -425,6 +414,18 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                             <Dices className="mr-2 h-6 w-6 sm:h-8 sm:h-8" />
                             {getTurnMessage()}
                         </Button>
+                        
+                        {!animationState && turnState === 'selecting' && dice && moveSteps && (
+                            <div className="flex flex-col items-center justify-center gap-1 text-center text-white pt-2">
+                                <div className="flex items-center text-3xl sm:text-4xl font-bold gap-2">
+                                    <span className="opacity-70">=</span>
+                                    <span className="text-4xl sm:text-5xl drop-shadow-md">{moveSteps}</span>
+                                </div>
+                                <p className="text-lg font-semibold animate-pulse">
+                                    {moveSteps === 6 ? "It's a Six! Select a pawn." : `Move ${moveSteps} steps.`}
+                                </p>
+                            </div>
+                        )}
                     </>
                 )}
             </Card>
