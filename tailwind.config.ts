@@ -24,7 +24,7 @@ export default {
       },
       fontFamily: {
         body: ['"Baloo 2"', 'sans-serif'],
-        headline: ['"Baloo 2"', 'sans-serif'],
+        headline: ['"Fredoka One"', 'cursive'],
         code: ['monospace'],
       },
       colors: {
