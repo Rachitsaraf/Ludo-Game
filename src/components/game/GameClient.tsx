@@ -370,7 +370,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
         </div>
         
         <div className="w-full md:w-auto flex flex-col items-center gap-4">
-            <Card className="p-4 rounded-4xl shadow-lg w-full max-w-xs flex flex-col items-center gap-4 bg-white/10 backdrop-blur-sm border border-white/20">
+            <Card className="p-4 rounded-4xl shadow-lg w-full max-w-sm flex flex-col items-center gap-4 bg-white/10 backdrop-blur-sm border border-white/20">
                  <div className="w-full text-center p-2 rounded-lg" style={{ backgroundColor: playerColors[currentPlayer.id] }}>
                     <h2 className="text-xl font-bold text-white">
                         {winner ? `${winner.characterName} Wins!` : `${currentPlayer.characterName}'s Turn`}
