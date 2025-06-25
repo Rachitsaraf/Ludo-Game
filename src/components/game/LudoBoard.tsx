@@ -67,12 +67,12 @@ export const LudoBoard = () => {
     'R': 'bg-red-500', 'G': 'bg-green-500', 'B': 'bg-blue-500', 'Y': 'bg-yellow-400',
     'r': 'bg-red-500', 'g': 'bg-green-500', 'b': 'bg-blue-500', 'y': 'bg-yellow-400',
   };
-
-  const startingTiles: { [key: string]: { dir: 'up' | 'down' | 'left' | 'right'; color: string; tileColor: string } } = {
-    '8-1': { dir: 'right', color: 'text-red-400', tileColor: 'bg-black'},
-    '1-8': { dir: 'down', color: 'text-green-400', tileColor: 'bg-black'},
-    '8-15': { dir: 'left', color: 'text-yellow-400', tileColor: 'bg-black'},
-    '15-8': { dir: 'up', color: 'text-blue-400', tileColor: 'bg-black'},
+  
+  const startingTiles: { [key: string]: { dir: 'up' | 'down' | 'left' | 'right'; playerChar: 'r' | 'g' | 'b' | 'y' } } = {
+    '7-1':  { dir: 'right', playerChar: 'r' },
+    '1-9':  { dir: 'down',  playerChar: 'g' },
+    '9-15': { dir: 'left',  playerChar: 'y' },
+    '15-7': { dir: 'up',    playerChar: 'b' },
   };
 
   const safeTiles: { [key: string]: string } = {
@@ -116,8 +116,8 @@ export const LudoBoard = () => {
         const safeColor = safeTiles[key];
 
         if (startInfo) {
-          cellContent = <Arrow direction={startInfo.dir} colorClass={startInfo.color} />;
-          tileBg = startInfo.tileColor;
+          cellContent = <Arrow direction={startInfo.dir} colorClass="text-white" />;
+          tileBg = colorMap[startInfo.playerChar];
         } else if (safeColor) {
           cellContent = <SafeStar colorClass={safeColor} />;
         }
