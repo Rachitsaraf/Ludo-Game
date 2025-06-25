@@ -63,7 +63,7 @@ export const LudoBoard = () => {
   ].map(row => row.split(/\s+/));
 
   const colorMap: { [key: string]: string } = {
-    '.': 'bg-yellow-100',
+    '.': 'bg-yellow-200',
     'R': 'bg-red-500', 'G': 'bg-green-500', 'B': 'bg-blue-500', 'Y': 'bg-yellow-400',
     'r': 'bg-red-500', 'g': 'bg-green-500', 'b': 'bg-blue-500', 'y': 'bg-yellow-400',
   };
@@ -110,7 +110,7 @@ export const LudoBoard = () => {
         }
       } else {
         let cellContent = null;
-        let tileBg = colorMap[cellType] || 'bg-yellow-100';
+        let tileBg = colorMap[cellType] || 'bg-yellow-200';
         
         const startInfo = startingTiles[key];
         const safeColor = safeTiles[key];
