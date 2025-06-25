@@ -30,14 +30,14 @@ export const SplashScreen = () => {
           alt="Company Logo"
           width={200}
           height={200}
-          className="rounded-full shadow-2xl shadow-black/50 animate-logo-pulse"
+          className="rounded-full shadow-2xl shadow-black/50"
           data-ai-hint="game studio logo"
         />
         <h1 className="text-4xl font-bold text-white drop-shadow-lg mt-4">
           Ludo Learn & Play
         </h1>
         <div className="w-24 h-2 mt-4 bg-white/20 rounded-full overflow-hidden">
-            <div className="h-full bg-white animate-pulse" style={{animationDuration: '1.8s'}}></div>
+            <div className="h-full bg-white animate-loading-bar"></div>
         </div>
       </div>
     </div>

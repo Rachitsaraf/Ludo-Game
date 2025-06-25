@@ -18,7 +18,7 @@ const Arrow = ({ direction, colorClass }: { direction: 'up' | 'down' | 'left' | 
 
 export const LudoBoard = () => {
   const Tile = ({ className = "", children }: { className?: string; children?: React.ReactNode }) => (
-    <div className={`flex items-center justify-center ${className}`}>{children}</div>
+    <div className={`flex items-center justify-center border border-black/20 ${className}`}>{children}</div>
   );
 
   const HomeBase = ({ bgColor }: { bgColor: string }) => (
@@ -63,7 +63,7 @@ export const LudoBoard = () => {
   ].map(row => row.split(/\s+/));
 
   const colorMap: { [key: string]: string } = {
-    '.': 'bg-black',
+    '.': 'bg-yellow-100',
     'R': 'bg-red-500', 'G': 'bg-green-500', 'B': 'bg-blue-500', 'Y': 'bg-yellow-400',
     'r': 'bg-red-500', 'g': 'bg-green-500', 'b': 'bg-blue-500', 'y': 'bg-yellow-400',
   };
@@ -110,7 +110,7 @@ export const LudoBoard = () => {
         }
       } else {
         let cellContent = null;
-        let tileBg = colorMap[cellType] || 'bg-black';
+        let tileBg = colorMap[cellType] || 'bg-yellow-100';
         
         const startInfo = startingTiles[key];
         const safeColor = safeTiles[key];
@@ -122,14 +122,14 @@ export const LudoBoard = () => {
           cellContent = <SafeStar colorClass={safeColor} />;
         }
         
-        boardCells.push(<Tile key={key} className={`${tileBg} border-black/20`}>{cellContent}</Tile>);
+        boardCells.push(<Tile key={key} className={`${tileBg}`}>{cellContent}</Tile>);
       }
     }
   }
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[95vw] rounded-2xl bg-white p-2 shadow-lg sm:p-3 md:max-w-[500px] lg:max-w-[600px] border-4 border-black">
-      <div className="grid h-full w-full grid-cols-17 grid-rows-17 gap-px">
+    <div className="relative mx-auto aspect-square w-full max-w-[95vw] rounded-2xl bg-white p-3 shadow-lg sm:p-4 md:max-w-[500px] lg:max-w-[600px] border-4 border-black">
+      <div className="grid h-full w-full grid-cols-17 grid-rows-17 gap-px bg-black">
         {boardCells}
       </div>
     </div>

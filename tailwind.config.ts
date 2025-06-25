@@ -127,9 +127,9 @@ export default {
           '80%': { transform: 'scale(1.05)', opacity: '1' },
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
-        'logo-pulse': {
-          '0%, 100%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.05)' },
+        'loading-bar': {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
         }
       },
       animation: {
@@ -141,7 +141,7 @@ export default {
         'shake': 'shake 0.82s cubic-bezier(.36,.07,.19,.97) both',
         'title-drop': 'title-drop 0.5s ease-out forwards',
         'pop-in': 'pop-in 0.4s ease-out forwards',
-        'logo-pulse': 'logo-pulse 2s ease-in-out infinite',
+        'loading-bar': 'loading-bar 1.8s ease-in-out infinite',
       },
     },
   },

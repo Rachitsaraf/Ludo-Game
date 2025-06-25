@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -27,7 +28,7 @@ export default function Home() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 2000);
+    }, 5000); // Show splash for 5 seconds
     return () => clearTimeout(timer); // Cleanup timer on unmount
   }, []);
 
@@ -99,7 +100,7 @@ export default function Home() {
                 </div>
 
                 <div className="opacity-0 animate-pop-in" style={{ animationDelay: '700ms' }}>
-                  <Link href="/instructions" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-purple-500 border-purple-700 hover:bg-purple-400`}>
+                  <Link href="/instructions" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl text-black bg-yellow-400 border-yellow-600 hover:bg-yellow-300`}>
                       <Info className="h-10 w-10" />
                       <span>Instructions</span>
                   </Link>

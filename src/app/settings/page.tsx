@@ -1,19 +1,17 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, RefreshCw, User, Music, Settings, Star } from 'lucide-react';
+import { ArrowLeft, RefreshCw, User, Music, Paintbrush, Settings, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
 import { useSound } from '@/hooks/use-sound';
-import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
-import { Skeleton } from '@/components/ui/skeleton';
 
 const FloatingIcon = ({ icon: Icon, className, duration = 10, delay = 0 }: { icon: React.ElementType, className: string, duration?: number, delay?: number }) => {
     return (
@@ -24,115 +22,24 @@ const FloatingIcon = ({ icon: Icon, className, duration = 10, delay = 0 }: { ico
 };
 
 export default function SettingsPage() {
+  const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const { isMuted, toggleMute } = useSound();
   
-  const [playerName, setPlayerName] = useState("");
-  const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  // Get or create a unique user ID from localStorage. This ID will be the document ID in Firestore.
-  useEffect(() => {
-    let storedUserId = localStorage.getItem('ludoUserId');
-    if (!storedUserId) {
-      // A simple way to generate a pseudo-unique ID for guest users.
-      // This will serve as the document ID in the 'leaderboard' collection.
-      storedUserId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-      localStorage.setItem('ludoUserId', storedUserId);
-    }
-    setUserId(storedUserId);
-  }, []);
-
-  // Fetch player data from Firestore when userId is available
-  useEffect(() => {
-    // If firebase isn't configured, fall back to localStorage.
-    if (!db) {
-        const storedName = localStorage.getItem('ludoPlayerName') || 'Player 1';
-        setPlayerName(storedName);
-        setLoading(false);
-        return;
-    }
-      
-    if (!userId) return;
-
-    const fetchData = async () => {
-      setLoading(true);
-      const playerDocRef = doc(db, 'leaderboard', userId);
-      try {
-        const docSnap = await getDoc(playerDocRef);
-        if (docSnap.exists()) {
-          setPlayerName(docSnap.data().playerName || 'Player 1');
-        } else {
-          // If the document doesn't exist, create it with default data.
-          const newPlayerData = {
-            playerName: 'Player 1',
-            gamesPlayed: 0,
-            gamesWon: 0,
-            averageTime: 'N/A',
-            score: 0,
-            avatarUrl: `https://placehold.co/40x40.png`,
-            lastUpdated: Timestamp.now(),
-          };
-          await setDoc(playerDocRef, newPlayerData);
-          setPlayerName(newPlayerData.playerName);
-        }
-      } catch (error) {
-        console.error("Error fetching player data:", error);
-        toast({ title: "Error", description: "Could not load player data.", variant: "destructive" });
-        setPlayerName('Player 1'); // Fallback
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userId, toast]);
-  
-  const handlePlayerNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newName = e.target.value;
-    setPlayerName(newName);
-    // If firebase isn't configured, save to localStorage as a fallback.
-    if (!db) {
-      localStorage.setItem('ludoPlayerName', newName);
-    }
-  };
-
-  const handleSavePlayerNameOnBlur = async () => {
-    // Do not save if Firebase is not configured.
-    if (!userId || !db) {
-      return;
-    }
-    
-    if (!playerName.trim()) {
-        toast({ title: "Invalid Name", description: "Player name cannot be empty.", variant: "destructive" });
-        return;
-    }
-
-    const playerDocRef = doc(db, 'leaderboard', userId);
-    try {
-      await setDoc(playerDocRef, { playerName: playerName.trim(), lastUpdated: Timestamp.now() }, { merge: true });
-      toast({
-        title: "Name Saved!",
-        description: `Your name has been updated.`,
-      });
-    } catch (error) {
-      console.error("Error updating player name:", error);
-      toast({ title: "Error", description: "Could not save your name. Please try again.", variant: "destructive" });
-    }
-  };
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [playerName, setPlayerName] = useState("Player 1");
 
   const handleReset = () => {
-    const isConfirmed = window.confirm('Are you sure you want to reset your player profile? This will create a new player ID and cannot be undone.');
+    const isConfirmed = window.confirm('Are you sure you want to reset all data? This cannot be undone.');
     if (isConfirmed) {
-      localStorage.removeItem('ludoUserId');
-      localStorage.removeItem('ludoGameState');
-      localStorage.removeItem('ludoPlayerName');
+      localStorage.clear();
+      toast({
+        title: "Data Reset",
+        description: "All application data has been cleared.",
+      });
       window.location.reload();
     }
   };
-  
-  // Render a loading state until we have a userId and have attempted to load data.
-  const isReady = !!userId;
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-gradient-to-br from-indigo-950 via-blue-900 to-indigo-950 font-headline flex flex-col items-center justify-center p-4">
@@ -155,25 +62,24 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
           <div className="space-y-2 p-3 sm:p-4 rounded-2xl bg-primary/20">
-            <Label htmlFor="player-name" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
-              <User className="h-5 w-5 sm:h-6 sm:w-6" />
-              Player Name
-            </Label>
-            {!isReady || loading ? (
-                <Skeleton className="h-10 w-full" />
-            ) : (
-                <Input
-                  id="player-name"
-                  type="text"
-                  value={playerName}
-                  onChange={handlePlayerNameChange}
-                  onBlur={handleSavePlayerNameOnBlur}
-                  placeholder="Enter your name"
-                  className="text-lg bg-white dark:bg-slate-700"
-                  disabled={!db}
-                />
+            <div className="flex items-center justify-between">
+                <Label htmlFor="change-name" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
+                    <User className="h-5 w-5 sm:h-6 sm:w-6" />
+                    Change Player Name
+                </Label>
+                <Switch id="change-name" checked={isEditingName} onCheckedChange={setIsEditingName} />
+            </div>
+            {isEditingName && (
+                <div className="pt-2 animate-in fade-in-0 duration-300">
+                    <Input
+                      type="text"
+                      value={playerName}
+                      onChange={(e) => setPlayerName(e.target.value)}
+                      placeholder="Enter your name"
+                      className="text-lg bg-white dark:bg-slate-700"
+                    />
+                </div>
             )}
-            {!db && <p className="text-xs text-muted-foreground pt-1">Player name is stored on this device only.</p>}
           </div>
           
           <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20">
@@ -184,13 +90,25 @@ export default function SettingsPage() {
             <Switch id="sound-music" checked={!isMuted} onCheckedChange={toggleMute} />
           </div>
           
+          <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20">
+            <Label htmlFor="dark-mode" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
+              <Paintbrush className="h-5 w-5 sm:h-6 sm:w-6" />
+              Dark Mode
+            </Label>
+            <Switch
+              id="dark-mode"
+              checked={theme === 'dark'}
+              onCheckedChange={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            />
+          </div>
+
           <Button
             variant="destructive"
             className="w-full h-12 sm:h-14 text-lg sm:text-xl rounded-2xl"
             onClick={handleReset}
           >
             <RefreshCw className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
-            Reset & New Profile
+            Reset All Data
           </Button>
         </CardContent>
       </Card>

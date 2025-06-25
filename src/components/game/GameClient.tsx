@@ -6,7 +6,7 @@ import { produce } from 'immer';
 import { LudoBoard } from './LudoBoard';
 import { Pawn } from './Pawn';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Dices, Minus, Plus, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Dices, Minus, Plus, HelpCircle, User, Bot, Check, X } from 'lucide-react';
 import type { Operator, Player, PlayerColor, PawnState } from '@/lib/types';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
@@ -180,12 +180,24 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                                     const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 60;
                                     if (otherPawnGlobalPos === targetPosOnBoard) {
                                         otherPawn.position = -1;
+                                        toast({
+                                            title: "Collision!",
+                                            description: `${movedPlayer.characterName} knocked ${otherPlayer.characterName}'s pawn back to base!`,
+                                            variant: "destructive"
+                                        });
                                     }
                                 }
                             });
                         }
                     });
                 }
+            }
+             // Check if pawn reached home
+            if (finalPosition === 66) {
+                toast({
+                    title: "Pawn Home!",
+                    description: `${movedPlayer.characterName} got a pawn to the finish line!`,
+                });
             }
         });
         
@@ -216,7 +228,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     }
 
     return () => clearTimeout(animationTimeout);
-  }, [turnState, animationState, players, nextTurn, playSound]);
+  }, [turnState, animationState, players, nextTurn, playSound, toast]);
 
   const performRoll = useCallback((): number => {
     playSound('dice');
@@ -241,6 +253,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     if (turnState !== 'rolling' || currentPlayer.isBot) return;
     
     const result = performRoll();
+    toast({ title: `You rolled for ${result} steps!` });
     
     if (result === 0) {
         toast({ title: "No move!", description: "Result is 0, skipping turn." });
@@ -265,6 +278,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     
     playSound('click');
     setSelectedPawnId(pawn.id);
+    toast({ description: `${currentPlayer.characterName} moved ${moveSteps} steps!`});
     executeMove(moveSteps, pawn.id);
   };
 
@@ -302,6 +316,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
       if (pawnToMove) {
         setMoveSteps(result);
         setTimeout(() => {
+            toast({ description: `${currentPlayer.characterName} moved ${result} steps!`});
             executeMove(result, pawnToMove!.id);
         }, 800);
       } else {
@@ -376,15 +391,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
         </div>
         
         <div className="w-full md:w-auto flex flex-col items-center gap-4">
-            <Card className="p-2 px-4 rounded-2xl shadow-lg w-full max-w-xs flex flex-col items-center gap-2" style={{backgroundColor: playerColors[currentPlayer.id as PlayerColor]}}>
-                <h2 className="text-xl font-bold text-white text-center">{turnTitle}</h2>
-                 <div className="flex items-center gap-2">
-                    <Image src={currentPlayer.characterImage} alt={currentPlayer.characterName} width={40} height={40} className="rounded-full bg-white/20 p-1" data-ai-hint={CHARACTER_HINTS[currentPlayer.id]} />
-                    <span className="text-lg font-semibold text-white">{currentPlayer.characterName}</span>
-                </div>
-            </Card>
-
-            <Card className="w-full max-w-xs p-4 rounded-4xl shadow-lg flex flex-col items-center gap-4 min-h-[200px] sm:min-h-[220px] justify-center bg-white/10 backdrop-blur-sm border border-white/20">
+            <Card className="p-4 rounded-4xl shadow-lg w-full max-w-xs flex flex-col items-center gap-4 min-h-[220px] bg-white/10 backdrop-blur-sm border border-white/20">
                 {winner ? (
                     <div className="text-center text-white">
                         <h2 className="text-3xl font-bold" style={{color: playerColors[winner.id as PlayerColor]}}>{winner.characterName} Wins!</h2>
@@ -392,43 +399,35 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                     </div>
                 ) : (
                     <>
-                        {animationState ? (
-                             <div className="flex flex-col items-center justify-center gap-2 text-center h-full text-white">
-                                <p className="text-xl sm:text-2xl font-bold">Moving Pawn</p>
-                                <p className="text-4xl sm:text-5xl font-bold">
-                                    {animationState.totalSteps - animationState.path.length + 1}
-                                    <span className="text-2xl sm:text-3xl opacity-70"> / {animationState.totalSteps}</span>
-                                </p>
-                             </div>
-                        ) : (
-                            <div className="flex flex-col items-center justify-center gap-2">
-                                <div className="flex items-center justify-center gap-2 sm:gap-4">
-                                    {dice ? <DieFace value={dice[0]} /> : <DicePlaceholder />}
-                                    {dice ? <OperatorIcon op={dice[1]} /> : <OperatorPlaceholder />}
-                                    {dice ? <DieFace value={dice[2]} /> : <DicePlaceholder />}
-                                </div>
+                        <div className="flex flex-col items-center justify-center gap-2">
+                            <div className="flex items-center justify-center gap-2 sm:gap-4">
+                                {dice ? <DieFace value={dice[0]} /> : <DicePlaceholder />}
+                                {dice ? <OperatorIcon op={dice[1]} /> : <OperatorPlaceholder />}
+                                {dice ? <DieFace value={dice[2]} /> : <DicePlaceholder />}
                             </div>
-                        )}
+                        </div>
                         
                         <Button onClick={handleRollDice} disabled={turnState !== 'rolling' || currentPlayer.isBot} className="w-full h-14 sm:h-16 text-xl sm:text-2xl rounded-3xl shadow-lg">
                             <Dices className="mr-2 h-6 w-6 sm:h-8 sm:h-8" />
                             {getTurnMessage()}
                         </Button>
-                        
-                        {!animationState && turnState === 'selecting' && dice && moveSteps && (
-                            <div className="flex flex-col items-center justify-center gap-1 text-center text-white pt-2">
-                                <div className="flex items-center text-3xl sm:text-4xl font-bold gap-2">
-                                    <span className="opacity-70">=</span>
-                                    <span className="text-4xl sm:text-5xl drop-shadow-md">{moveSteps}</span>
-                                </div>
-                                <p className="text-lg font-semibold animate-pulse">
-                                    {moveSteps === 6 ? "It's a Six! Select a pawn." : `Move ${moveSteps} steps.`}
-                                </p>
-                            </div>
-                        )}
                     </>
                 )}
             </Card>
+
+            <div className="grid grid-cols-2 gap-2 w-full max-w-xs">
+                {players.map((p, index) => (
+                    <Card key={p.id} className={`p-2 rounded-xl flex items-center gap-2 transition-all duration-300 ${index === currentPlayerIndex ? 'scale-105 opacity-100' : 'opacity-70'}`} style={{backgroundColor: playerColors[p.id]}}>
+                        {p.isBot ? <Bot className="text-white"/> : <User className="text-white"/>}
+                        <div className="flex flex-col text-white">
+                           <span className="font-bold text-sm leading-tight">{p.characterName}</span>
+                           <div className="flex items-center gap-1 text-xs">
+                             {p.pawns.every(pawn => pawn.position === -1) ? 'All in base' : `${p.pawns.filter(pawn => pawn.position === 66).length}/4 home`}
+                           </div>
+                        </div>
+                    </Card>
+                ))}
+            </div>
         </div>
     </div>
   );
