@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Gamepad2, Trophy, Star, Dice5, Plus, Minus, Maximize, Minimize } from 'lucide-react';
 import Link from 'next/link';
@@ -6,22 +7,27 @@ import { Button } from '@/components/ui/button';
 const instructions = [
   {
     title: '1. Roll The Dice',
-    content: 'On your turn, click the "Roll" button to roll two number dice and one math operator die.',
+    content: 'Click the "Roll" button on your turn. You will roll two number dice and one math die (+, -, Max, Min).',
     illustration: '🎲',
   },
   {
-    title: '2. Get Your Steps',
-    content: 'Your dice roll creates a math problem. The result of the problem is the number of steps you get to move!',
+    title: '2. Do The Math!',
+    content: 'The dice create a math problem. The answer is the number of steps you can move your character!',
     illustration: '🧮',
   },
   {
-    title: '3. Move Your Balloon',
-    content: 'Select one of your playable balloon pawns to move it forward by the calculated number of steps.',
+    title: '3. Move Your Character',
+    content: 'Click on one of your characters to move it forward by the number of steps you rolled.',
     illustration: '🎈',
   },
   {
-    title: '4. Win The Game',
-    content: 'Be the first player to get all four of your balloon pawns around the board and to the finish line!',
+    title: '4. Starting The Game',
+    content: 'You need to roll a 6 to move one of your characters out from their home base to the starting tile.',
+    illustration: '🚀',
+  },
+  {
+    title: '5. Win The Game!',
+    content: 'Be the first player to get all four of your characters around the board and to the center finish area!',
     illustration: '🏆',
   },
 ];
