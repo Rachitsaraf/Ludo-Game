@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -22,7 +21,6 @@ const FloatingIcon = ({ icon: Icon, className, duration = 10, delay = 0 }: { ico
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const { theme, setTheme } = useTheme();
   const { isMuted, toggleMute } = useSound();
   
   const [isMounted, setIsMounted] = useState(false);
@@ -98,13 +96,6 @@ export default function SettingsPage() {
               />
             </div>
           )}
-          <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20">
-            <Label htmlFor="theme-mode" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
-              <Paintbrush className="h-5 w-5 sm:h-6 sm:w-6" />
-              Dark Mode
-            </Label>
-            <Switch id="theme-mode" checked={theme === 'dark'} onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')} />
-          </div>
           <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20">
             <Label htmlFor="sound-music" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
               <Music className="h-5 w-5 sm:h-6 sm:w-6" />
