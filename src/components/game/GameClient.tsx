@@ -252,8 +252,8 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
 
     const hasPawnsInBase = player.pawns.some(p => p.position === -1);
     
-    // Give a 1 in 3 chance to roll a 6 if a pawn is in the home base.
-    if (hasPawnsInBase && Math.random() < (1/3)) {
+    // Give a 1 in 4 (25%) chance to roll a 6 if a pawn is in the home base.
+    if (hasPawnsInBase && Math.random() < 0.25) {
         // To make it look real, we'll set the dice to a combination that makes 6.
         const useAddition = Math.random() > 0.5;
         if (useAddition) {
