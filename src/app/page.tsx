@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -86,7 +87,7 @@ export default function Home() {
               {/* Start Game button */}
               <div className="w-full px-4 sm:px-0 opacity-0 animate-pop-in" style={{ animationDelay: '400ms' }}>
                 <button
-                  className={`${buttonBaseClasses} w-full h-24 text-3xl bg-green-500 border-green-700 hover:bg-green-400`}
+                  className={`${buttonBaseClasses} w-full h-24 text-3xl bg-gradient-to-br from-green-400 to-green-600 border-green-800 hover:from-green-500 hover:to-green-700`}
                   onClick={handleOpenPlayerSelection}
                 >
                   <div className="flex items-center gap-4">
@@ -99,14 +100,14 @@ export default function Home() {
               {/* 2x2 Grid for other options */}
               <div className="grid grid-cols-2 gap-4 sm:gap-6 w-full">
                 <div className="opacity-0 animate-pop-in" style={{ animationDelay: '600ms' }}>
-                  <Link href="/leaderboard" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-blue-500 border-blue-700 hover:bg-blue-400`}>
+                  <Link href="/leaderboard" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-gradient-to-br from-blue-400 to-blue-600 border-blue-800 hover:from-blue-500 hover:to-blue-700`}>
                       <Trophy className="h-10 w-10" />
                       <span>Leaderboard</span>
                   </Link>
                 </div>
 
                 <div className="opacity-0 animate-pop-in" style={{ animationDelay: '700ms' }}>
-                  <Link href="/instructions" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl text-black bg-yellow-400 border-yellow-600 hover:bg-yellow-300`}>
+                  <Link href="/instructions" onClick={() => playSound('click')} className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-gradient-to-br from-yellow-400 to-amber-500 border-amber-700 hover:from-yellow-500 hover:to-amber-600`}>
                       <Info className="h-10 w-10" />
                       <span>Instructions</span>
                   </Link>
@@ -115,7 +116,7 @@ export default function Home() {
                 <div className="opacity-0 animate-pop-in" style={{ animationDelay: '800ms' }}>
                     <button
                       onClick={handleOpenSettings}
-                      className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-red-500 border-red-700 hover:bg-red-400`}>
+                      className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-gradient-to-br from-red-400 to-red-600 border-red-800 hover:from-red-500 hover:to-red-700`}>
                         <Settings className="h-10 w-10" />
                         <span>Settings</span>
                     </button>
@@ -123,7 +124,7 @@ export default function Home() {
 
                 <div className="opacity-0 animate-pop-in" style={{ animationDelay: '900ms' }}>
                     <button
-                      className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-pink-500 border-pink-700 hover:bg-pink-400`}
+                      className={`${buttonBaseClasses} w-full h-28 sm:h-32 text-xl bg-gradient-to-br from-pink-500 to-purple-600 border-purple-800 hover:from-pink-600 hover:to-purple-700`}
                       onClick={handleOpenDevelopers}
                     >
                       <Users className="h-10 w-10" />
