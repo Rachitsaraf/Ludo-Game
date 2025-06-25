@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -22,7 +21,6 @@ const FloatingIcon = ({ icon: Icon, className, duration = 10, delay = 0 }: { ico
 };
 
 export default function SettingsPage() {
-  const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const { isMuted, toggleMute } = useSound();
   
@@ -119,18 +117,6 @@ export default function SettingsPage() {
               Vibration (Mobile)
             </Label>
             <Switch id="vibration" checked={isVibrationOn} onCheckedChange={toggleVibration} />
-          </div>
-          
-          <div className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-primary/20">
-            <Label htmlFor="dark-mode" className="text-lg sm:text-xl flex items-center gap-2 text-card-foreground">
-              <Paintbrush className="h-5 w-5 sm:h-6 sm:w-6" />
-              Dark Mode
-            </Label>
-            <Switch
-              id="dark-mode"
-              checked={theme === 'dark'}
-              onCheckedChange={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            />
           </div>
 
           <Button
