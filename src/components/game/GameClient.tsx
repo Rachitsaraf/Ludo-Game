@@ -6,10 +6,9 @@ import { produce } from 'immer';
 import { LudoBoard } from './LudoBoard';
 import { Pawn } from './Pawn';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Dices, Minus, Plus, HelpCircle, User, Bot, Check, X } from 'lucide-react';
+import { ArrowLeft, Dices, Minus, Plus, HelpCircle, User, Bot } from 'lucide-react';
 import type { Operator, Player, PlayerColor, PawnState } from '@/lib/types';
 import Link from 'next/link';
-import { useToast } from '@/hooks/use-toast';
 import { Card } from '@/components/ui/card';
 import { getPawnStyle, PLAYER_CONFIG } from '@/lib/board';
 import { Confetti } from './Confetti';
@@ -89,8 +88,8 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
   const [winner, setWinner] = useState<Player | null>(null);
   const [moveSteps, setMoveSteps] = useState<number | null>(null);
   const [selectedPawnId, setSelectedPawnId] = useState<number | null>(null);
-  const { toast } = useToast();
   const { playSound } = useSound();
+  const [turnMessage, setTurnMessage] = useState<string | null>(null);
   
   const [animationState, setAnimationState] = useState<{
     pawnId: number;
@@ -115,6 +114,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     setDice(null);
     setMoveSteps(null);
     setSelectedPawnId(null);
+    setTurnMessage(null);
   }, [players, playSound]);
 
   const isPawnMovable = useCallback((pawn: PawnState, steps: number): boolean => {
@@ -180,24 +180,12 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                                     const otherPawnGlobalPos = (otherPlayerConfig.pathStart + otherPawn.position) % 60;
                                     if (otherPawnGlobalPos === targetPosOnBoard) {
                                         otherPawn.position = -1;
-                                        toast({
-                                            title: "Collision!",
-                                            description: `${movedPlayer.characterName} knocked ${otherPlayer.characterName}'s pawn back to base!`,
-                                            variant: "destructive"
-                                        });
                                     }
                                 }
                             });
                         }
                     });
                 }
-            }
-             // Check if pawn reached home
-            if (finalPosition === 66) {
-                toast({
-                    title: "Pawn Home!",
-                    description: `${movedPlayer.characterName} got a pawn to the finish line!`,
-                });
             }
         });
         
@@ -228,7 +216,7 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     }
 
     return () => clearTimeout(animationTimeout);
-  }, [turnState, animationState, players, nextTurn, playSound, toast]);
+  }, [turnState, animationState, players, nextTurn, playSound]);
 
   const performRoll = useCallback((): number => {
     playSound('dice');
@@ -253,19 +241,19 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     if (turnState !== 'rolling' || currentPlayer.isBot) return;
     
     const result = performRoll();
-    toast({ title: `You rolled for ${result} steps!` });
+    setTurnMessage(`You rolled for ${result} steps!`);
     
     if (result === 0) {
-        toast({ title: "No move!", description: "Result is 0, skipping turn." });
-        setTimeout(() => nextTurn(), 800);
+        setTurnMessage("No move! Result is 0, skipping turn.");
+        setTimeout(() => nextTurn(), 1200);
         return;
     }
 
     const movablePawns = currentPlayer.pawns.filter(p => isPawnMovable(p, result));
     
     if (movablePawns.length === 0) {
-        toast({ title: "No valid moves!", description: `Cannot move ${result} steps. Skipping turn.` });
-        setTimeout(() => nextTurn(), 800);
+        setTurnMessage(`No valid moves! Cannot move ${result} steps. Skipping turn.`);
+        setTimeout(() => nextTurn(), 1200);
         return;
     }
     
@@ -278,18 +266,17 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
     
     playSound('click');
     setSelectedPawnId(pawn.id);
-    toast({ description: `${currentPlayer.characterName} moved ${moveSteps} steps!`});
     executeMove(moveSteps, pawn.id);
   };
 
   const handleBotTurn = useCallback(() => {
     if (turnState !== 'rolling' || !currentPlayer.isBot) return;
 
-    toast({ title: `${currentPlayer.characterName} is thinking...` });
+    setTurnMessage(`${currentPlayer.characterName} is thinking...`);
     
     setTimeout(() => {
       const result = performRoll();
-      toast({ title: `${currentPlayer.characterName} (Bot) rolled for ${result} steps` });
+      setTurnMessage(`${currentPlayer.characterName} (Bot) rolled for ${result} steps`);
 
       if (result === 0) {
           setTimeout(() => nextTurn(), 1200);
@@ -309,47 +296,39 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
       if (result === 6 && pawnsInBase.length > 0) {
           pawnToMove = pawnsInBase[0];
       } else {
-          const sortedMovablePawns = [...movablePawns].sort((a, b) => b.position - a.position);
-          pawnToMove = sortedMovablePawns[0];
+          const pawnsOnBoard = movablePawns.filter(p => p.position !== -1).sort((a, b) => b.position - a.position);
+          pawnToMove = pawnsOnBoard[0] || null;
       }
       
       if (pawnToMove) {
         setMoveSteps(result);
         setTimeout(() => {
-            toast({ description: `${currentPlayer.characterName} moved ${result} steps!`});
             executeMove(result, pawnToMove!.id);
         }, 800);
       } else {
           setTimeout(() => nextTurn(), 1200);
       }
-    }, 1000);
-  }, [turnState, currentPlayer, isPawnMovable, nextTurn, toast, performRoll, executeMove]);
+    }, 1500);
+  }, [turnState, currentPlayer, isPawnMovable, nextTurn, performRoll, executeMove]);
 
   useEffect(() => {
     if (turnState === 'rolling' && currentPlayer.isBot && !winner) {
       const timer = setTimeout(() => {
         handleBotTurn();
-      }, 1500); // Bot "thinking" time
+      }, 1500);
       return () => clearTimeout(timer);
     }
   }, [turnState, currentPlayer, winner, handleBotTurn]);
 
-  const getTurnMessage = () => {
+  const getTurnStatusMessage = () => {
     switch(turnState) {
-        case 'rolling': return currentPlayer.isBot ? 'Bot Rolling...' : 'Roll Dice';
-        case 'selecting': return 'Select a Pawn';
+        case 'rolling': return currentPlayer.isBot ? 'Bot is Rolling...' : 'Roll Your Dice!';
+        case 'selecting': return 'Select a Pawn to Move';
         case 'moving': return 'Moving...';
         case 'game-over': return 'Game Over!';
         default: return 'Roll Dice';
     }
   }
-
-  const turnTitle = useMemo(() => {
-      if (winner) return `${winner.characterName} Wins!`;
-      if (turnState === 'game-over') return 'Game Over!';
-      const playerType = currentPlayer.isBot ? 'Bot' : 'Your';
-      return `${playerType} Turn`;
-  }, [currentPlayer, turnState, winner]);
 
   return (
     <div className="relative flex flex-col md:flex-row items-center justify-center p-2 sm:p-4 gap-4 sm:gap-6 w-full max-w-7xl mx-auto">
@@ -391,11 +370,20 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
         </div>
         
         <div className="w-full md:w-auto flex flex-col items-center gap-4">
-            <Card className="p-4 rounded-4xl shadow-lg w-full max-w-xs flex flex-col items-center gap-4 min-h-[220px] bg-white/10 backdrop-blur-sm border border-white/20">
+            <Card className="p-4 rounded-4xl shadow-lg w-full max-w-xs flex flex-col items-center gap-4 bg-white/10 backdrop-blur-sm border border-white/20">
+                 <div className="w-full text-center p-2 rounded-lg" style={{ backgroundColor: playerColors[currentPlayer.id] }}>
+                    <h2 className="text-xl font-bold text-white">
+                        {winner ? `${winner.characterName} Wins!` : `${currentPlayer.characterName}'s Turn`}
+                    </h2>
+                    <p className="text-sm text-white/90">{getTurnStatusMessage()}</p>
+                 </div>
                 {winner ? (
-                    <div className="text-center text-white">
-                        <h2 className="text-3xl font-bold" style={{color: playerColors[winner.id as PlayerColor]}}>{winner.characterName} Wins!</h2>
-                        <p className="text-muted-foreground">Congratulations!</p>
+                    <div className="text-center text-white flex-grow flex flex-col justify-center items-center h-[180px]">
+                        <p className="text-4xl">🏆</p>
+                        <p className="text-muted-foreground mt-2">Congratulations!</p>
+                         <Link href="/" passHref>
+                           <Button className="mt-4">Play Again</Button>
+                         </Link>
                     </div>
                 ) : (
                     <>
@@ -409,25 +397,14 @@ export const GameClient = ({ humanColors }: { humanColors: PlayerColor[] }) => {
                         
                         <Button onClick={handleRollDice} disabled={turnState !== 'rolling' || currentPlayer.isBot} className="w-full h-14 sm:h-16 text-xl sm:text-2xl rounded-3xl shadow-lg">
                             <Dices className="mr-2 h-6 w-6 sm:h-8 sm:h-8" />
-                            {getTurnMessage()}
+                            Roll Dice
                         </Button>
+                        <div className="h-6 mt-1 text-center text-white font-semibold">
+                          {turnMessage && <p className="animate-in fade-in-0">{turnMessage}</p>}
+                        </div>
                     </>
                 )}
             </Card>
-
-            <div className="grid grid-cols-2 gap-2 w-full max-w-xs">
-                {players.map((p, index) => (
-                    <Card key={p.id} className={`p-2 rounded-xl flex items-center gap-2 transition-all duration-300 ${index === currentPlayerIndex ? 'scale-105 opacity-100' : 'opacity-70'}`} style={{backgroundColor: playerColors[p.id]}}>
-                        {p.isBot ? <Bot className="text-white"/> : <User className="text-white"/>}
-                        <div className="flex flex-col text-white">
-                           <span className="font-bold text-sm leading-tight">{p.characterName}</span>
-                           <div className="flex items-center gap-1 text-xs">
-                             {p.pawns.every(pawn => pawn.position === -1) ? 'All in base' : `${p.pawns.filter(pawn => pawn.position === 66).length}/4 home`}
-                           </div>
-                        </div>
-                    </Card>
-                ))}
-            </div>
         </div>
     </div>
   );
