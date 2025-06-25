@@ -51,7 +51,7 @@ export const LudoBoard = () => {
     'R R R R R R R . g . G G G G G G G',
     'R R R R R R R . g . G G G G G G G',
     '. . . . . . . C C C . . . . . . .',
-    'r r r r r r . C C C . y y y y y y',
+    'r r r r r r r C C C y y y y y y y',
     '. . . . . . . C C C . . . . . . .',
     'B B B B B B B . b . Y Y Y Y Y Y Y',
     'B B B B B B B . b . Y Y Y Y Y Y Y',
